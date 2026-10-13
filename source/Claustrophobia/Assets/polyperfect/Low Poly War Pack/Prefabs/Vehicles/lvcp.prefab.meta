@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 5e3f62e4fe1924e2085ee366cd8bad28
+timeCreated: 1521391511
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Vehicles/lvcp.prefab
+  uploadId: 688686

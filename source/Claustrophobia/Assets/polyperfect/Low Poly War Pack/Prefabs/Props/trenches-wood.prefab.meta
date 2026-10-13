@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 09dd3bf2e9d5748ffb5e7f634bb5d04a
+timeCreated: 1535307344
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Props/trenches-wood.prefab
+  uploadId: 688686

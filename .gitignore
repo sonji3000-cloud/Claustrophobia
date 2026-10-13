@@ -1,0 +1,25 @@
+# Unity-generated caches, temporary files, logs, and per-user settings
+/source/Claustrophobia/[Ll]ibrary/
+/source/Claustrophobia/[Tt]emp/
+/source/Claustrophobia/[Oo]bj/
+/source/Claustrophobia/[Ll]ogs/
+/source/Claustrophobia/[Uu]ser[Ss]ettings/
+/source/Claustrophobia/[Bb]uild/
+/source/Claustrophobia/[Bb]uilds/
+/source/Claustrophobia/[Mm]emoryCaptures/
+/source/Claustrophobia/[Rr]ecordings/
+
+# Generated IDE files and local IDE caches
+/source/Claustrophobia/.vs/
+/source/Claustrophobia/.idea/
+/source/Claustrophobia/.vsconfig
+/source/Claustrophobia/*.csproj
+/source/Claustrophobia/*.sln
+/source/Claustrophobia/*.slnx
+/source/Claustrophobia/*.suo
+/source/Claustrophobia/*.user
+/source/Claustrophobia/*.userprefs
+/source/Claustrophobia/*.pidb
+/source/Claustrophobia/*.booproj
+
+# Assets, their .meta files, Packages, and ProjectSettings must stay tracked.

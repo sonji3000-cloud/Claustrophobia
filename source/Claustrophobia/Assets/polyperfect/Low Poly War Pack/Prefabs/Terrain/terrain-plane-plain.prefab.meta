@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f2a0097f01d8441948e215a13fb697a3
+timeCreated: 1520983999
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Terrain/terrain-plane-plain.prefab
+  uploadId: 688686

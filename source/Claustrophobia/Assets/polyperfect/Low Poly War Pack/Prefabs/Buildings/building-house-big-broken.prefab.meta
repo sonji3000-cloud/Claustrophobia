@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 4febb34fd6c674c24a269abb5ff22242
+timeCreated: 1556056848
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Buildings/building-house-big-broken.prefab
+  uploadId: 688686

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 5bf5fc3532c34583924d40d39f28914b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - FuzzyType: {fileID: 11400000, guid: 1b0cf953070583047b40092729b69876, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Scripts/Abstracts/FuzzyComponent.cs
+  uploadId: 688686

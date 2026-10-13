@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 5b05ffe16435d0243946e4af7cd05c10
+timeCreated: 1525787274
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/- Animations/AnimationControllers/Tank-T-34_85.controller
+  uploadId: 688686

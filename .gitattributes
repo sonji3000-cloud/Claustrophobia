@@ -1,1 +1,8 @@
 *.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Unity binary assets; generated Library/ caches are excluded in .gitignore.
+source/Claustrophobia/Assets/**/*.png filter=lfs diff=lfs merge=lfs -text
+source/Claustrophobia/Assets/**/*.psd filter=lfs diff=lfs merge=lfs -text
+source/Claustrophobia/Assets/**/*.tga filter=lfs diff=lfs merge=lfs -text
+source/Claustrophobia/Assets/**/*.wav filter=lfs diff=lfs merge=lfs -text
+source/Claustrophobia/Assets/**/*.ogg filter=lfs diff=lfs merge=lfs -text

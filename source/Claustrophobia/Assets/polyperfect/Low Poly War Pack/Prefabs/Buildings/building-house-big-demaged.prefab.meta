@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 76561844570c844119e3336771c99051
+timeCreated: 1556130817
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Buildings/building-house-big-demaged.prefab
+  uploadId: 688686

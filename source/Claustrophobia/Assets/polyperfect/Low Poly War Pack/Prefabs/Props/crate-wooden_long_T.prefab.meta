@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 663748f6e387440f5be0b85e0927a6eb
+timeCreated: 1554239608
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Props/crate-wooden_long_T.prefab
+  uploadId: 688686

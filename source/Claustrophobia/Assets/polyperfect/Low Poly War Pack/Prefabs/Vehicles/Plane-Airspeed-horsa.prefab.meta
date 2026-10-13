@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 454434ef6bfe149ddaaa050ddaeb10b8
+timeCreated: 1526848019
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Vehicles/Plane-Airspeed-horsa.prefab
+  uploadId: 688686
