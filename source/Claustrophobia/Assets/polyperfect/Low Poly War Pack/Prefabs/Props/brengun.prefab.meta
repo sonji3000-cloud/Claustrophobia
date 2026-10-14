@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 7b2910da581814d7197190cf1c5d1d61
+timeCreated: 1530565046
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Props/brengun.prefab
+  uploadId: 688686

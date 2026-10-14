@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: c1bff1ec75dbd4b8485820061aaf30e6
+timeCreated: 1526328007
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Props/log-post.prefab
+  uploadId: 688686

@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 17c17aff7c9447eb9c47bebb5a14c4be
+timeCreated: 1618001423
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Scripts/Senders/OnCollide_Damage_Sender.cs
+  uploadId: 688686

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: b754f8424a1747c18bd5f590b32874a5
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - Capability: {fileID: 11400000, guid: c59fac7bd3334034597127850504a287, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Scripts/Abilities/Reload_UseEffector.cs
+  uploadId: 688686

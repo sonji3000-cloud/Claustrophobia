@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 82d2a7b2957a14a4a9129ed07db88369
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Scripts/Abstracts/IDamegeable.cs
+  uploadId: 688686

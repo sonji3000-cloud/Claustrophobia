@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: c7862f127ff164f23aea750388b4b99f
+timeCreated: 1531770464
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Props/m1a1-bazooka.prefab
+  uploadId: 688686

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: a31548b0bab585d43b4b685bf0a389d5
+timeCreated: 1533803556
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Scripts/Grandfathered/DestroyTime.cs
+  uploadId: 688686

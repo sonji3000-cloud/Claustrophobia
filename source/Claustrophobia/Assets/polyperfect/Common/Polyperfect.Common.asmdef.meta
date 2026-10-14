@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 531a9515a3189bd4e93f11a1b812ea2e
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Common/Polyperfect.Common.asmdef
+  uploadId: 688686

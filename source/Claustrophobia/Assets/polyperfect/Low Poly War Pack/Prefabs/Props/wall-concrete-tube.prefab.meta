@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 842487390e7264ba4beb02097a178b76
+timeCreated: 1556270711
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Props/wall-concrete-tube.prefab
+  uploadId: 688686

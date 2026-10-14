@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 7638eaa03bb5f4365ae12b0c6c686c2c
+timeCreated: 1554152181
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Props/rubble_small.prefab
+  uploadId: 688686

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 3862800a90b419e419491fb275addaed
+timeCreated: 1591737010
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/Prefabs/Nature/rock-square.prefab
+  uploadId: 688686

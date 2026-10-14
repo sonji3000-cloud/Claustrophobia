@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: cf0eb7e51c8b4104c9a288e09cde2c28
+timeCreated: 1526644706
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124419
+  packageName: Low Poly War Pack
+  packageVersion: 3.15
+  assetPath: Assets/polyperfect/Low Poly War Pack/- Animations/AnimationControllers/Gun Flash = Sprite.controller
+  uploadId: 688686
