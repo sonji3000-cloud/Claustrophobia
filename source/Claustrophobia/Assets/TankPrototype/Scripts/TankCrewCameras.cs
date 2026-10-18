@@ -1,15 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>F1/F2/F3 select crew stations. Only the commander supports mouse look.</summary>
+/// <summary>F1/F2/F3 select crew stations; F4 selects the optional third-person view.</summary>
 [DisallowMultipleComponent]
 public sealed class TankCrewCameras : MonoBehaviour
 {
-    public enum CrewStation { Driver, Gunner, Commander }
+    public enum CrewStation { Driver, Gunner, Commander, ThirdPerson }
 
     [SerializeField] private Camera driverCamera;
     [SerializeField] private Camera gunnerCamera;
     [SerializeField] private Camera commanderCamera;
+    [SerializeField] private Camera thirdPersonCamera;
     [SerializeField] private Camera observationCamera;
     [SerializeField] private CrewStation startingStation = CrewStation.Driver;
     [Tooltip("Degrees per mouse pixel while holding the right mouse button.")]
@@ -27,8 +28,19 @@ public sealed class TankCrewCameras : MonoBehaviour
     public CrewStation CurrentStation { get; private set; }
     public float CommanderYaw => commanderYaw;
     public float CommanderPitch => commanderPitch;
-    public Camera ActiveCamera => CurrentStation == CrewStation.Driver ? driverCamera
-        : CurrentStation == CrewStation.Gunner ? gunnerCamera : commanderCamera;
+    public Camera ActiveCamera => GetCamera(CurrentStation);
+
+    private Camera GetCamera(CrewStation station)
+    {
+        switch (station)
+        {
+            case CrewStation.Driver: return driverCamera;
+            case CrewStation.Gunner: return gunnerCamera;
+            case CrewStation.Commander: return commanderCamera;
+            case CrewStation.ThirdPerson: return thirdPersonCamera;
+            default: return null;
+        }
+    }
 
     private void Awake()
     {
@@ -56,6 +68,7 @@ public sealed class TankCrewCameras : MonoBehaviour
         if (keyboard.f1Key.wasPressedThisFrame) SwitchView(0);
         else if (keyboard.f2Key.wasPressedThisFrame) SwitchView(1);
         else if (keyboard.f3Key.wasPressedThisFrame) SwitchView(2);
+        else if (keyboard.f4Key.wasPressedThisFrame) SwitchView(3);
     }
 
     private void LateUpdate()
@@ -71,16 +84,17 @@ public sealed class TankCrewCameras : MonoBehaviour
             * Quaternion.Euler(commanderPitch, commanderYaw, 0f);
     }
 
-    /// <param name="station">0 = driver, 1 = gunner, 2 = commander.</param>
+    /// <param name="station">0 = driver, 1 = gunner, 2 = commander, 3 = third person.</param>
     public void SwitchView(int station)
     {
-        if (station < 0 || station > 2) return;
-        Camera selected = station == 0 ? driverCamera : station == 1 ? gunnerCamera : commanderCamera;
+        if (station < 0 || station > 3) return;
+        Camera selected = GetCamera((CrewStation)station);
         if (selected == null) return;
         CurrentStation = (CrewStation)station;
         SetCameraState(driverCamera, driverCamera == selected);
         SetCameraState(gunnerCamera, gunnerCamera == selected);
         SetCameraState(commanderCamera, commanderCamera == selected);
+        SetCameraState(thirdPersonCamera, thirdPersonCamera == selected);
     }
 
     private static void SetCameraState(Camera camera, bool active)
@@ -97,6 +111,7 @@ public sealed class TankCrewCameras : MonoBehaviour
         SetCameraState(driverCamera, false);
         SetCameraState(gunnerCamera, false);
         SetCameraState(commanderCamera, false);
+        SetCameraState(thirdPersonCamera, false);
         if (observationCamera != null) observationCamera.enabled = observationWasEnabled;
         if (observationListener != null) observationListener.enabled = observationListenerWasEnabled;
     }
