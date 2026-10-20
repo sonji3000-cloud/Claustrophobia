@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-/// <summary>F1/F2/F3 select crew stations; F4 selects the optional third-person view.</summary>
+/// <summary>Applies prototype camera selection and commander look requested by TankInput.</summary>
 [DisallowMultipleComponent]
 public sealed class TankCrewCameras : MonoBehaviour
 {
@@ -61,22 +60,10 @@ public sealed class TankCrewCameras : MonoBehaviour
         SwitchView((int)startingStation);
     }
 
-    private void Update()
+    public void Look(Vector2 delta)
     {
-        Keyboard keyboard = Keyboard.current;
-        if (keyboard == null) return;
-        if (keyboard.f1Key.wasPressedThisFrame) SwitchView(0);
-        else if (keyboard.f2Key.wasPressedThisFrame) SwitchView(1);
-        else if (keyboard.f3Key.wasPressedThisFrame) SwitchView(2);
-        else if (keyboard.f4Key.wasPressedThisFrame) SwitchView(3);
-    }
+        if (!isActiveAndEnabled || CurrentStation != CrewStation.Commander || commanderCamera == null) return;
 
-    private void LateUpdate()
-    {
-        if (CurrentStation != CrewStation.Commander || commanderCamera == null) return;
-        Mouse mouse = Mouse.current;
-        if (mouse == null || !mouse.rightButton.isPressed || !Application.isFocused) return;
-        Vector2 delta = mouse.delta.ReadValue();
         commanderYaw = Mathf.Repeat(commanderYaw + delta.x * mouseSensitivity, 360f);
         commanderPitch = Mathf.Clamp(commanderPitch - delta.y * mouseSensitivity,
             minimumPitch, maximumPitch);

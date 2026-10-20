@@ -37,6 +37,9 @@ R: 포탄 삽입, T: 폐쇄기 닫기, Enter: 한 발 발사
 기본 발사 순서: R -> T -> Enter
 발사 후 1.5초 회복이 끝나면 다시 R -> T -> Enter로 발사합니다.
 Y: 빈 약실 열기(빈 상태로 T를 눌러 닫았을 때 사용)
+F1 / F2 / F3: 조종수 / 포수 / 전차장 테스트 시점, F4: 3인칭(카메라가 연결된 경우)
+전차장 시점에서 우클릭을 누른 채 마우스 이동: 관측 방향 조절.
+현재는 전체 기능을 시험하는 입력이며, 좌석별 조작 권한 제한은 아직 포함하지 않습니다.
 
 5. 팀 씬에서 재사용
 Prefabs/Tank.prefab: 이동, 조준, 발사, 포탄 참조, 탄도 표시가 연결된 탱크.
@@ -47,7 +50,8 @@ TankKeyboardDebug의 observationCamera와 targetHealth는 테스트 씬에서만
 프리팹 자체는 특정 씬의 카메라/표적을 참조하지 않습니다.
 다른 씬에서는 해당 필드를 Inspector에서 연결하거나 팀의 카메라/입력 시스템을 사용하세요.
 탄도 표시기는 탱크 프리팹 내부에 포함되어 있습니다.
-팀 입력을 연결할 때 TankKeyboardDebug를 비활성화하고 다음 API를 호출하세요.
+팀 입력을 연결할 때 TankInput을 비활성화하고 다음 API를 호출하세요.
+TankKeyboardDebug는 진단 HUD와 기존 외부 카메라 추적만 담당합니다.
 TankMotor.SetLeverInputs(left, right): 각 값 -1~1.
 TankAim.ApplyInput(turret, gun, deltaTime): 조준 입력.
 TankGun.TickRecovery(): 매 프레임 호출해 회복 완료 처리.
@@ -68,5 +72,7 @@ TankGun: 약실 상태, 발사, 회복 처리.
 TankProjectile: 비행, 충돌, 피해와 수명 처리.
 TankHealth: 표적 체력과 파괴 상태.
 TankBallistics: 탄도 예측, 착탄 표시, 포탄과 공유하는 데이터 타입.
-TankKeyboardDebug: 테스트용 입력, 카메라 추적, 진단 HUD.
+TankInput: 테스트용 이동·조준·무기·시점 전환·마우스 관측 입력.
+TankCrewCameras: 요청받은 카메라 선택과 전차장 관측 회전 적용.
+TankKeyboardDebug: 기존 외부 카메라 추적과 진단 HUD(입력·전차 조작 없음).
 기본 발사에도 공유 타입이 필요하므로 Scripts 폴더는 함께 가져오세요.

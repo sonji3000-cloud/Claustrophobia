@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 2875274406765504558}
   - component: {fileID: 4274808342533664724}
   - component: {fileID: 8995400153039013291}
+  - component: {fileID: 9001001001}
   - component: {fileID: 3193043947660887071}
   - component: {fileID: 4626755262749872917}
   - component: {fileID: 700330996973930304}
@@ -139,6 +140,23 @@ MonoBehaviour:
   MoveDeceleration: 4
   TurnAcceleration: 90
   TurnDeceleration: 180
+--- !u!114 &9001001001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286242536391279158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc96d1b456c43cabe46665c2cc13ea2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankInput
+  leverChangeRate: 1
+  motor: {fileID: 8995400153039013291}
+  aim: {fileID: 4626755262749872917}
+  gun: {fileID: 700330996973930304}
+  cameras: {fileID: 0}
 --- !u!114 &3193043947660887071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,7 +169,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24df7ad7b107c3b4489e77b4fc8992c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankKeyboardDebug
-  LeverChangeRate: 1
   ShowCombatDiagnostics: 1
   motor: {fileID: 8995400153039013291}
   observationCamera: {fileID: 0}
