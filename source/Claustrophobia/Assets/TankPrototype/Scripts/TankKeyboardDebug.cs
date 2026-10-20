@@ -1,12 +1,10 @@
 using System.Globalization;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(TankMotor))]
 public sealed class TankKeyboardDebug : MonoBehaviour
 {
-    [Min(0f)] public float LeverChangeRate = 1f;
     [Tooltip("Show aiming, weapon, damage and ballistics panels alongside movement diagnostics.")]
     public bool ShowCombatDiagnostics = true;
     [SerializeField] private TankMotor motor;
@@ -19,8 +17,6 @@ public sealed class TankKeyboardDebug : MonoBehaviour
 
     private Rigidbody body;
     private GUIStyle valueStyle;
-    public float LeftLever { get; private set; }
-    public float RightLever { get; private set; }
     // Update samples the completed physics state, independently of motor's write.
     public float CurrentForwardSpeed { get; private set; }
     public float CurrentTurnSpeed { get; private set; }
@@ -32,60 +28,10 @@ public sealed class TankKeyboardDebug : MonoBehaviour
         if (aim == null) aim = GetComponent<TankAim>();
         if (gun == null) gun = GetComponent<TankGun>();
         if (ballistics == null) ballistics = GetComponent<TankBallistics>();
-        LeftLever = RightLever = 0f;
-        motor.SetLeverInputs(0f, 0f);
     }
 
     private void Update()
     {
-        Keyboard keyboard = Keyboard.current;
-        // Aim first, then recovery completion, then one weapon request by priority.
-        float turretInput = keyboard == null ? 0f
-            : (keyboard.rightArrowKey.isPressed ? 1f : 0f) - (keyboard.leftArrowKey.isPressed ? 1f : 0f);
-        float gunInput = keyboard == null ? 0f
-            : (keyboard.upArrowKey.isPressed ? 1f : 0f) - (keyboard.downArrowKey.isPressed ? 1f : 0f);
-        bool newFireRequest = keyboard != null && keyboard.enterKey.wasPressedThisFrame;
-        if (aim != null) aim.ApplyInput(turretInput, gunInput, Time.deltaTime);
-        if (gun != null)
-        {
-            gun.TickRecovery();
-            if (newFireRequest) gun.RequestFire();
-            else if (keyboard != null && keyboard.rKey.wasPressedThisFrame) gun.RequestInsert();
-            else if (keyboard != null && keyboard.tKey.wasPressedThisFrame) gun.RequestClose();
-            else if (keyboard != null && keyboard.yKey.wasPressedThisFrame) gun.RequestOpenEmpty();
-        }
-        if (keyboard != null)
-        {
-            int preset = 0;
-            if (keyboard.digit1Key.wasPressedThisFrame) preset = 1;
-            else if (keyboard.digit2Key.wasPressedThisFrame) preset = 2;
-            else if (keyboard.digit3Key.wasPressedThisFrame) preset = 3;
-            else if (keyboard.digit4Key.wasPressedThisFrame) preset = 4;
-            else if (keyboard.digit5Key.wasPressedThisFrame) preset = 5;
-            else if (keyboard.digit6Key.wasPressedThisFrame) preset = 6;
-
-            float presetLeft = 0f, presetRight = 0f;
-            switch (preset)
-            {
-                case 1: presetLeft = 1f; presetRight = 1f; break;
-                case 2: presetLeft = 1f; presetRight = 0.3f; break;
-                case 3: presetLeft = 1f; presetRight = -1f; break;
-                case 4: presetLeft = -1f; presetRight = 1f; break;
-                case 5: presetLeft = -1f; presetRight = -1f; break;
-                case 6: presetLeft = -1f; presetRight = -0.3f; break;
-            }
-            bool bothNeutral = keyboard.spaceKey.isPressed;
-            float step = LeverChangeRate * Time.deltaTime;
-            LeftLever = keyboard.qKey.isPressed || bothNeutral ? 0f
-                : preset != 0 ? presetLeft
-                : Mathf.Clamp(LeftLever + ((keyboard.wKey.isPressed ? 1 : 0)
-                    - (keyboard.sKey.isPressed ? 1 : 0)) * step, -1f, 1f);
-            RightLever = keyboard.uKey.isPressed || bothNeutral ? 0f
-                : preset != 0 ? presetRight
-                : Mathf.Clamp(RightLever + ((keyboard.iKey.isPressed ? 1 : 0)
-                    - (keyboard.kKey.isPressed ? 1 : 0)) * step, -1f, 1f);
-        }
-        motor.SetLeverInputs(LeftLever, RightLever);
         CurrentForwardSpeed = Vector3.Dot(body.linearVelocity, body.rotation * Vector3.forward);
         CurrentTurnSpeed = body.angularVelocity.y * Mathf.Rad2Deg;
     }
