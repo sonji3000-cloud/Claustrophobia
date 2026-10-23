@@ -21,6 +21,8 @@ public sealed class TankInput : MonoBehaviour
 		Keyboard keyboard = Keyboard.current;
 		float dt = Time.deltaTime;
 
+		ReadRole(keyboard);
+
 		// Apply aim before a weapon request so a shot uses this frame's direction.
 		ReadAim(keyboard, dt);
 		ReadWeapon(keyboard);
@@ -37,6 +39,15 @@ public sealed class TankInput : MonoBehaviour
 		if (mouse == null || !mouse.rightButton.isPressed) return;
 
 		control.Look(mouse.delta.ReadValue());
+	}
+
+	private void ReadRole(Keyboard keyboard)
+	{
+		if (keyboard == null) return;
+
+		if (keyboard.digit1Key.wasPressedThisFrame) control.SetTestRole(TankCrew.Role.Driver);
+		else if (keyboard.digit2Key.wasPressedThisFrame) control.SetTestRole(TankCrew.Role.Gunner);
+		else if (keyboard.digit3Key.wasPressedThisFrame) control.SetTestRole(TankCrew.Role.Commander);
 	}
 
 	private void ReadAim(Keyboard keyboard, float dt)
@@ -94,12 +105,12 @@ public sealed class TankInput : MonoBehaviour
 
 	private static bool TryReadPreset(Keyboard keyboard, out Vector2 levers)
 	{
-		if (keyboard.digit1Key.wasPressedThisFrame) levers = new Vector2(1f, 1f);
-		else if (keyboard.digit2Key.wasPressedThisFrame) levers = new Vector2(1f, 0.3f);
-		else if (keyboard.digit3Key.wasPressedThisFrame) levers = new Vector2(1f, -1f);
-		else if (keyboard.digit4Key.wasPressedThisFrame) levers = new Vector2(-1f, 1f);
-		else if (keyboard.digit5Key.wasPressedThisFrame) levers = new Vector2(-1f, -1f);
-		else if (keyboard.digit6Key.wasPressedThisFrame) levers = new Vector2(-1f, -0.3f);
+		if (keyboard.numpad1Key.wasPressedThisFrame) levers = new Vector2(1f, 1f);
+		else if (keyboard.numpad2Key.wasPressedThisFrame) levers = new Vector2(1f, 0.3f);
+		else if (keyboard.numpad3Key.wasPressedThisFrame) levers = new Vector2(1f, -1f);
+		else if (keyboard.numpad4Key.wasPressedThisFrame) levers = new Vector2(-1f, 1f);
+		else if (keyboard.numpad5Key.wasPressedThisFrame) levers = new Vector2(-1f, -1f);
+		else if (keyboard.numpad6Key.wasPressedThisFrame) levers = new Vector2(-1f, -0.3f);
 		else
 		{
 			levers = Vector2.zero;

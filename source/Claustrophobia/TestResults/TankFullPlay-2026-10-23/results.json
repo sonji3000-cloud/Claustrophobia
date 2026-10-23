@@ -1,0 +1,712 @@
+{
+    "status": "passed",
+    "phase": "finished",
+    "unityVersion": "6000.6.3f1",
+    "inputPath": "virtual keyboard/mouse events -> real TankInput.Update/LateUpdate -> TankControl -> TankCrew -> components",
+    "scene": "Assets/TankPrototype/Scenes/TankTest.unity",
+    "focused": true,
+    "checks": [
+        {
+            "name": "saved scene initial tank and target composition",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "W/I increment once per frame",
+            "details": "lever=0.3595228, elapsed=0.364525",
+            "passed": true
+        },
+        {
+            "name": "keyboard produces actual forward movement",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "release holds lever setting",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "Q neutralizes left only",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "U neutralizes right only",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "S/K decrease both levers",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset physics command 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset physics command 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset physics command 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset 4",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset physics command 4",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset 5",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset physics command 5",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset 6",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "preset physics command 6",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "actual clockwise pivot",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "track animation follows opposite wheel speeds",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "actual counterclockwise pivot",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "actual reverse displacement",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "tracks hold stopped pose",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "opposite lever keys cancel",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "lever range clamps at one",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "neutral overrides preset per side",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "controls work with TankKeyboardDebug disabled",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "wall fixture starts separated from every owner collider",
+            "details": "front extent=5.091349, colliders=4",
+            "passed": true
+        },
+        {
+            "name": "actual hull stops at wall",
+            "details": "travelled=1.12489",
+            "passed": true
+        },
+        {
+            "name": "wall blocks motion while forward command remains active",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "wall collision avoids significant penetration",
+            "details": "depth=5.49309E-43",
+            "passed": true
+        },
+        {
+            "name": "blocked tank tracks follow actual stopped hull",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "gunner movement keys are rejected",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "right arrow rotates once per frame",
+            "details": "yaw change=12.57336",
+            "passed": true
+        },
+        {
+            "name": "left arrow reverses turret",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "upper gun angle limit",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "lower gun angle limit",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "opposite aim keys cancel",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "unloaded Enter is rejected",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "rejected shot has no recoil",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "T closes empty chamber",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "Y opens empty chamber",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "driver weapon requests never reach gun",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "driver cannot aim",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "ballistics predicts actual target",
+            "details": "Hit / Target Hull",
+            "passed": true
+        },
+        {
+            "name": "predicted impact marker is visible",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard insert shot 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard close shot 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "commander cannot fire loaded gun",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "Enter commits one shot 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "independent projectile spawned 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "successful shot starts recoil 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "actual hit HP 75",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "predicted and actual impact agree 1",
+            "details": "error=0.03446231",
+            "passed": true
+        },
+        {
+            "name": "held Enter does not refire 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard insert shot 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard close shot 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "Enter commits one shot 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "independent projectile spawned 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "successful shot starts recoil 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "actual hit HP 50",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "predicted and actual impact agree 2",
+            "details": "error=0.03446231",
+            "passed": true
+        },
+        {
+            "name": "held Enter does not refire 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard insert shot 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard close shot 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "Enter commits one shot 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "independent projectile spawned 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "successful shot starts recoil 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "actual hit HP 25",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "predicted and actual impact agree 3",
+            "details": "error=0.03446231",
+            "passed": true
+        },
+        {
+            "name": "held Enter does not refire 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard insert shot 4",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard close shot 4",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "Enter commits one shot 4",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "independent projectile spawned 4",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "successful shot starts recoil 4",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "actual hit HP 0",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "predicted and actual impact agree 4",
+            "details": "error=0.03446207",
+            "passed": true
+        },
+        {
+            "name": "held Enter does not refire 4",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "four real hits destroy target once",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "recovery advances with TankInput disabled",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "destroyed target rejects extra damage",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "tank actually moves and turns before crew handoff",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "gunner aims while driver lever settings keep movement",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "keyboard shot succeeds during moving aim",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "moving and turning shot applies real damage",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "observation role 1 F1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 1/0",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 1/0",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "observation role 1 F2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 1/1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 1/1",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "observation role 1 F3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 1/2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 1/2",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "active view MainCamera tag role 1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "observation role 2 F1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 2/0",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 2/0",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "observation role 2 F2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 2/1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 2/1",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "observation role 2 F3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 2/2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 2/2",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "active view MainCamera tag role 2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "observation role 3 F1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 3/0",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 3/0",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "observation role 3 F2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 3/1",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 3/1",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "observation role 3 F3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "F key preserves role 3/2",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "single active camera/audio 3/2",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "active view MainCamera tag role 3",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "Game view focused for real mouse route",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "mouse without RMB does not rotate",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "RMB mouse routes through TankInput exactly once",
+            "details": "yaw delta=15",
+            "passed": true
+        },
+        {
+            "name": "observation lower pitch clamp",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "observation upper pitch clamp",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "role change exits previous observation",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "gunner mouse cannot rotate commander view",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "unassigned role cannot drive or observe",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "disabled crew exits observation",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "saved basic tank has crew and scene camera binding",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "basic F1 driver observation",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "basic driver camera/audio",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "basic external camera restored after role change",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "basic external overview camera/audio",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "basic F2 re-enters gunner observation",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "basic gunner camera/audio",
+            "details": "cameras=1, listeners=1",
+            "passed": true
+        },
+        {
+            "name": "basic F3 commander observation",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "basic disabled crew returns to external overview",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "camera manager disable restores originally disabled scene overview",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "missing crew fails closed",
+            "details": "",
+            "passed": true
+        },
+        {
+            "name": "missing optional camera leaves movement working",
+            "details": "",
+            "passed": true
+        }
+    ],
+    "screenshots": [
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\01-third-person.png",
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\01b-wall-collision.png",
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\02-shot-and-ballistics.png",
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\03-target-destroyed.png",
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\03b-moving-fire.png",
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\04-driver-view.png",
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\05-gunner-view.png",
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\06-commander-view.png",
+        "C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\TestResults\\TankFullPlay-2026-10-23\\07-basic-external-overview.png"
+    ],
+    "errors": []
+}

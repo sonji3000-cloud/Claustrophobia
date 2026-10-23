@@ -27,7 +27,8 @@ public sealed class TankCrewCameras : MonoBehaviour
     public CrewStation CurrentStation { get; private set; }
     public float CommanderYaw => commanderYaw;
     public float CommanderPitch => commanderPitch;
-    public Camera ActiveCamera => GetCamera(CurrentStation);
+    public Camera ActiveCamera => CurrentStation == CrewStation.ThirdPerson && thirdPersonCamera == null
+        ? observationCamera : GetCamera(CurrentStation);
 
     private Camera GetCamera(CrewStation station)
     {
@@ -77,11 +78,32 @@ public sealed class TankCrewCameras : MonoBehaviour
         if (station < 0 || station > 3) return;
         Camera selected = GetCamera((CrewStation)station);
         if (selected == null) return;
+        if (observationCamera != null) observationCamera.enabled = false;
+        if (observationListener != null) observationListener.enabled = false;
         CurrentStation = (CrewStation)station;
         SetCameraState(driverCamera, driverCamera == selected);
         SetCameraState(gunnerCamera, gunnerCamera == selected);
         SetCameraState(commanderCamera, commanderCamera == selected);
         SetCameraState(thirdPersonCamera, thirdPersonCamera == selected);
+    }
+
+    // Return to the prototype overview when the operator loses an observation permission.
+    public void ExitObservation()
+    {
+        if (!isActiveAndEnabled) return;
+        if (thirdPersonCamera != null)
+        {
+            SwitchView((int)CrewStation.ThirdPerson);
+            return;
+        }
+
+        CurrentStation = CrewStation.ThirdPerson;
+        SetCameraState(driverCamera, false);
+        SetCameraState(gunnerCamera, false);
+        SetCameraState(commanderCamera, false);
+        // A permission fallback must render even if the overview started disabled.
+        if (observationCamera != null) observationCamera.enabled = true;
+        if (observationListener != null) observationListener.enabled = true;
     }
 
     private static void SetCameraState(Camera camera, bool active)
@@ -99,6 +121,11 @@ public sealed class TankCrewCameras : MonoBehaviour
         SetCameraState(gunnerCamera, false);
         SetCameraState(commanderCamera, false);
         SetCameraState(thirdPersonCamera, false);
+        RestoreObservation();
+    }
+
+    private void RestoreObservation()
+    {
         if (observationCamera != null) observationCamera.enabled = observationWasEnabled;
         if (observationListener != null) observationListener.enabled = observationListenerWasEnabled;
     }
