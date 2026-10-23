@@ -51,11 +51,18 @@ TankKeyboardDebug의 observationCamera와 targetHealth는 테스트 씬에서만
 다른 씬에서는 해당 필드를 Inspector에서 연결하거나 팀의 카메라/입력 시스템을 사용하세요.
 탄도 표시기는 탱크 프리팹 내부에 포함되어 있습니다.
 팀 입력을 연결할 때 TankInput을 비활성화하고 다음 API를 호출하세요.
+입력 경로: 키보드/마우스 -> TankInput -> TankControl -> 이동·조준·무기·카메라 컴포넌트.
+TankInput은 TankControl만 참조합니다. 시점 전환과 관측도 TankControl을 거칩니다.
+TankControl은 레버 값을 보관하고, 입력 컴포넌트가 꺼져 있어도 발사 후 회복을 매 프레임 처리합니다.
+leverChangeRate는 키보드로 레버를 증감하는 속도이므로 TankInput에 남아 있습니다.
 TankKeyboardDebug는 진단 HUD와 기존 외부 카메라 추적만 담당합니다.
-TankMotor.SetLeverInputs(left, right): 각 값 -1~1.
-TankAim.ApplyInput(turret, gun, deltaTime): 조준 입력.
-TankGun.TickRecovery(): 매 프레임 호출해 회복 완료 처리.
-TankGun.RequestInsert(), RequestClose(), RequestFire(): 장전/폐쇄/발사 요청.
+TankControl.SetLeverInputs(left, right): 각 값 -1~1. LeftLever/RightLever로 유지 값을 조회합니다.
+TankControl.ApplyAim(turret, barrel, deltaTime): 조준 입력. 사격과 같은 프레임에는 먼저 호출합니다.
+TankControl.RequestInsert(), RequestClose(), RequestOpenEmpty(), RequestFire(): 무기 요청, 성공 여부 반환.
+TankControl.SwitchView(station): 0 조종수 / 1 포수 / 2 전차장 / 3 3인칭.
+TankControl.Look(delta): 관측 이동량. 감도·각도 제한·회전은 TankCrewCameras가 적용합니다.
+TankControl이 활성 상태일 때 요청을 처리합니다. 카메라가 없거나 꺼져 있으면 시점·관측 요청은 무시합니다.
+요청 API 연결은 완료했지만 역할별 허용 여부와 네트워크 권한 검증은 아직 포함하지 않습니다.
 기본 이동 모델은 평지용이며 경사/궤도 물리, 네트워크 동기화는 포함하지 않습니다.
 기본 레이어 충돌과 중력 (0,-9.81,0), Fixed Timestep 0.02초가 검증 기준입니다.
 
@@ -72,7 +79,8 @@ TankGun: 약실 상태, 발사, 회복 처리.
 TankProjectile: 비행, 충돌, 피해와 수명 처리.
 TankHealth: 표적 체력과 파괴 상태.
 TankBallistics: 탄도 예측, 착탄 표시, 포탄과 공유하는 데이터 타입.
-TankInput: 테스트용 이동·조준·무기·시점 전환·마우스 관측 입력.
+TankInput: 키보드·마우스를 읽어 TankControl에 테스트 조작 요청 전달.
+TankControl: 이동·조준·무기·시점·관측 요청의 공통 진입점, 레버 값 유지와 무기 회복 갱신.
 TankCrewCameras: 요청받은 카메라 선택과 전차장 관측 회전 적용.
 TankKeyboardDebug: 기존 외부 카메라 추적과 진단 HUD(입력·전차 조작 없음).
 기본 발사에도 공유 타입이 필요하므로 Scripts 폴더는 함께 가져오세요.

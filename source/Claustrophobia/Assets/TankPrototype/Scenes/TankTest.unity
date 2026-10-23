@@ -1803,7 +1803,7 @@ PrefabInstance:
       propertyPath: observationCamera
       value: 
       objectReference: {fileID: 330585545}
-    - target: {fileID: 9001001001, guid: 5a7c5150bb9c2b24ba36c5cf2444f1db, type: 3}
+    - target: {fileID: 9002001001, guid: 5a7c5150bb9c2b24ba36c5cf2444f1db, type: 3}
       propertyPath: cameras
       value:
       objectReference: {fileID: 294387885}

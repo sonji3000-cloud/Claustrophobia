@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>Applies prototype camera selection and commander look requested by TankInput.</summary>
+/// <summary>Applies prototype camera selection and commander look requested by TankControl.</summary>
 [DisallowMultipleComponent]
 public sealed class TankCrewCameras : MonoBehaviour
 {
