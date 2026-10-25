@@ -2752,6 +2752,8 @@ GameObject:
   - component: {fileID: 5928873119628849928}
   - component: {fileID: 6645272728011381682}
   - component: {fileID: 9001001002}
+  - component: {fileID: 9002001002}
+  - component: {fileID: 9003001002}
   - component: {fileID: 7685796844441804652}
   - component: {fileID: 5937393932700067239}
   - component: {fileID: 6616087051832642295}
@@ -2889,10 +2891,37 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::TankInput
   leverChangeRate: 1
+  control: {fileID: 9002001002}
+--- !u!114 &9002001002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6390709329587793397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6b98401c85b4c5e9ae34127ea8d176f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankControl
+  crew: {fileID: 9003001002}
   motor: {fileID: 6645272728011381682}
   aim: {fileID: 5937393932700067239}
   gun: {fileID: 6616087051832642295}
   cameras: {fileID: 5128799699252321863}
+--- !u!114 &9003001002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6390709329587793397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecab4dd6225947f6ab0e42460bc55baa, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankCrew
+  role: 1
 --- !u!114 &7685796844441804652
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,6 +16,7 @@ public sealed class TankKeyboardDebug : MonoBehaviour
     [SerializeField] private Vector3 cameraOffset = new Vector3(12f, 15f, -17f);
 
     private Rigidbody body;
+    private TankCrew crew;
     private GUIStyle valueStyle;
     // Update samples the completed physics state, independently of motor's write.
     public float CurrentForwardSpeed { get; private set; }
@@ -25,6 +26,7 @@ public sealed class TankKeyboardDebug : MonoBehaviour
     {
         if (motor == null) motor = GetComponent<TankMotor>();
         body = GetComponent<Rigidbody>();
+        crew = GetComponent<TankCrew>();
         if (aim == null) aim = GetComponent<TankAim>();
         if (gun == null) gun = GetComponent<TankGun>();
         if (ballistics == null) ballistics = GetComponent<TankBallistics>();
@@ -42,6 +44,17 @@ public sealed class TankKeyboardDebug : MonoBehaviour
         observationCamera.transform.position = body.position + cameraOffset;
         observationCamera.transform.rotation = Quaternion.LookRotation(
             body.position - observationCamera.transform.position, Vector3.up);
+    }
+
+    private string GetRoleLabel()
+    {
+        switch (crew != null ? crew.CurrentRole : TankCrew.Role.None)
+        {
+            case TankCrew.Role.Driver: return "TANK / Role: DRIVER [1]";
+            case TankCrew.Role.Gunner: return "TANK / Role: GUNNER [2]";
+            case TankCrew.Role.Commander: return "TANK / Role: COMMANDER [3]";
+            default: return "TANK / Role: NONE";
+        }
     }
 
     private static string Signed(float value) =>
@@ -63,7 +76,7 @@ public sealed class TankKeyboardDebug : MonoBehaviour
             new Vector3(scale, scale, 1f));
         GUI.Box(new Rect(12, 12, 448, 438), GUIContent.none);
         GUILayout.BeginArea(new Rect(26, 22, 422, 418));
-        GUILayout.Label("TANK / independent lever test", valueStyle);
+        GUILayout.Label(GetRoleLabel(), valueStyle);
         GUILayout.Label("Inputs and targets = last physics tick", valueStyle);
         GUILayout.Label("Left Input                       " + Signed(motor.LeftInput), valueStyle);
         GUILayout.Label("Right Input                      " + Signed(motor.RightInput), valueStyle);
@@ -77,8 +90,8 @@ public sealed class TankKeyboardDebug : MonoBehaviour
         GUILayout.Label("Turn + = nose RIGHT / - = nose LEFT", valueStyle);
         GUILayout.Label("W/S: left +/-   I/K: right +/- (release = hold)", valueStyle);
         GUILayout.Label("Q: left neutral   U: right neutral   Space: both", valueStyle);
-        GUILayout.Label("1 (+1,+1)   2 (+1,+0.3)   3 (+1,-1)", valueStyle);
-        GUILayout.Label("4 (-1,+1)   5 (-1,-1)     6 (-1,-0.3)", valueStyle);
+        GUILayout.Label("Num1 (+1,+1)  Num2 (+1,+0.3)  Num3 (+1,-1)", valueStyle);
+        GUILayout.Label("Num4 (-1,+1)  Num5 (-1,-1)  Num6 (-1,-0.3)", valueStyle);
         GUILayout.EndArea();
         if (ShowCombatDiagnostics && aim != null && gun != null)
         {
