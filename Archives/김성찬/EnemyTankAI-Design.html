@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>적 전차 하위 AI 구조와 구현 설계</title>
+<style>
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#fff;color:#20242b;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;font-size:16px;line-height:1.8}main{max-width:1160px;margin:0 auto;padding:44px 44px 80px}h1,h2,h3{color:#000;line-height:1.4;word-break:keep-all}h1{font-size:30px;margin:0 0 12px}h2{font-size:23px;margin:44px 0 16px}h3{font-size:18px;margin:30px 0 12px}p{margin:13px 0}a{color:#17569b;text-underline-offset:3px;overflow-wrap:anywhere}ul,ol{padding-left:1.6em}li{margin:6px 0}code{font-family:Consolas,monospace;font-size:.9em;background:#f2f4f6;padding:2px 5px;border-radius:3px;overflow-wrap:anywhere}nav{margin:24px 0 34px;padding:15px 0;border-top:1px solid #d9d9d9;border-bottom:1px solid #d9d9d9}summary{cursor:pointer;font-weight:600}nav ol{columns:2;column-gap:34px;margin-bottom:5px}nav li{break-inside:avoid;font-size:14px}.table-scroll{overflow-x:auto;margin:20px 0 25px}table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.65}th,td{border:1px solid #d9d9d9;padding:11px 12px;vertical-align:middle;text-align:left;word-break:normal;overflow-wrap:anywhere}th{background:#e8eff6;color:#111;font-weight:600}tr:nth-child(even) td{background:#f8fafc}td:first-child{min-width:78px}table ul,table ol{margin:0}.diagram{margin:24px 0 30px;overflow-x:auto}.diagram svg{display:block;width:100%;min-width:760px;height:auto}.diagram figcaption{font-size:13px;color:#505864;margin-top:12px}input[type=checkbox]{width:14px;height:14px;margin-right:5px}.table-scroll code{font-size:.95em}pre{overflow-x:auto}section{scroll-margin-top:20px}
+nav ul{columns:2;column-gap:34px;margin-bottom:5px;list-style:none;padding-left:0}nav li{margin:9px 0}body{word-break:keep-all;overflow-wrap:anywhere}table{font-size:15px;line-height:1.75}th,td{padding:13px 14px;word-break:keep-all}th:first-child{width:23%}td strong{font-weight:600}
+@media(max-width:700px){main{padding:24px 18px 50px}body{font-size:15px}h1{font-size:25px}h2{font-size:21px}nav ol,nav ul{columns:1}table{min-width:690px}.diagram svg{min-width:900px}th,td{padding:10px}}
+@media print{main{max-width:none;padding:0}body{font-size:10pt}h1{font-size:21pt}h2{font-size:15pt;break-after:avoid}h3{font-size:12pt;break-after:avoid}nav{display:none}.table-scroll{overflow:visible}table{font-size:9pt;min-width:0}thead{display:table-header-group}tr{break-inside:avoid}.diagram{break-inside:avoid;overflow:visible}.diagram svg{min-width:0;width:100%}a{color:#174c78}p{orphans:3;widows:3}}
+</style></head><body><main><h1 id="section-0">적 전차 하위 AI 구조와 구현 설계</h1>
+<p>기존 전차 기능을 재사용하는 자율 교전 AI</p>
+<ul>
+<li>작성일: 2026년 10월 24일</li>
+<li>가독성 정리: 2026년 10월 26일</li>
+<li>프로젝트: Claustrophobia</li>
+<li>문서 용도: 프로젝트 <code>Docs/EnemyTankAI-Design.md</code>에 보관할 구현 전 설계안</li>
+<li>설계 범위: 지휘관 없이 교전하는 적 전차의 탐지, 이동, 조준, 장전, 사격, 수색과 복귀</li>
+</ul>
+<nav aria-label="문서 목차"><details><summary>목차</summary><ul><li><a href="#section-1">설계 방향</a></li><li><a href="#section-2">기존 코드의 재사용 범위</a></li><li><a href="#section-3">의사결정 방식</a></li><li><a href="#section-4">전체 FSM</a></li><li><a href="#section-6">교전 하위 FSM</a></li><li><a href="#section-9">클래스별 책임과 연결</a></li><li><a href="#section-10">기능별 구현 방식</a></li><li><a href="#section-16">실행 순서와 갱신 주기</a></li><li><a href="#section-17">대표 교전 흐름</a></li><li><a href="#section-18">구현 순서와 단계별 완료 기준</a></li><li><a href="#section-20">지휘관 연결과 현재 범위</a></li><li><a href="#section-21">구현 전 결정할 사항</a></li><li><a href="#section-22">코드와 기술 근거</a></li></ul></details></nav><h2 id="section-1">설계 방향</h2>
+<p>하위 AI는 얕은 계층형 상태 머신인 HFSM으로 행동을 선택하고, 이동 및 전투 제어부가 그 결정을 기존 전차 코드의 입력으로 바꾼다. 실제 주행, 포탑과 포신 회전, 약실 조작, 발사체 생성 및 피해 처리는 기존 구현을 최대한 유지한다.</p>
+<p>상위 행동 상태는 경계, 교전, 수색, 복귀, 파괴의 5개다. 교전 안에는 접근, 유지, 재배치, 근거리 이격의 4개 하위 상태를 둔다. 탐지, 조준, 장전, 사격을 모두 배타적인 행동 상태로 만들지 않는다. 접근하면서 포탑을 돌리고 장전할 수 있어야 하기 때문이다.</p>
+<p>첫 데모의 발사 정책은 유지 상태에서 차체가 충분히 안정되었을 때 발사하는 것으로 정한다. 이동 중 탐지, 조준, 장전은 계속 수행한다. 이동 사격은 추후 발사 조건을 확장하여 추가할 수 있다.</p>
+<p><code>EnemyTank</code> 접두사의 클래스와 아래의 데이터 계약은 신규 설계다. 기존 코드에 이미 구현된 기능으로 해석하지 않는다. Job 배정, 명령 큐, 지휘관의 전술 평가와 네트워크 권한 구현은 현재 범위에 포함하지 않는다.</p>
+<h2 id="section-2">기존 코드의 재사용 범위</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>기존 코드</th>
+<th>확인한 동작</th>
+<th>AI가 추가할 책임</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TankMotor</code></td>
+<td>좌우 레버 요청을 저장하고 FixedUpdate에서 가감속과 Rigidbody 속도 적용</td>
+<td>목적지와 경로를 좌우 레버 입력으로 변환</td>
+</tr>
+<tr>
+<td><code>TankAim</code></td>
+<td>축 입력에 따라 포탑과 포신 회전, 속도 및 피치 제한 적용</td>
+<td>목표 발사 방향 계산과 조준 오차 제어</td>
+</tr>
+<tr>
+<td><code>TankGun</code></td>
+<td>약실 상태, 회복 시간, 조작 요청 승인, 실제 발사 처리</td>
+<td>자동 장전 순서 요청과 AI 발사 허가 판단</td>
+</tr>
+<tr>
+<td><code>TankProjectile</code></td>
+<td>발사 조건을 받아 실제 물리 이동, 충돌과 피해 전달</td>
+<td>기존 흐름을 유지하며 별도 AI 포탄을 만들지 않음</td>
+</tr>
+<tr>
+<td><code>TankHealth</code></td>
+<td>HP와 피격 횟수 갱신, 파괴 시 외형 변화</td>
+<td>파괴 후 AI 출력 중단과 피격 사건 해석</td>
+</tr>
+<tr>
+<td><code>TankBallistics</code></td>
+<td>주어진 발사 조건의 궤적과 충돌 예측</td>
+<td>목표를 맞힐 발사 방향 역산, 예측 결과의 전술적 해석</td>
+</tr>
+<tr>
+<td><code>TankControl</code>과 <code>TankCrew</code></td>
+<td>로컬 플레이어 역할에 따라 운전, 조준, 장전, 발사 제한</td>
+<td>적 입력 경로에서는 사용하지 않고 인간 권한 경로 유지</td>
+</tr>
+</tbody></table></div>
+<p>현재 TankCrew에서는 Driver가 운전하고 Gunner가 조준과 발사를 수행한다. AI가 이 역할을 번갈아 바꾸도록 설계하지 않는다. 플레이어 입력은 기존 TankControl을 거치고, 적 AI는 EnemyTankActuator를 통해 같은 Motor, Aim, Gun을 호출한다.</p>
+<p>적 프리팹에는 기존 주행, 조준, 무기, 발사체, 체력 및 필요한 외형 기능을 연결한다. TankInput, 플레이어용 TankControl과 TankCrew, 플레이어 카메라 제어, TankKeyboardDebug는 적 제어 경로에서 제외하거나 비활성화한다. 표시나 입력 컴포넌트를 제외하는 것은 전차 동작을 다시 구현하는 것과 별개다.</p>
+<h2 id="section-3">의사결정 방식</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>방식</th>
+<th>현재 요구와의 관계</th>
+<th>선택</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>일반 FSM</td>
+<td>구현은 가능하나 각 교전 상태에 시야 상실과 파괴 등의 공통 전이가 반복됨</td>
+<td>소규모 시작안으로 가능</td>
+</tr>
+<tr>
+<td>얕은 HFSM</td>
+<td>교전 공통 전이와 이동 전술별 행동을 함께 표현할 수 있음</td>
+<td>권장</td>
+</tr>
+<tr>
+<td>BT 또는 Utility AI</td>
+<td>행동과 선택 기준이 크게 늘어날 때 검토할 수 있음</td>
+<td>현재 추가하지 않음</td>
+</tr>
+</tbody></table></div>
+<p>하나의 EnemyTankBrain 안에서 상위 상태와 교전 하위 상태를 관리한다. 상태마다 MonoBehaviour를 만들거나 별도의 범용 FSM 프레임워크를 도입할 필요는 없다. 전이 평가, 상태 진입, 지속 처리, 이탈 처리는 구분한다.</p>
+<p>그림의 생존 상태 영역은 파괴 공통 전이를 묶는 영역이다. 별도의 여섯 번째 행동 상태로 세지 않는다.</p>
+<h2 id="section-4">전체 FSM</h2>
+<figure class="diagram" aria-label="전체 FSM">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1390" role="img" aria-labelledby="overall-title overall-desc" style="font-family:Malgun Gothic, sans-serif">
+<title id="overall-title">적 전차 전체 HFSM</title><desc id="overall-desc">경계에서 표적을 발견하면 교전하고, 놓치면 수색한다. 수색을 끝내거나 추격 한계를 넘으면 복귀한다. 자신의 HP가 0이면 어느 생존 상태에서든 파괴로 전이한다.</desc>
+<defs><marker id="overall-arrow" markerWidth="10" markerHeight="10" refX="8.5" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 9 5 L 0 10 Z" fill="#6c7783" /></marker></defs>
+<rect width="1200" height="1390" fill="white" /><rect x="30" y="55" width="1140" height="1125" rx="20" fill="#fafbfd" stroke="#b3bec8" stroke-width="1.8" /><text x="65" y="94" text-anchor="start" fill="#17212b" font-size="22" font-weight="600"><tspan x="65" dy="0">생존 상태 영역</tspan></text><circle cx="590" cy="125" r="8" fill="#374454" /><path d="M590 133 V170" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><rect x="440" y="170" width="300" height="100" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="590.0" y="217.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="590.0" dy="0">경계</tspan></text><text x="590.0" y="248.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="590.0" dy="0">Guard</tspan></text><rect x="440" y="420" width="300" height="100" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="590.0" y="467.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="590.0" dy="0">교전</tspan></text><text x="590.0" y="498.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="590.0" dy="0">Engage · 하위 상태 4개</tspan></text><rect x="440" y="670" width="300" height="100" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="590.0" y="717.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="590.0" dy="0">수색</tspan></text><text x="590.0" y="748.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="590.0" dy="0">Search</tspan></text><rect x="440" y="920" width="300" height="100" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="590.0" y="967.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="590.0" dy="0">복귀</tspan></text><text x="590.0" y="998.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="590.0" dy="0">Return</tspan></text><path d="M590 270 V420" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><text x="625" y="335" text-anchor="start" fill="#17212b" font-size="19" font-weight="normal"><tspan x="625" dy="0">허용 범위에서</tspan><tspan x="625" dy="28">표적을 발견함</tspan></text><path d="M590 520 V670" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><text x="625" y="585" text-anchor="start" fill="#17212b" font-size="19" font-weight="normal"><tspan x="625" dy="0">표적이 보이지 않고</tspan><tspan x="625" dy="28">유예 시간이 지남</tspan></text><path d="M590 770 V920" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><text x="625" y="830" text-anchor="start" fill="#17212b" font-size="18" font-weight="normal"><tspan x="625" dy="0">수색 완료·한도 초과</tspan><tspan x="625" dy="26">또는 조사 위치에 갈 수 없음</tspan></text><path d="M740 720 H900 V490 H740" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><text x="995" y="573" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="995" dy="0">허용 범위에서</tspan><tspan x="995" dy="26">표적을</tspan><tspan x="995" dy="26">다시 발견함</tspan></text><path d="M740 970 H1090 V450 H740" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><text x="970" y="870" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="970" dy="0">방어 허용 범위 안에서</tspan><tspan x="970" dy="26">표적을 발견함</tspan></text><path d="M440 470 H300 V950 H440" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><text x="170" y="705" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="170" dy="0">추격 한계를 넘거나</tspan><tspan x="170" dy="26">표적 파괴를 확인함</tspan></text><path d="M440 990 H80 V220 H440" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><text x="200" y="350" text-anchor="middle" fill="#17212b" font-size="19" font-weight="normal"><tspan x="200" dy="0">경계점에 도착함</tspan></text><text x="70" y="1084" text-anchor="start" fill="#465565" font-size="18" font-weight="normal"><tspan x="70" dy="0">짧은 관측 상실: 발사는 즉시 보류한다.</tspan><tspan x="70" dy="26">상태는 유예 시간이 지난 뒤 수색으로 전이한다.</tspan></text><path d="M590 1180 V1270" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#overall-arrow)" /><text x="620" y="1225" text-anchor="start" fill="#17212b" font-size="19" font-weight="normal"><tspan x="620" dy="0">어느 상태에서든</tspan><tspan x="620" dy="28">자신의 HP가 0이 됨</tspan></text><rect x="440" y="1270" width="300" height="90" rx="14" fill="#f0f1f3" stroke="#91a2b1" stroke-width="1.8" /><text x="590.0" y="1312.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="590.0" dy="0">파괴</tspan></text><text x="590.0" y="1343.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="590.0" dy="0">Destroyed</tspan></text></svg>
+<figcaption>생존 영역의 네 행동 상태와 모든 상태에서 가능한 파괴 전이를 표시한다. 자세한 조건은 상위 상태 전이표를 따른다.</figcaption>
+</figure>
+
+
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>상태</th>
+<th>이 상태에서 하는 일</th>
+<th>상태에 들어올 때 정리할 것</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>경계</strong></td>
+<td>경계점에서 정지하고 주변을 탐지한다. 필요하면 포탑으로 주변을 확인한다.</td>
+<td>이전 교전의 이동 목표와 발사 의도를 지운다.</td>
+</tr>
+<tr>
+<td><strong>교전</strong></td>
+<td>접근·유지·재배치·이격을 선택하며 조준과 장전을 병행한다.</td>
+<td>현재 관측과 실행 결과를 보고 교전 하위 상태를 정한다.</td>
+</tr>
+<tr>
+<td><strong>수색</strong></td>
+<td>마지막 목격 위치로 이동해 제한된 시간 동안 주변을 확인한다.</td>
+<td>관측을 잃은 순간의 목격 위치와 수색 종료 시각을 사용한다.</td>
+</tr>
+<tr>
+<td><strong>복귀</strong></td>
+<td>경계점으로 돌아가며 탐지를 유지한다. 허용 범위 안에서만 방어 교전을 재개한다.</td>
+<td>복귀 경로를 요청하고 기존 발사 의도를 해제한다.</td>
+</tr>
+<tr>
+<td><strong>파괴</strong></td>
+<td>새로운 주행·조준·발사 명령을 차단한다.</td>
+<td>레버를 중립으로 바꾸고 조준 입력과 발사 의도를 정리한다.</td>
+</tr>
+</tbody></table></div>
+<h3 id="section-5">상위 상태 전이표</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>상태 변화</th>
+<th>언제 바뀌는가</th>
+<th>바뀐 뒤 하는 일</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>경계 → 교전</strong></td>
+<td>교전 허용 범위에서 유효한 표적을 발견했을 때</td>
+<td>관측한 위치를 기준으로 목표와 교전 하위 상태를 정한다.</td>
+</tr>
+<tr>
+<td><strong>교전 → 수색</strong></td>
+<td>표적이 보이지 않는 시간이 유예 시간을 넘었을 때</td>
+<td>관측 상실 즉시 고정한 마지막 목격 정보를 이어받는다.</td>
+</tr>
+<tr>
+<td><strong>교전 → 복귀</strong></td>
+<td>추격 시간이나 허용 활동 범위를 넘었을 때</td>
+<td>추격을 끝내고 경계점으로 돌아간다.</td>
+</tr>
+<tr>
+<td><strong>교전 → 복귀</strong></td>
+<td>관측이나 명시적인 결과로 표적의 파괴·소멸을 확인했을 때</td>
+<td>교전 대상과 발사 의도를 정리한다.</td>
+</tr>
+<tr>
+<td><strong>수색 → 교전</strong></td>
+<td>교전 허용 범위에서 표적을 다시 발견했을 때</td>
+<td>새 관측으로 이동 전술을 다시 판단한다.</td>
+</tr>
+<tr>
+<td><strong>수색 → 복귀</strong></td>
+<td>마지막 목격 위치와 주변 확인을 마쳤을 때</td>
+<td>수색을 끝내고 복귀한다.</td>
+</tr>
+<tr>
+<td><strong>수색 → 복귀</strong></td>
+<td>수색 시간·이동 범위·기억 한도 중 하나를 넘었을 때</td>
+<td>더 추적하지 않고 복귀한다.</td>
+</tr>
+<tr>
+<td><strong>수색 → 복귀</strong></td>
+<td>제한된 재시도 후에도 조사 위치에 갈 수 없을 때</td>
+<td>실패를 기록하고 복귀 경로를 확인한다.</td>
+</tr>
+<tr>
+<td><strong>복귀 → 경계</strong></td>
+<td>경계점의 도착 허용 오차 안에 들어왔을 때</td>
+<td>레버를 중립으로 바꾸고 주변을 경계한다.</td>
+</tr>
+<tr>
+<td><strong>복귀 → 교전</strong></td>
+<td>방어 허용 범위 안에서 표적을 발견했을 때</td>
+<td>방어 교전을 재개한다. 범위 밖 표적은 다시 추격하지 않는다.</td>
+</tr>
+<tr>
+<td><strong>모든 생존 상태 → 파괴</strong></td>
+<td>자신의 HP가 0이 되었을 때</td>
+<td>새 명령을 차단한다. 실제 출력 직전에도 생존 여부를 확인한다.</td>
+</tr>
+</tbody></table></div>
+<p>짧은 시야 차단은 곧바로 상위 상태를 바꾸지 않는다. 다만 발사는 관측을 잃은 즉시 금지한다. 유예 시간은 상태 왕복을 줄이기 위한 것이며, 가려진 플레이어의 현재 위치를 읽는 허가가 아니다.</p>
+<p>비활성화나 제어 주체 해제는 파괴와 구분되는 실행 중단 사건이다. 해당 시점에도 남은 레버와 조준 입력을 정리한다. 재활성화 시 이전 입력을 그대로 재생하지 않고 현재 관측과 상태를 재평가한다.</p>
+<h2 id="section-6">교전 하위 FSM</h2>
+<figure class="diagram" aria-label="교전 하위 FSM">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1090" role="img" aria-labelledby="combat-title combat-desc" style="font-family:Malgun Gothic, sans-serif">
+<title id="combat-title">교전 하위 FSM과 전술 선택</title><desc id="combat-desc">판단 지점에서 근거리 이격, 접근, 재배치, 유지 순으로 조건을 평가한다. 각 상태에서 조건이 변하면 재평가하며 이동 대안이 없으면 유지 상태에서 정지한다.</desc>
+<defs><marker id="combat-arrow" markerWidth="10" markerHeight="10" refX="8.5" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 9 5 L 0 10 Z" fill="#6c7783" /></marker></defs>
+<rect width="1200" height="1090" fill="white" /><rect x="440" y="30" width="320" height="75" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="600.0" y="74.5" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="600.0" dy="0">교전 진입</tspan></text><path d="M600 105 V145" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#combat-arrow)" /><polygon points="600,145 810,250 600,355 390,250" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="600" y="244" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="600" dy="0">전술 재평가</tspan></text><text x="600" y="277" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="600" dy="0">판단 지점 · 지속 상태 아님</tspan></text><path d="M600 355 V410" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" /><path d="M157.5 410 H1042.5" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" /><path d="M157.5 410 V555" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#combat-arrow)" /><rect x="34" y="440" width="247" height="67" rx="4" fill="white" stroke="white" stroke-width="1.8" /><text x="157.5" y="465" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="157.5" dy="0">너무 가까우며</tspan><tspan x="157.5" dy="26">안전한 이격 위치가 있음</tspan></text><rect x="30" y="555" width="255" height="110" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="157.5" y="607.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="157.5" dy="0">근거리 이격</tspan></text><text x="157.5" y="638.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="157.5" dy="0">Backoff</tspan></text><path d="M452.5 410 V555" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#combat-arrow)" /><rect x="329" y="440" width="247" height="67" rx="4" fill="white" stroke="white" stroke-width="1.8" /><text x="452.5" y="465" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="452.5" dy="0">사거리 밖이며</tspan><tspan x="452.5" dy="26">접근할 위치가 있음</tspan></text><rect x="325" y="555" width="255" height="110" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="452.5" y="607.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="452.5" dy="0">접근</tspan></text><text x="452.5" y="638.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="452.5" dy="0">Approach</tspan></text><path d="M747.5 410 V555" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#combat-arrow)" /><rect x="624" y="440" width="247" height="67" rx="4" fill="white" stroke="white" stroke-width="1.8" /><text x="747.5" y="465" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="747.5" dy="0">사격 장애가 지속되며</tspan><tspan x="747.5" dy="26">다른 위치로 갈 수 있음</tspan></text><rect x="620" y="555" width="255" height="110" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="747.5" y="607.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="747.5" dy="0">재배치</tspan></text><text x="747.5" y="638.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="747.5" dy="0">Reposition</tspan></text><path d="M1042.5 410 V555" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#combat-arrow)" /><rect x="919" y="440" width="247" height="67" rx="4" fill="white" stroke="white" stroke-width="1.8" /><text x="1042.5" y="465" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="1042.5" dy="0">현재 위치를 지켜도 됨</tspan><tspan x="1042.5" dy="26">또는 이동 대안이 없음</tspan></text><rect x="915" y="555" width="255" height="110" rx="14" fill="#edf3f8" stroke="#91a2b1" stroke-width="1.8" /><text x="1042.5" y="607.0" text-anchor="middle" fill="#17212b" font-size="25" font-weight="600"><tspan x="1042.5" dy="0">유지</tspan></text><text x="1042.5" y="638.0" text-anchor="middle" fill="#465565" font-size="18" font-weight="normal"><tspan x="1042.5" dy="0">Hold</tspan></text><path d="M157.5 665 V855" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" /><rect x="34" y="714" width="247" height="68" rx="4" fill="white" stroke="white" stroke-width="1.8" /><text x="157.5" y="740" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="157.5" dy="0">이격 거리 확보</tspan><tspan x="157.5" dy="26">또는 경로 실패</tspan></text><path d="M452.5 665 V855" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" /><rect x="329" y="714" width="247" height="68" rx="4" fill="white" stroke="white" stroke-width="1.8" /><text x="452.5" y="740" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="452.5" dy="0">도착·막힘</tspan><tspan x="452.5" dy="26">또는 조건 변화</tspan></text><path d="M747.5 665 V855" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" /><rect x="624" y="714" width="247" height="68" rx="4" fill="white" stroke="white" stroke-width="1.8" /><text x="747.5" y="740" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="747.5" dy="0">도착·후보 실패</tspan><tspan x="747.5" dy="26">또는 조건 변화</tspan></text><path d="M1042.5 665 V855" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" /><rect x="919" y="714" width="247" height="68" rx="4" fill="white" stroke="white" stroke-width="1.8" /><text x="1042.5" y="740" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="1042.5" dy="0">거리·사선·위치</tspan><tspan x="1042.5" dy="26">조건 변화</tspan></text><path d="M157.5 855 H1178 V250 H810" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#combat-arrow)" /><text x="1000" y="185" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="1000" dy="0">각 상태의 종료·조건 변화 시</tspan><tspan x="1000" dy="26">동일한 판단 지점으로 복귀</tspan></text><text x="60" y="935" text-anchor="start" fill="#17212b" font-size="20" font-weight="600"><tspan x="60" dy="0">판단 순서: 근거리 이격 → 접근 → 재배치 → 유지</tspan></text><text x="60" y="980" text-anchor="start" fill="#17212b" font-size="19" font-weight="normal"><tspan x="60" dy="0">모든 하위 상태에서 탐지·조준·장전을 병행한다.</tspan><tspan x="60" dy="28">갈 수 있는 위치가 없으면 유지 상태에서 정지하고 간격을 두어 다시 판단한다.</tspan><tspan x="60" dy="28">초기에는 유지 상태에서 차체가 안정되고 발사 조건을 만족할 때만 쏜다.</tspan></text></svg>
+<figcaption>판단 지점은 지속 상태가 아니다. 같은 상태를 선택하면 진입 처리와 목적지 선택을 반복하지 않는다.</figcaption>
+</figure>
+
+
+<p>마름모는 지속 상태가 아니라 판단 지점이다. 같은 상태가 다시 선택되면 진입 처리를 반복하지 않는다. 채택한 이동 목표도 매 판단마다 새로 뽑지 않고 실패하거나 의미가 없어질 때까지 유지한다.</p>
+<p>조건이 겹치면 <strong>근거리 이격 → 접근 → 재배치 → 유지</strong> 순서로 확인한다. 먼저 안전하게 거리를 벌려야 하는지 보고, 그다음 접근이나 위치 변경이 필요한지 판단한다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>상태</th>
+<th>이동 목표</th>
+<th>동시에 가능한 기능</th>
+<th>초기 발사 정책</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>접근</strong></td>
+<td>적절한 교전 거리에 있는 도달 가능한 위치</td>
+<td>탐지, 포탑 추적, 장전</td>
+<td>금지</td>
+</tr>
+<tr>
+<td><strong>유지</strong></td>
+<td>현재 위치 유지</td>
+<td>탐지, 조준, 장전, 조건부 발사</td>
+<td>차체 안정과 최종 발사 조건 충족 시 허용</td>
+</tr>
+<tr>
+<td><strong>재배치</strong></td>
+<td>사선이나 발사 각도를 개선하는 가까운 위치</td>
+<td>탐지, 포탑 추적, 장전</td>
+<td>금지</td>
+</tr>
+<tr>
+<td><strong>근거리 이격</strong></td>
+<td>후방 또는 측면의 안전한 짧은 이격 위치</td>
+<td>탐지, 포탑 추적, 장전</td>
+<td>금지</td>
+</tr>
+</tbody></table></div>
+<h3 id="section-7">교전 상태 전이표</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>상태 변화 또는 상황</th>
+<th>언제 판단하는가</th>
+<th>다음 행동</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>교전에 들어왔을 때</strong></td>
+<td>현재 거리·사격 위치·이동 가능성을 확인한다.</td>
+<td>위 우선순위에 따라 하위 상태를 선택한다.</td>
+</tr>
+<tr>
+<td><strong>접근·유지·재배치 → 근거리 이격</strong></td>
+<td>표적이 이격 시작 거리보다 가까워졌고 안전한 이격 위치가 있을 때</td>
+<td>짧게 물러나 거리를 확보한다.</td>
+</tr>
+<tr>
+<td><strong>근거리 이격 → 유지 또는 접근</strong></td>
+<td>이격 종료 거리까지 벌어졌을 때</td>
+<td>현재 위치에서 쏠 수 있으면 유지하고, 거리가 멀면 접근한다.</td>
+</tr>
+<tr>
+<td><strong>이격 중 길이 막혔을 때</strong></td>
+<td>후방이 막히거나 선택한 위치에 갈 수 없을 때</td>
+<td>안전한 대안을 찾는다. 없으면 유지 상태에서 정지하고 간격을 두어 재평가한다.</td>
+</tr>
+<tr>
+<td><strong>접근 → 유지</strong></td>
+<td>유효 교전 거리와 사격 위치를 확보했을 때</td>
+<td>감속해 정지하고 발사 조건을 확인한다.</td>
+</tr>
+<tr>
+<td><strong>유지 → 접근</strong></td>
+<td>표적이 재접근 기준보다 멀어졌고 접근할 위치가 있을 때</td>
+<td>유효 교전 위치로 이동한다.</td>
+</tr>
+<tr>
+<td><strong>접근·유지 → 재배치</strong></td>
+<td>벽·지형·포신 각도 등의 장애가 지속되고 대안 위치가 있을 때</td>
+<td>가까운 다른 사격 위치로 이동한다.</td>
+</tr>
+<tr>
+<td><strong>재배치 → 유지</strong></td>
+<td>추가 이동이 필요 없어졌거나 목적지에 도착했을 때</td>
+<td>정지하고 사격 조건을 다시 확인한다.</td>
+</tr>
+<tr>
+<td><strong>이동 중 막혔을 때</strong></td>
+<td>길이 막히거나 목적지에 갈 수 없을 때</td>
+<td>정해진 횟수 안에서 후보를 바꾸고 경로를 다시 구한다.</td>
+</tr>
+<tr>
+<td><strong>이동 후보가 모두 실패했을 때</strong></td>
+<td>안전하게 갈 수 있는 대안이 남지 않았을 때</td>
+<td>유지 상태에서 정지한다. 발사는 별도 조건으로 판단하고, 간격을 두어 재시도한다.</td>
+</tr>
+<tr>
+<td><strong>교전을 끝내야 할 때</strong></td>
+<td>상위 상태의 이탈 조건을 충족했을 때</td>
+<td>하위 목표를 정리하고 수색·복귀·파괴 등 해당 상위 상태로 전이한다.</td>
+</tr>
+</tbody></table></div>
+<p>유지 상태는 발사 중이라는 뜻이 아니다. 장전 대기, 짧은 아군 통과, 일시적인 차폐, 이동 후보가 없는 상황에서도 정지하며 기다릴 수 있다. 발사 가능 여부는 Combat이 별도로 판단한다.</p>
+<h3 id="section-8">전이 안정성과 실패 처리</h3>
+<ul>
+<li>이격 시작 거리보다 종료 거리를 더 크게 둔다.</li>
+<li>접근 종료 거리보다 재접근 시작 거리를 더 크게 둔다.</li>
+<li>짧은 차폐와 지속적인 사격 장애를 구분한다.</li>
+<li>장전 중이라는 이유로 재배치하지 않는다.</li>
+<li>상태 최소 유지 시간은 보조 수단으로 사용하며 파괴와 강제 제한을 막지 않는다.</li>
+<li>수색점, 재배치점, 복귀점이 막혀도 무한 재탐색하지 않는다.</li>
+<li>복귀점 자체가 도달 불가라면 현재 위치에서 안전하게 정지하고 재시도 간격을 둔다. 순간 이동으로 복귀시키지 않는다.</li>
+</ul>
+<p>전이 우선순위는 파괴와 실행 중단, 활동 범위 등의 강제 제한, 상위 상태 전이, 근거리 이격, 나머지 교전 전술 순서로 고정한다. 한 번의 판단에서 최종 상위 상태와 필요한 하위 상태를 확정한다.</p>
+<h2 id="section-9">클래스별 책임과 연결</h2>
+<figure class="diagram" aria-label="클래스 연결 구조">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" role="img" aria-labelledby="classes-title classes-desc" style="font-family:Malgun Gothic, sans-serif">
+<title id="classes-title">신규 AI와 기존 전차 코드의 연결</title><desc id="classes-desc">관측에서 Brain, Navigation과 Combat, Actuator를 거쳐 기존 Motor와 Aim과 Gun으로 명령이 흐른다. 자신의 Health는 생존 판단에, 포탄이 맞힌 대상의 Health는 피해 처리에 사용되며 두 참조는 분리된다.</desc>
+<defs><marker id="classes-arrow" markerWidth="10" markerHeight="10" refX="8.5" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 9 5 L 0 10 Z" fill="#6c7783"/></marker></defs>
+<rect width="1200" height="1600" fill="white"/><rect x="400" y="35" width="400" height="110" rx="14" fill="#eaf2f9" stroke="#91a2b1" stroke-width="1.8"/><text x="600.0" y="59" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="600.0" dy="0">신규</tspan></text><text x="600.0" y="91" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="600.0" dy="0">EnemyTankPerception</tspan></text><text x="600.0" y="119" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="600.0" dy="0">관측·마지막 목격 정보</tspan></text><rect x="40" y="250" width="280" height="110" rx="14" fill="#f1f2f4" stroke="#91a2b1" stroke-width="1.8"/><text x="180.0" y="274" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="180.0" dy="0">기존</tspan></text><text x="180.0" y="306" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="180.0" dy="0">TankHealth</tspan></text><text x="180.0" y="334" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="180.0" dy="0">자신의 HP·피격 정보</tspan></text><rect x="400" y="250" width="400" height="110" rx="14" fill="#eaf2f9" stroke="#91a2b1" stroke-width="1.8"/><text x="600.0" y="274" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="600.0" dy="0">신규</tspan></text><text x="600.0" y="306" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="600.0" dy="0">EnemyTankBrain</tspan></text><text x="600.0" y="334" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="600.0" dy="0">HFSM·목표·행동 의도</tspan></text><rect x="900" y="250" width="260" height="110" rx="14" fill="#f1f2f4" stroke="#91a2b1" stroke-width="1.8"/><text x="1030.0" y="274" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="1030.0" dy="0">기존</tspan></text><text x="1030.0" y="306" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="1030.0" dy="0">TankBallistics</tspan></text><text x="1030.0" y="334" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="1030.0" dy="0">탄도 예측 결과</tspan></text><path d="M600 145 V250" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><text x="635" y="207" text-anchor="start" fill="#17212b" font-size="18" font-weight="normal"><tspan x="635" dy="0">관측·기억</tspan></text><path d="M320 305 H400" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><path d="M600 360 V410 H280 V500" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><path d="M600 410 H920 V500" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><text x="280" y="457" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="280" dy="0">이동 목표·허용 범위</tspan></text><text x="820" y="457" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="820" dy="0">관측 표적·사격 방침</tspan></text><rect x="60" y="500" width="440" height="110" rx="14" fill="#eaf2f9" stroke="#91a2b1" stroke-width="1.8"/><text x="280.0" y="524" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="280.0" dy="0">신규</tspan></text><text x="280.0" y="556" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="280.0" dy="0">EnemyTankNavigation</tspan></text><text x="280.0" y="584" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="280.0" dy="0">경로·조향·도착·막힘</tspan></text><rect x="700" y="500" width="440" height="110" rx="14" fill="#eaf2f9" stroke="#91a2b1" stroke-width="1.8"/><text x="920.0" y="524" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="920.0" dy="0">신규</tspan></text><text x="920.0" y="556" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="920.0" dy="0">EnemyTankCombat</tspan></text><text x="920.0" y="584" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="920.0" dy="0">조준 해·장전·최종 발사 판단</tspan></text><path d="M1030 360 V500" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><rect x="400" y="750" width="400" height="110" rx="14" fill="#eaf2f9" stroke="#91a2b1" stroke-width="1.8"/><text x="600.0" y="774" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="600.0" dy="0">신규</tspan></text><text x="600.0" y="806" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="600.0" dy="0">EnemyTankActuator</tspan></text><text x="600.0" y="834" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="600.0" dy="0">기존 API 호출·중단 처리</tspan></text><path d="M280 610 V805 H400" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><text x="220" y="710" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="220" dy="0">좌우 레버</tspan></text><path d="M920 610 V805 H800" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><text x="1010" y="700" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="1010" dy="0">조준 축</tspan><tspan x="1010" dy="26">장전·발사 요청</tspan></text><path d="M600 860 V950 H210 V1030" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><path d="M600 950 V1030" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><path d="M600 950 H990 V1030" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><text x="600" y="915" text-anchor="middle" fill="#17212b" font-size="19" font-weight="normal"><tspan x="600" dy="0">주행·조준·무기 조작의 공개 API 호출</tspan></text><rect x="60" y="1030" width="300" height="110" rx="14" fill="#f1f2f4" stroke="#91a2b1" stroke-width="1.8"/><text x="210.0" y="1054" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="210.0" dy="0">기존</tspan></text><text x="210.0" y="1086" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="210.0" dy="0">TankMotor</tspan></text><text x="210.0" y="1114" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="210.0" dy="0">Rigidbody 주행</tspan></text><rect x="450" y="1030" width="300" height="110" rx="14" fill="#f1f2f4" stroke="#91a2b1" stroke-width="1.8"/><text x="600.0" y="1054" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="600.0" dy="0">기존</tspan></text><text x="600.0" y="1086" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="600.0" dy="0">TankAim</tspan></text><text x="600.0" y="1114" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="600.0" dy="0">포탑·포신 회전</tspan></text><rect x="840" y="1030" width="300" height="110" rx="14" fill="#f1f2f4" stroke="#91a2b1" stroke-width="1.8"/><text x="990.0" y="1054" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="990.0" dy="0">기존</tspan></text><text x="990.0" y="1086" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="990.0" dy="0">TankGun</tspan></text><text x="990.0" y="1114" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="990.0" dy="0">약실 상태·실제 발사</tspan></text><path d="M990 1140 V1210" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><rect x="840" y="1210" width="300" height="110" rx="14" fill="#f1f2f4" stroke="#91a2b1" stroke-width="1.8"/><text x="990.0" y="1234" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="990.0" dy="0">기존</tspan></text><text x="990.0" y="1266" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="990.0" dy="0">TankProjectile</tspan></text><text x="990.0" y="1294" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="990.0" dy="0">포탄 이동·충돌</tspan></text><path d="M990 1320 V1390" fill="none" stroke="#6c7783" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#classes-arrow)"/><text x="1015" y="1360" text-anchor="start" fill="#17212b" font-size="18" font-weight="normal"><tspan x="1015" dy="0">충돌 피해</tspan></text><rect x="840" y="1390" width="300" height="110" rx="14" fill="#f1f2f4" stroke="#91a2b1" stroke-width="1.8"/><text x="990.0" y="1414" text-anchor="middle" fill="#556778" font-size="15" font-weight="600"><tspan x="990.0" dy="0">기존</tspan></text><text x="990.0" y="1446" text-anchor="middle" fill="#17212b" font-size="20" font-weight="600"><tspan x="990.0" dy="0">TankHealth</tspan></text><text x="990.0" y="1474" text-anchor="middle" fill="#17212b" font-size="18" font-weight="normal"><tspan x="990.0" dy="0">피격 대상의 HP</tspan></text><rect x="60" y="1200" width="710" height="280" rx="12" fill="#fafbfd" stroke="#c3cbd3" stroke-width="1.8"/><text x="90" y="1240" text-anchor="start" fill="#17212b" font-size="20" font-weight="600"><tspan x="90" dy="0">그림에서 생략한 보조 연결</tspan></text><text x="90" y="1280" text-anchor="start" fill="#17212b" font-size="18" font-weight="normal"><tspan x="90" dy="0">• 자신의 HP는 Actuator도 출력 직전에 확인한다.</tspan><tspan x="90" dy="35">• 포구·약실 등 읽기 전용 정보는 기존 컴포넌트에서 조회한다.</tspan><tspan x="90" dy="35">• Profile 설정과 표적 식별 정보는 필요한 제어부에 제공한다.</tspan><tspan x="90" dy="35">• 각 실행 결과는 Brain의 다음 판단에 사용한다.</tspan><tspan x="90" dy="35">• 피격 대상 Health와 자신의 Health는 서로 다른 참조다.</tspan></text><text x="60" y="1550" text-anchor="start" fill="#465565" font-size="19" font-weight="normal"><tspan x="60" dy="0">파란색: 신규 AI 제어부 · 회색: 재사용하는 기존 전차 코드</tspan></text></svg>
+<figcaption>피격 대상 체력과 자신의 체력을 구분한다. 자신의 생존 여부는 Brain과 실제 출력 직전 Actuator가 확인한다.</figcaption>
+</figure>
+
+
+<p>구조도는 주된 제어와 결과 전달 관계를 나타낸다. 발사 조건과 포구 같은 읽기 전용 정보는 각 제어부가 기존 컴포넌트에서 조회할 수 있다. 기존 컴포넌트의 동작을 변경하는 명령은 Actuator를 통해 전달한다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>신규 클래스</th>
+<th>입력</th>
+<th>책임과 출력</th>
+<th>경계</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>EnemyTankBrain</td>
+<td>관측, 이동 결과, 전투 결과, 설정</td>
+<td>HFSM 전이, 이동 목표 채택, 사격 방침, 갱신 순서 관리</td>
+<td>Rigidbody나 포탑 Transform을 직접 변경하지 않음</td>
+</tr>
+<tr>
+<td>EnemyTankPerception</td>
+<td>센서, 대상 식별 정보, 탐지 설정</td>
+<td>관측 여부, 관측 위치와 속도, 마지막 목격 정보</td>
+<td>보이지 않는 표적의 현재 위치를 다른 제어부에 제공하지 않음</td>
+</tr>
+<tr>
+<td>EnemyTankNavigation</td>
+<td>목표 위치, 차체 상태, 허용 범위</td>
+<td>경로와 조향 계산, 레버, 도착과 실패 결과</td>
+<td>전술 상태나 공격 대상을 임의로 바꾸지 않음</td>
+</tr>
+<tr>
+<td>EnemyTankCombat</td>
+<td>관측 표적, 포구, 무기 상태, 사격 방침</td>
+<td>탄도 조준, 자동 장전 요청, 최종 발사 판단, 불가 이유</td>
+<td>이동 목적지를 직접 변경하지 않음</td>
+</tr>
+<tr>
+<td>EnemyTankActuator</td>
+<td>레버, 조준 축, 무기 요청, 자신의 생존 상태</td>
+<td>기존 API 호출, 회복 갱신, 출력 중단</td>
+<td>로컬 AI의 단일 제어 경계이며 네트워크 권한 체계 전체를 대신하지 않음</td>
+</tr>
+<tr>
+<td>EnemyTankProfile</td>
+<td>탐지, 거리, 반응, 수색 및 제어 설정</td>
+<td>여러 적이 공유 가능한 ScriptableObject 설정</td>
+<td>실제 약실 상태나 회복 시간의 복사본을 보관하지 않음</td>
+</tr>
+<tr>
+<td>TankTargetInfo</td>
+<td>진영, 관측 지점, 조준 지점, Health 참조</td>
+<td>최소한의 표적 식별 정보</td>
+<td>신규 식별용 컴포넌트이며 복잡한 팀 전술 시스템은 아님</td>
+</tr>
+</tbody></table></div>
+<p>EnemyTankBrain이 관리하는 작은 데이터 구조를 두되 작성 책임은 고정한다. 모든 기능이 하나의 공용 정보를 자유롭게 덮어쓰게 만들지 않는다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>제안 데이터</th>
+<th>주요 내용</th>
+<th>작성 책임</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ObservedTarget</td>
+<td>표적 식별자, 현재 관측 여부, 관측 위치와 속도, 마지막 목격 위치와 시각</td>
+<td>Perception</td>
+</tr>
+<tr>
+<td>NavigationStatus</td>
+<td>이동 중, 도착, 막힘, 도달 불가와 실패 이유</td>
+<td>Navigation</td>
+</tr>
+<tr>
+<td>CombatStatus</td>
+<td>탄도 도달 가능성, 조준 오차, 사격 장애, 무기 준비 상태</td>
+<td>Combat</td>
+</tr>
+<tr>
+<td>TankActionIntent</td>
+<td>이동 목표, 조준에 사용할 관측 정보, 사격 허용 방침</td>
+<td>Brain</td>
+</tr>
+<tr>
+<td>EnemyTankContext</td>
+<td>상태 시작 시각, 경계점, 활동 범위와 위 결과들의 보관</td>
+<td>Brain이 소유하고 각 결과의 원 작성자 유지</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-10">기능별 구현 방식</h2>
+<h3 id="section-11">탐지와 기억</h3>
+<p>첫 데모는 전차 센서 기준점에서 360도 거리 및 차폐 검사를 사용하는 출발안을 권장한다. 시야각 제한은 이후 설정으로 조정할 수 있다. 등록된 플레이어 전차를 대상으로 시작하고, 여러 표적이 필요해지면 후보 검색과 대상 선택을 확장한다.</p>
+<p>Unity 물리 검사로 거리와 차폐를 확인한다. 여러 후보가 있는 경우 범위 검색으로 후보를 얻고 실제 관측은 Raycast로 확인한다. 자신의 콜라이더와 관측 대상의 콜라이더를 구분하고, 여러 차체 콜라이더가 같은 표적으로 중복 등록되지 않게 한다.</p>
+<p>실제로 보이는 동안에만 위치와 속도를 갱신한다. 속도는 관측 위치의 시간 변화로 추정할 수 있다. 재발견 시 속도 추정을 초기화하고 연속된 관측으로 다시 추정한다. 시야를 잃으면 마지막 목격 위치를 고정하고, 다른 기능은 이 관측 데이터만 사용한다. 발사 직전에는 최신 차폐 상태를 다시 확인한다.</p>
+<p>현재 TankHealth의 피격 횟수 변화로 맞았다는 사실은 확인할 수 있지만, 공격자의 위치와 방향은 알 수 없다. 피격 시 경계를 높이고 탐지를 재확인하되 공격자 위치를 자동으로 알아내지 않는다. 방향성 반격이 필요해질 때 피해 알림 데이터를 확장한다.</p>
+<h3 id="section-12">교전 위치와 주행</h3>
+<p>Brain이 접근, 재배치, 이격의 목적을 정한다. Navigation이 소수의 위치 후보와 도달 가능성을 제공하고 Combat이 사격 조건을 평가한다. Brain은 가까운 유효 후보를 채택한 뒤 Navigation에 실행을 맡긴다. 현재는 복잡한 점수 체계보다 유효성 우선의 선택이면 충분하다.</p>
+<p>NavMesh.CalculatePath로 경로 코너를 얻고 기존 TankMotor로 실제 주행한다. 전차용 agent type과 폭을 반영한 NavMesh 준비 및 맵 검증이 필요하다. 경로 반환값뿐 아니라 PathComplete, PathPartial, PathInvalid를 구분한다.</p>
+<ul>
+<li>방향 오차가 크면 감속하고 제자리 선회한다.</li>
+<li>정렬되면 다음 코너를 향해 전진한다.</li>
+<li>현재 속도와 감속 성능을 반영해 도착 전에 제동한다.</li>
+<li>원하는 전진값 f와 선회값 t를 왼쪽 f+t, 오른쪽 f-t로 변환하고 필요하면 함께 정규화한다.</li>
+<li>후진은 후방 여유를 확인한 뒤 제한된 거리만 허용한다.</li>
+<li>실제 이동 명령에 비해 일정 시간 진척이 없을 때 막힘으로 판단한다. 정지와 제자리 선회는 제외한다.</li>
+<li>앞차나 벽이 가까우면 감속 또는 정지하고, 일정 시간 뒤 경로와 후보를 재평가한다.</li>
+</ul>
+<p>경로 계산은 필요할 때 갱신하고 매 프레임 반복하지 않는다. NavMeshAgent가 Rigidbody와 함께 실제 위치를 변경하게 하지 않는다. 경로 계산만 사용하는 구성에는 자동 군중 회피가 없으므로, 차체 크기의 근거리 검사와 기본적인 정지 및 재시도 처리가 필요하다.</p>
+<h3 id="section-13">탄도 조준</h3>
+<p>Combat 내부의 작은 BallisticAimSolver가 목표를 맞힐 발사 방향을 구한다. 별도의 MonoBehaviour를 여러 개 추가할 필요는 없다.</p>
+<p>입력은 관측 목표점, 현재 포구 위치, 실제 포탄 속도, 중력, 고정 시간 간격, 포탄 수명과 피치 제한이다. 출력은 목표 발사 방향, 예상 비행시간, 도달 가능 여부와 실패 이유다.</p>
+<p>정지 목표의 저각 해를 초기값으로 구하고 기존 TankBallisticStep과 같은 적분으로 오차를 확인하고 보정한다. 현재 TankGun의 초속도는 포구 방향에 ProjectileSpeed를 곱한 값이므로 차체 속도를 임의로 더하지 않는다. 포탑 회전에 따라 포구 위치도 달라질 수 있으므로 현재 포구 기준으로 반복 갱신한다.</p>
+<p>현재 포구 방향과 목표 발사 방향의 yaw 및 pitch 오차를 축 입력으로 변환한다. 실제 회전은 TankAim.ApplyInput에 맡기고 포탑과 포신의 Transform을 AI가 직접 덮어쓰지 않는다. 한계 각도나 수명 밖 목표는 조준 실패로 반환한다.</p>
+<p>검증은 정지 목표부터 시작한다. 이후 실제 관측 속도와 예상 비행시간을 이용한 단순 선행 조준을 추가한다. 표적이 가려진 뒤 실시간 Transform을 읽어 예측을 보정하지 않는다.</p>
+<p>TankBallistics.Predict는 현재 발사 방향의 궤적 및 환경 충돌 검사에 재사용한다. 움직이는 표적에 선행 사격할 때 현재 월드의 표적 콜라이더를 반드시 먼저 맞혀야 한다는 조건을 걸면 정상적인 선행 조준까지 거부할 수 있다. 탄도 안전과 명중 가능성을 구분한다.</p>
+<p>첫 버전은 기존 예측 컴포넌트와 공개 Predict를 그대로 사용한다. ShowMarker를 꺼도 자동 계산은 남는다. 실제 중복 호출이나 부하가 문제가 되는 것이 확인되면 계산을 다시 구현하는 대신 자동 갱신과 요청 시 계산 모드를 작게 분리한다.</p>
+<h3 id="section-14">자동 장전과 사격</h3>
+<p>실제 약실 상태의 원본은 TankGun.State 하나로 유지한다. AI는 상태에 맞는 요청을 보내며 동일한 회복 타이머를 따로 구현하지 않는다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>약실 상태</th>
+<th>AI의 동작</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>EmptyOpen</td>
+<td>RequestInsert 요청</td>
+</tr>
+<tr>
+<td>LoadedOpen</td>
+<td>RequestClose 요청</td>
+</tr>
+<tr>
+<td>EmptyClosed</td>
+<td>RequestOpenEmpty 요청</td>
+</tr>
+<tr>
+<td>Ready</td>
+<td>최종 발사 조건을 만족할 때만 RequestFire 요청</td>
+</tr>
+<tr>
+<td>Recovering</td>
+<td>TickRecovery를 호출하며 회복 완료 대기</td>
+</tr>
+</tbody></table></div>
+<p>Actuator가 갱신 시작 시 TickRecovery를 호출한다. 현재 플레이어 입력 경로에서는 TankControl이 맡던 책임이다. 상태에 맞지 않는 요청을 매 프레임 반복하지 않으며, 한 갱신에서 발사 요청은 최대 한 번 보낸다. 요청 실패를 발사 성공으로 기록하지 않는다.</p>
+<p>현재 삽입과 폐쇄는 즉시 상태를 바꾸고 RecoveryDuration은 테스트용 회복 시간이다. 최종 장전 시간이나 장전 연출은 별도의 게임 규칙으로 결정한다.</p>
+<p>최종 발사는 다음 조건을 모두 통과해야 한다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>확인할 내용</th>
+<th>통과 조건</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>생존과 제어</strong></td>
+<td>자신이 살아 있고 AI 제어가 활성화되어 있다.</td>
+</tr>
+<tr>
+<td><strong>교전 상태</strong></td>
+<td>상위 상태가 교전이고, 초기 정책상 하위 상태가 유지다.</td>
+</tr>
+<tr>
+<td><strong>차체 안정</strong></td>
+<td>차체의 이동·회전 속도가 안정 기준 안에 있다.</td>
+</tr>
+<tr>
+<td><strong>표적 관측</strong></td>
+<td>유효한 표적이 현재 보이며, 발사 직전에도 시야가 확보된다.</td>
+</tr>
+<tr>
+<td><strong>반응과 조준</strong></td>
+<td>반응 지연이 지났고 조준 오차가 허용 범위 안이다.</td>
+</tr>
+<tr>
+<td><strong>포구와 탄도</strong></td>
+<td>유효한 발사 해가 있고, 포구가 외부 물체와 겹치지 않으며, 궤적이 지형에 막히지 않는다.</td>
+</tr>
+<tr>
+<td><strong>아군 안전</strong></td>
+<td>예상 교전 구간에서 아군이 궤적을 막지 않는다.</td>
+</tr>
+<tr>
+<td><strong>무기 승인</strong></td>
+<td>TankGun.CanFire를 확인하고 요청한다. 실제 RequestFire가 성공해야 발사 성공으로 처리한다.</td>
+</tr>
+</tbody></table></div>
+<p>장전 중, 조준 중, 일시적인 아군 통과, 지속적인 벽 차단, 탄도 해 없음 등의 사격 불가 이유를 구분한다. 이 중 장전과 일시 차단은 재배치 이유가 아니다.</p>
+<p>아군 사선 검사는 발사 직전의 보류 기능이다. 발사 후 아군이 궤도로 들어오는 상황까지 막지는 않는다. 아군 피해 자체를 허용할지는 진영별 피해 규칙으로 별도 결정한다.</p>
+<h3 id="section-15">파괴와 비활성 처리</h3>
+<p>자신의 파괴 여부는 판단 주기와 별개로 실제 출력 직전에도 확인한다. 파괴 시 새 발사와 조준을 차단하고 Motor에 중립 입력을 보낸다. AI를 비활성화하거나 제어를 해제할 때도 같은 입력 정리를 수행한다.</p>
+<p>현재 Motor의 중립 입력은 감속 정지다. 파괴 순간 즉시 위치를 고정하는 기능이 아니다. 즉시 정지, 관성 유지, 충돌 가능한 잔해 등의 정책은 별도로 정한다. 기존 TankHealth가 자동으로 주행과 발사를 정지시키는 것으로 가정하지 않는다.</p>
+<h2 id="section-16">실행 순서와 갱신 주기</h2>
+<p>EnemyTankBrain이 한 곳에서 순서를 관리하고 다른 제어부는 호출에 따라 처리한다. 여러 컴포넌트가 독립 Update에서 같은 입력을 서로 덮어쓰게 만들지 않는다.</p>
+<p>처리 순서는 <strong>준비 확인 → 관측과 판단 → 입력 계산과 적용 → 최종 발사 검사</strong>다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>처리 단계</th>
+<th>이 단계에서 하는 일</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>준비 확인</strong></td>
+<td>Actuator가 무기 회복을 갱신하고 자신의 생존 여부를 확인한다.</td>
+</tr>
+<tr>
+<td><strong>관측과 판단</strong></td>
+<td>필요한 주기에 관측을 갱신한다. 이전 이동 결과와 현재 전투 조건을 보고 FSM 상태·이동 목표·사격 방침을 정한다.</td>
+</tr>
+<tr>
+<td><strong>입력 계산과 적용</strong></td>
+<td>Navigation은 레버를, Combat은 조준 입력을 계산한다. Actuator가 이를 기존 주행·조준 기능에 적용한다.</td>
+</tr>
+<tr>
+<td><strong>최종 발사 검사</strong></td>
+<td>변경된 포구 방향으로 안전 조건을 다시 확인한 뒤 장전 또는 발사를 요청한다.</td>
+</tr>
+</tbody></table></div>
+<p>Motor의 실제 물리 이동은 기존 FixedUpdate가 담당한다. 판단 빈도, 센서 갱신, 프레임별 조준 실행을 구분한다. 낮은 판단 빈도 사이에도 파괴 후 발사나 남은 레버 입력이 실행되지 않아야 한다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>설정</th>
+<th>제안 초깃값 또는 기준</th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>탐지 갱신</td>
+<td>0.2초</td>
+<td>관측 후보와 일반 차폐 검사</td>
+</tr>
+<tr>
+<td>행동 판단</td>
+<td>0.1초</td>
+<td>상태와 전술 조건 평가</td>
+</tr>
+<tr>
+<td>인식 반응 지연</td>
+<td>0.5초</td>
+<td>표적을 발견한 직후 즉시 사격하는 현상 조정</td>
+</tr>
+<tr>
+<td>시야 상실 유예</td>
+<td>0.5초</td>
+<td>짧은 차폐로 인한 상태 왕복 방지</td>
+</tr>
+<tr>
+<td>수색 시간</td>
+<td>5초</td>
+<td>마지막 목격 위치에 대한 제한된 조사</td>
+</tr>
+<tr>
+<td>막힘 판정</td>
+<td>의도한 이동에 비해 진척이 없는 시간을 기준으로 조정</td>
+<td>선회나 의도적인 정지와 구분</td>
+</tr>
+<tr>
+<td>재시도 제한</td>
+<td>후보 수, 시도 횟수, 재시도 간격 설정</td>
+<td>도달 불가 위치에 대한 무한 반복 방지</td>
+</tr>
+</tbody></table></div>
+<p>위 시간은 튜닝용 출발값이다. 발사 직전 안전 검사와 생존 확인을 이 주기만으로 제한하지 않는다. 교전 거리와 도착 오차는 실제 전차 크기 및 유효 탄도 범위를 확인한 뒤 정한다.</p>
+<h2 id="section-17">대표 교전 흐름</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>벌어진 상황</th>
+<th>선택하는 상태</th>
+<th>실제로 하는 일</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>플레이어를 발견함</strong></td>
+<td>경계 → 교전 및 접근</td>
+<td>관측한 위치를 받아 Brain이 교전 위치를 정한다.</td>
+</tr>
+<tr>
+<td><strong>아직 거리가 멂</strong></td>
+<td>접근</td>
+<td>레버를 계산하며 조준과 장전을 병행한다.</td>
+</tr>
+<tr>
+<td><strong>사격 위치에 도착함</strong></td>
+<td>유지</td>
+<td>감속해 정지하고 조준과 차체 안정을 확인한다.</td>
+</tr>
+<tr>
+<td><strong>발사 조건을 충족함</strong></td>
+<td>유지</td>
+<td>갱신된 포구로 검사한 뒤 기존 Gun으로 발사한다.</td>
+</tr>
+<tr>
+<td><strong>발사 후 회복 중임</strong></td>
+<td>유지</td>
+<td>포탑 추적을 계속하며 기존 약실의 회복을 기다린다.</td>
+</tr>
+<tr>
+<td><strong>낮은 벽이 포탄을 막음</strong></td>
+<td>재배치</td>
+<td>장애가 지속되는지 확인한 뒤 가까운 대안 위치로 이동한다.</td>
+</tr>
+<tr>
+<td><strong>플레이어가 가려짐</strong></td>
+<td>즉시 발사 중단, 유예 뒤 수색</td>
+<td>마지막 목격 위치만 사용한다.</td>
+</tr>
+<tr>
+<td><strong>수색 중 다시 발견함</strong></td>
+<td>교전</td>
+<td>현재 거리와 사선에 맞는 하위 상태를 고른다.</td>
+</tr>
+<tr>
+<td><strong>플레이어가 너무 가까움</strong></td>
+<td>근거리 이격</td>
+<td>안전한 후방 또는 측면 공간으로 짧게 이동한다.</td>
+</tr>
+<tr>
+<td><strong>수색이나 추격을 끝냄</strong></td>
+<td>복귀 → 경계</td>
+<td>경계점에 도착하면 레버를 중립으로 바꾼다.</td>
+</tr>
+<tr>
+<td><strong>자신의 HP가 0이 됨</strong></td>
+<td>파괴</td>
+<td>출력을 차단하고 남은 입력을 정리한다.</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-18">구현 순서와 단계별 완료 기준</h2>
+<p>개발 순서는 <strong>전차 제어 연결 → 탐지와 기억 → 정지 교전 → 목적지 이동 → FSM 연결 → 예외 처리 → 부하와 기존 기능 확인</strong>으로 잡는다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>구현할 기능</th>
+<th>확인할 상황</th>
+<th>다음으로 넘어갈 수 있는 기준</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>전차 제어 연결</strong></td>
+<td>적 프리팹과 Actuator에 시험 입력을 보내 주행·조준·장전·발사를 확인한다.</td>
+<td>기존 코어로 동작하고 플레이어 입력과 충돌하지 않는다. 중단 시 남은 입력이 정리된다.</td>
+</tr>
+<tr>
+<td><strong>탐지와 기억</strong></td>
+<td>표적 식별과 Perception을 붙여 거리 밖·차폐·재발견·피격을 확인한다.</td>
+<td>가려진 실제 위치를 기억이 따라가지 않는다. 피격만으로 공격자 위치를 얻지 않는다.</td>
+</tr>
+<tr>
+<td><strong>정지 교전</strong></td>
+<td>Combat으로 거리·높이가 다른 정지 목표를 확인하고, 이후 일정 속도 이동 목표를 확인한다.</td>
+<td>실제 탄도로 명중하며 장전·조준 조건을 지킨다. 제한 밖 목표에는 실패 이유를 제공한다.</td>
+</tr>
+<tr>
+<td><strong>목적지 이동</strong></td>
+<td>Navigation으로 코너·제동·후진·막힘·부분 경로를 확인한다.</td>
+<td>순간 이동이나 순간 회전 없이 도착한다. 실패하면 제한된 복구 뒤 정지한다.</td>
+</tr>
+<tr>
+<td><strong>FSM 연결</strong></td>
+<td>발견부터 접근·유지·재배치·이격·수색·복귀까지 이어 본다.</td>
+<td>지휘관 없이 전체 흐름을 수행하며 같은 상태의 진입 처리를 중복하지 않는다.</td>
+</tr>
+<tr>
+<td><strong>예외와 복수 전차</strong></td>
+<td>짧은 차폐·아군 통과·거리 경계·후보 실패·이동 중 파괴를 확인한다.</td>
+<td>상태 왕복과 무한 재탐색이 없다. 장전 때문에 재배치하거나 파괴 후 새로 발사하지 않는다.</td>
+</tr>
+<tr>
+<td><strong>부하와 기존 기능 확인</strong></td>
+<td>6대 동시 이동, 50대 배치와 동시 행동 증가, 플레이어 조작을 비교한다.</td>
+<td>목표 환경에서 병목을 분리해 측정하고, 공유 코어와 플레이어 권한 동작을 유지한다.</td>
+</tr>
+</tbody></table></div>
+<p>정지 교전에서는 적이 관측한 목표를 조준하고 연속 장전·발사하는 작은 단위부터 검증한다. 이동과 FSM 전체를 붙이기 전에 조준과 발사 조건의 문제를 따로 확인할 수 있다.</p>
+<h3 id="section-19">최종 수용 검증 항목</h3>
+<ul>
+<li><input disabled="" type="checkbox"> 경계 중 플레이어를 발견하면 교전을 시작하고, 반응 지연과 발사 조건을 충족한 뒤 사격한다.</li>
+<li><input disabled="" type="checkbox"> 이동, 포탑 추적, 장전이 동시에 가능하며 초기 정책상 이동 사격은 하지 않는다.</li>
+<li><input disabled="" type="checkbox"> 장전 중이라는 이유만으로 재배치하지 않는다.</li>
+<li><input disabled="" type="checkbox"> 한 번의 짧은 차폐로 교전과 수색을 반복하지 않지만 발사는 즉시 보류한다.</li>
+<li><input disabled="" type="checkbox"> 가려진 플레이어가 옆으로 움직여도 마지막 목격 위치가 갱신되지 않는다.</li>
+<li><input disabled="" type="checkbox"> 시야는 확보되지만 포구나 탄도가 막힌 상황을 구분한다.</li>
+<li><input disabled="" type="checkbox"> 아군 통과 시 발사만 보류하며, 차단이 풀리면 정상 교전한다.</li>
+<li><input disabled="" type="checkbox"> 거리 경계에서 전진과 후진을 반복하지 않는다.</li>
+<li><input disabled="" type="checkbox"> 이동 불가, 재배치 후보 실패, 복귀점 도달 불가 상황에 재시도 한도가 있다.</li>
+<li><input disabled="" type="checkbox"> 파괴와 AI 비활성 시 마지막 레버 입력을 정리하고 신규 발사를 차단한다.</li>
+<li><input disabled="" type="checkbox"> 플레이어의 기존 역할 권한, 주행, 조준, 장전과 발사가 유지된다.</li>
+</ul>
+<p>상태 전이 사유, 관측 여부와 마지막 목격 시각, 이동 목표 및 실패 이유, 발사 보류 이유를 확인할 수 있게 한다. 매 프레임 로그 대신 상태 변화와 주요 결과를 기록한다. 기존 플레이어 검증 결과는 적 AI의 완료 증거를 대신하지 않는다.</p>
+<h2 id="section-20">지휘관 연결과 현재 범위</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>현재 구현</th>
+<th>지휘관 추가 시</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>목표와 행동 범위</td>
+<td>자율 정책이 경계점, 추격 한도와 교전 정책 제공</td>
+<td>지휘관이 방어 지점, 이동 목표, 행동 범위와 정책 제공</td>
+</tr>
+<tr>
+<td>하위 전술</td>
+<td>접근, 유지, 재배치, 근거리 이격과 제한 수색</td>
+<td>같은 행동 재사용, 명령별 중단 조건과 제약 확장</td>
+</tr>
+<tr>
+<td>관측</td>
+<td>전차 자신의 관측과 기억</td>
+<td>필요할 때 공유 정보의 출처와 유효성을 구분하여 확장</td>
+</tr>
+<tr>
+<td>실제 실행</td>
+<td>Navigation, Combat, Actuator와 기존 전차 기능</td>
+<td>대부분 재사용</td>
+</tr>
+<tr>
+<td>배정과 보고</td>
+<td>구현하지 않음</td>
+<td>필요해질 때 Job, 배정과 보고 체계 설계</td>
+</tr>
+</tbody></table></div>
+<p>지휘관은 목적과 제약을 전달하고, 하위 AI가 이동과 교전을 수행한다. 지휘관이 좌우 레버나 발사 함수를 직접 호출하여 두 제어 주체가 충돌하게 만들지 않는다. 자율 정책이 목표를 만드는 부분과 그 목표를 실행하는 부분을 분리하는 것이 현재 필요한 확장 지점이다.</p>
+<h2 id="section-21">구현 전 결정할 사항</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>쟁점</th>
+<th>권장 출발점</th>
+<th>확정 또는 검증할 내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>탐지 방식</td>
+<td>360도 거리와 차폐 검사</td>
+<td>시야각, 센서 위치, 인식 반응 설정</td>
+</tr>
+<tr>
+<td>사격 방식</td>
+<td>이동 중 조준과 장전, 유지 및 안정 시 발사</td>
+<td>이동 사격 도입 여부</td>
+</tr>
+<tr>
+<td>교전 거리</td>
+<td>기존 속도, 피치 제한과 수명으로 실제 사격 가능한 범위</td>
+<td>맵 크기 및 무기 설정에 맞춘 거리와 오차</td>
+</tr>
+<tr>
+<td>추격 및 수색</td>
+<td>경계점, 활동 반경과 수색 시간 제한</td>
+<td>복귀 중 방어 허용 범위와 기억 만료 기준</td>
+</tr>
+<tr>
+<td>근거리 이격</td>
+<td>짧고 안전한 거리 확보</td>
+<td>후퇴 공간이 없을 때 정지 또는 대안 위치 정책</td>
+</tr>
+<tr>
+<td>장전 시간</td>
+<td>기존 약실과 회복 재사용</td>
+<td>최종 재장전 시간과 연출</td>
+</tr>
+<tr>
+<td>아군 피해</td>
+<td>발사 직전 아군 차단</td>
+<td>발사 후 아군 피격에 대한 피해 규칙</td>
+</tr>
+<tr>
+<td>파괴 차체</td>
+<td>출력 차단 후 기존 감속 정지</td>
+<td>즉시 고정, 관성, 잔해 충돌 정책</td>
+</tr>
+<tr>
+<td>실행 환경</td>
+<td>Quest 3 또는 3S 검토 중</td>
+<td>PC VR 또는 단독 실행, 목표 주사율과 프레임 예산</td>
+</tr>
+</tbody></table></div>
+<p>총 전차 수 약 50대와 통상 동시 이동 약 6대는 잠정 규모다. 이동 대수, 교전 대수, 탐지 대수, 화면에 보이는 대수를 구분하여 측정한다. 동시 행동이 늘어나는 조건도 별도로 확인한다. 성능 수용 기준은 실행 환경과 목표 프레임을 확정한 뒤 정한다.</p>
+<p>50대라는 이유만으로 기존 Motor나 Gun을 다시 구현하지 않는다. 우선 재사용 구조로 기능을 완성하고 실제 환경에서 AI 판단, 경로, 탄도, 물리, 렌더링의 비용을 분리해 확인한 뒤 해당 부분을 조정한다.</p>
+<h2 id="section-22">코드와 기술 근거</h2>
+<p>코드 링크는 기준 커밋의 고정된 내용을 가리킨다. 설계에 제시된 신규 클래스는 별도 구현 대상이다.</p>
+<p>기준 커밋은 <code>f58d2de6c6177db81a522e602e8e2615a8cb43a6</code>이다. 10월 26일 수정은 문장과 그림의 가독성 정리이며, 코드에 대한 설계 판단은 이 기준을 유지한다.</p>
+<ul>
+<li><a href="https://github.com/sonji3000-cloud/Claustrophobia/blob/f58d2de6c6177db81a522e602e8e2615a8cb43a6/source/Claustrophobia/Assets/TankPrototype/Scripts/TankMotor.cs#L29">TankMotor의 레버 요청과 물리 갱신</a></li>
+<li><a href="https://github.com/sonji3000-cloud/Claustrophobia/blob/f58d2de6c6177db81a522e602e8e2615a8cb43a6/source/Claustrophobia/Assets/TankPrototype/Scripts/TankAim.cs#L28">TankAim의 축 입력과 회전 제한</a></li>
+<li><a href="https://github.com/sonji3000-cloud/Claustrophobia/blob/f58d2de6c6177db81a522e602e8e2615a8cb43a6/source/Claustrophobia/Assets/TankPrototype/Scripts/TankControl.cs#L37">TankControl의 역할 권한 경로와 회복 갱신</a></li>
+<li><a href="https://github.com/sonji3000-cloud/Claustrophobia/blob/f58d2de6c6177db81a522e602e8e2615a8cb43a6/source/Claustrophobia/Assets/TankPrototype/Scripts/TankCrew.cs#L12">TankCrew의 역할별 권한</a></li>
+<li><a href="https://github.com/sonji3000-cloud/Claustrophobia/blob/f58d2de6c6177db81a522e602e8e2615a8cb43a6/source/Claustrophobia/Assets/TankPrototype/Scripts/TankGun.cs#L46">TankGun의 발사 조건과 약실 조작</a></li>
+<li><a href="https://github.com/sonji3000-cloud/Claustrophobia/blob/f58d2de6c6177db81a522e602e8e2615a8cb43a6/source/Claustrophobia/Assets/TankPrototype/Scripts/TankProjectile.cs#L53">TankProjectile의 초기화와 피해 전달</a></li>
+<li><a href="https://github.com/sonji3000-cloud/Claustrophobia/blob/f58d2de6c6177db81a522e602e8e2615a8cb43a6/source/Claustrophobia/Assets/TankPrototype/Scripts/TankHealth.cs#L20">TankHealth의 HP와 피격 정보</a></li>
+<li><a href="https://github.com/sonji3000-cloud/Claustrophobia/blob/f58d2de6c6177db81a522e602e8e2615a8cb43a6/source/Claustrophobia/Assets/TankPrototype/Scripts/TankBallistics.cs#L31">TankBallistics의 적분과 탄도 예측</a></li>
+<li><a href="https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/MixingComponents.html">Unity의 NavMeshAgent와 Rigidbody 혼용 지침</a></li>
+<li><a href="https://docs.unity3d.com/6000.6/Documentation/ScriptReference/AI.NavMesh.CalculatePath.html">Unity NavMesh.CalculatePath 반환값과 갱신 특성</a></li>
+</ul>
+<p>Markdown의 세 Mermaid 블록은 전체 FSM, 교전 하위 FSM, 클래스 연결 구조를 각각 나타낸다. HTML 열람본은 같은 내용을 외부 연결 없이 볼 수 있도록 그림을 포함한다.</p>
+</main></body></html>
