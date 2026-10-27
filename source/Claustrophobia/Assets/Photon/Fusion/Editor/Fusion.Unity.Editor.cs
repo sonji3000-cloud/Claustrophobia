@@ -15538,7 +15538,15 @@ namespace Fusion.Editor {
 
       var manifest = Path.Combine(Path.GetDirectoryName(Application.dataPath) ?? string.Empty, PackagesDir, ManifestFile);
 
-      if (File.ReadAllText(manifest).Contains(PackageToSearch)) {
+            if (!File.Exists(manifest))
+            {
+                Debug.LogWarning(
+                    "[FusionInstaller] manifest.json이 없어 설치 검사를 생략합니다."
+                );
+
+                return;
+            }
+            if (File.ReadAllText(manifest).Contains(PackageToSearch)) {
         UpdateDefinesForAllTargets();
       } else {
         FusionEditorLog.LogInstaller($"Installing '{PackageToInstall}' package");

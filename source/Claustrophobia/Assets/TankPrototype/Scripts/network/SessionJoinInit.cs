@@ -10,15 +10,19 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner runner;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private async void Start()
     {
         runner = GetComponent<NetworkRunner>();
 
         runner.AddCallbacks(this);
 
+        GameMode mode = Application.isEditor
+        ? GameMode.Host
+        : GameMode.Client;
+
         StartGameArgs startGameArgs = new StartGameArgs
         {
-            GameMode = GameMode.Host,
+            GameMode = mode,
             SessionName = "MySession",
             PlayerCount = 3, // Set the maximum number of players for the session
             IsOpen = true, // Allow other players to join the session
