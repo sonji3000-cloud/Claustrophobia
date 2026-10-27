@@ -53,11 +53,9 @@ public sealed class TankInput : MonoBehaviour
 	private void ReadAim(Keyboard keyboard, float dt)
 	{
 		float turret = keyboard == null ? 0f
-			: (keyboard.rightArrowKey.isPressed ? 1f : 0f)
-			- (keyboard.leftArrowKey.isPressed ? 1f : 0f);
+			: (keyboard.rightArrowKey.isPressed ? 1f : 0f) - (keyboard.leftArrowKey.isPressed ? 1f : 0f);
 		float barrel = keyboard == null ? 0f
-			: (keyboard.upArrowKey.isPressed ? 1f : 0f)
-			- (keyboard.downArrowKey.isPressed ? 1f : 0f);
+			: (keyboard.upArrowKey.isPressed ? 1f : 0f) - (keyboard.downArrowKey.isPressed ? 1f : 0f);
 
 		control.ApplyAim(turret, barrel, dt);
 	}
@@ -86,8 +84,7 @@ public sealed class TankInput : MonoBehaviour
 		else if (hasPreset) left = preset.x;
 		else
 		{
-			float axis = (keyboard.wKey.isPressed ? 1f : 0f)
-				- (keyboard.sKey.isPressed ? 1f : 0f);
+			float axis = (keyboard.wKey.isPressed ? 1f : 0f) - (keyboard.sKey.isPressed ? 1f : 0f);
 			left += axis * step;
 		}
 
@@ -95,8 +92,7 @@ public sealed class TankInput : MonoBehaviour
 		else if (hasPreset) right = preset.y;
 		else
 		{
-			float axis = (keyboard.iKey.isPressed ? 1f : 0f)
-				- (keyboard.kKey.isPressed ? 1f : 0f);
+			float axis = (keyboard.iKey.isPressed ? 1f : 0f) - (keyboard.kKey.isPressed ? 1f : 0f);
 			right += axis * step;
 		}
 
