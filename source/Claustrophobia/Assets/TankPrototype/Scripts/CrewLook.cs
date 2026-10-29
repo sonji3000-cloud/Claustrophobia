@@ -86,6 +86,14 @@ public sealed class CrewLook : MonoBehaviour
 		Cursor.visible = false;
 	}
 
+	public void ResetLook()
+	{
+		yaw = pitch = 0f;
+
+		if (yawPivot != null) yawPivot.localRotation = yawBase;
+		if (pitchPivot != null) pitchPivot.localRotation = pitchBase;
+	}
+
 	private void ReleaseCursor()
 	{
 		if (!ownsCursor) return;

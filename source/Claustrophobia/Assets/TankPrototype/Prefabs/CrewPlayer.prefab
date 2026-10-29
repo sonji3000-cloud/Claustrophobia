@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8575113796862294072}
   - component: {fileID: 7882333621128703582}
+  - component: {fileID: 7824237871169727887}
+  - component: {fileID: 5891972552078842518}
   m_Layer: 0
   m_Name: CrewPlayer
   m_TagString: Player
@@ -54,6 +56,38 @@ MonoBehaviour:
   sensitivity: 0.15
   minPitch: -80
   maxPitch: 80
+--- !u!114 &7824237871169727887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8850837484564700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecab4dd6225947f6ab0e42460bc55baa, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankCrew
+  role: 0
+--- !u!114 &5891972552078842518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8850837484564700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e88633132082fa43bc85954f190e00a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CrewSeats
+  crew: {fileID: 7824237871169727887}
+  look: {fileID: 7882333621128703582}
+  driver: {fileID: 0}
+  gunner: {fileID: 0}
+  commander: {fileID: 0}
+  localSeats: 1
+  startSeat: 1
 --- !u!1 &33991732710468111
 GameObject:
   m_ObjectHideFlags: 0

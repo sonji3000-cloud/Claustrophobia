@@ -1,0 +1,130 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Play Mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver initial pose and role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver role rules reused",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Digit2 applies anchor and role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Digit3 applies anchor and role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Digit1 applies anchor and role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Seat entry resets local look",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner role rules reused",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander role rules reused",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Invalid roles rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Same seat does not reapply",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Inactive target rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "External request accepted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Request waits without moving or assigning role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Denial preserves seat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Stale approval ignored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Latest approval commits position and role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Duplicate approval ignored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Disable clears role and pending request",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Disabled request stays invalid after reenable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Target disabled before approval cannot commit",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Disabled role owner blocks requests",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Camera stays on player",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Single output camera and listener",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Idle key polling has no managed allocation",
+      "passed": true,
+      "detail": "0 bytes / 10000 calls; Editor isolated input handler"
+    }
+  ]
+}

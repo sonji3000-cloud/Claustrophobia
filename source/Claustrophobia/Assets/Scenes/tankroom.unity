@@ -4267,6 +4267,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: CrewPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 5891972552078842518, guid: 9375fc0e9b7510b4ab57ee31aeb2f740, type: 3}
+      propertyPath: driver
+      value:
+      objectReference: {fileID: 1947037457}
+    - target: {fileID: 5891972552078842518, guid: 9375fc0e9b7510b4ab57ee31aeb2f740, type: 3}
+      propertyPath: gunner
+      value:
+      objectReference: {fileID: 1360033123}
+    - target: {fileID: 5891972552078842518, guid: 9375fc0e9b7510b4ab57ee31aeb2f740, type: 3}
+      propertyPath: commander
+      value:
+      objectReference: {fileID: 1823993014}
     - target: {fileID: 8575113796862294072, guid: 9375fc0e9b7510b4ab57ee31aeb2f740, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.1
