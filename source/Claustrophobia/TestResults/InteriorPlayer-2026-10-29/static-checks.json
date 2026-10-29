@@ -1,0 +1,15 @@
+{
+  "rootComponents": [
+    "UnityEngine.Transform",
+    "CrewLook"
+  ],
+  "allBehaviours": [
+    "CrewLook",
+    "UnityEngine.Rendering.Universal.UniversalAdditionalCameraData"
+  ],
+  "colliders": 0,
+  "prefab": "Assets/TankPrototype/Prefabs/CrewPlayer.prefab",
+  "enabledCameras": 1,
+  "enabledListeners": 1,
+  "missingScripts": 0
+}

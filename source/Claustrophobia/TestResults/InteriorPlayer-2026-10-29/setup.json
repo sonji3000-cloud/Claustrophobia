@@ -1,0 +1,32 @@
+{
+  "scene": "Assets/Scenes/tankroom.unity",
+  "prefab": "Assets/TankPrototype/Prefabs/CrewPlayer.prefab",
+  "existingTransformsPreserved": true,
+  "preservedObjectCount": 19,
+  "anchors": [
+    {
+      "name": "DriverAnchor",
+      "pos": "(-1.100, 1.474, 0.240)",
+      "rot": "(0.0, 90.0, 0.0)"
+    },
+    {
+      "name": "GunnerAnchor",
+      "pos": "(-16.734, 1.474, 2.977)",
+      "rot": "(0.0, 90.0, 0.0)"
+    },
+    {
+      "name": "CommanderAnchor",
+      "pos": "(-16.734, 1.474, -2.690)",
+      "rot": "(0.0, 90.0, 0.0)"
+    }
+  ],
+  "playerPosition": "(-1.100, 1.474, 0.240)",
+  "eyePosition": "(-1.100, 2.124, 0.240)",
+  "bodyComponents": [
+    "UnityEngine.Transform",
+    "UnityEngine.Animator",
+    "UnityEngine.SkinnedMeshRenderer"
+  ],
+  "enabledCameras": 1,
+  "enabledListeners": 1
+}

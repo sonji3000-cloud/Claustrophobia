@@ -1,0 +1,56 @@
+{
+  "passed": false,
+  "checks": [
+    {
+      "name": "Play Mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Only local view behaviour and URP data",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No legacy movement collider",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No automatic physics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Camera remains parented",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "One output camera",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "One audio listener",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Body hidden in first person",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Root motion disabled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Click captures cursor",
+      "passed": false,
+      "detail": null
+    }
+  ],
+  "error": "System.InvalidOperationException: Click captures cursor: \r\n  at InteriorPreparation.Check (System.Collections.Generic.List`1[T] checks, System.String name, System.Boolean passed, System.String detail) [0x00023] in C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\Assets\\TutorialInfo\\Editor\\InteriorPreparation.cs:180 \r\n  at InteriorPreparation.VerifyPlay () [0x0049d] in C:\\Users\\power\\OneDrive\\바탕 화면\\졸업작품\\Claustrophobia\\source\\Claustrophobia\\Assets\\TutorialInfo\\Editor\\InteriorPreparation.cs:101 "
+}
