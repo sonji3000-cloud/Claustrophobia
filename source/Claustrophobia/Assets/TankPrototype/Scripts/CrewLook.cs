@@ -8,6 +8,7 @@ public sealed class CrewLook : MonoBehaviour
 	[SerializeField] private Camera view;
 	[SerializeField] private Transform yawPivot;
 	[SerializeField] private Transform pitchPivot;
+	[SerializeField] private CrewInteract interaction;
 	[SerializeField] private Renderer[] bodyRenderers = System.Array.Empty<Renderer>();
 
 	[SerializeField, Min(0f)] private float sensitivity = 0.15f;
@@ -49,7 +50,7 @@ public sealed class CrewLook : MonoBehaviour
 		Keyboard keyboard = Keyboard.current;
 		if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
 		{
-			ReleaseCursor();
+			if (interaction == null || interaction.Active == null) ReleaseCursor();
 			return;
 		}
 

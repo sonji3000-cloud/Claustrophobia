@@ -1,0 +1,145 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Play Mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Five authored devices and four lever mesh parts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Single player camera and audio at startup",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Lever 1 selects the same drive device",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Lever 3 selects the same drive device",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Both lever outlines enabled together",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Space starts use once",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Holding Space does not end or restart use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Looking away retains active device",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Second Space ends use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Can reenter after looking back",
+      "passed": true,
+      "detail": "selected=DriveDevice (CrewDevice); reason=Ready"
+    },
+    {
+      "name": "Esc ends active use",
+      "passed": true,
+      "detail": "Escape held=True; pressed=True"
+    },
+    {
+      "name": "Applied seat change releases device and role filters driver device",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Disabled device releases owner",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Observer pauses interaction keys",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Observer keeps player camera as selection source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Observer restores player camera and pose",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Held Space on observer return is ignored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Disabled player interaction releases device and outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Center hit beats physically nearer side device",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Fallback picks closer screen offset",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Boundary retention keeps selected device",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Wall blocks center and fallback selection",
+      "passed": true,
+      "detail": "A: Outside; B: Blocked"
+    },
+    {
+      "name": "TryUse cannot bypass occlusion",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Out of reach and behind camera rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Device role masks reject other crew roles",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Selection polling has no managed allocation",
+      "passed": true,
+      "detail": "0 bytes / 1000 warmed calls; Editor selector only"
+    },
+    {
+      "name": "Outline shader has no import errors",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}

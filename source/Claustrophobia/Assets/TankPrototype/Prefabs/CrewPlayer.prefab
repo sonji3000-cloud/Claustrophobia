@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 7882333621128703582}
   - component: {fileID: 7824237871169727887}
   - component: {fileID: 5891972552078842518}
+  - component: {fileID: 2094782774886908951}
+  - component: {fileID: 4233343567803884395}
   m_Layer: 0
   m_Name: CrewPlayer
   m_TagString: Player
@@ -51,6 +53,7 @@ MonoBehaviour:
   view: {fileID: 9102191476171226941}
   yawPivot: {fileID: 1495123522161322867}
   pitchPivot: {fileID: 5308494390488809456}
+  interaction: {fileID: 2094782774886908951}
   bodyRenderers:
   - {fileID: 6726007585386323060}
   sensitivity: 0.15
@@ -83,11 +86,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CrewSeats
   crew: {fileID: 7824237871169727887}
   look: {fileID: 7882333621128703582}
+  debugView: {fileID: 4233343567803884395}
   driver: {fileID: 0}
   gunner: {fileID: 0}
   commander: {fileID: 0}
   localSeats: 1
   startSeat: 1
+--- !u!114 &2094782774886908951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8850837484564700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3472d45c816768d4589871b1ece1ad78, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CrewInteract
+  view: {fileID: 9102191476171226941}
+  crew: {fileID: 7824237871169727887}
+  seats: {fileID: 5891972552078842518}
+  debugView: {fileID: 4233343567803884395}
+  devices: []
+  reach: 2
+  radius: 0.05
+  retainScale: 1.3
+  blockers:
+    serializedVersion: 2
+    m_Bits: 4294967291
+--- !u!114 &4233343567803884395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8850837484564700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c401ab3ff09cd074a9a7332ec868bd17, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CrewDebugView
+  playerView: {fileID: 9102191476171226941}
+  observer: {fileID: 0}
+  playerAudio: {fileID: 1982796355632505080}
+  observerAudio: {fileID: 0}
+  interaction: {fileID: 2094782774886908951}
+  sightLines: {fileID: 0}
+  distance: 2
+  sensitivity: 0.15
 --- !u!1 &33991732710468111
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,6 +9,7 @@ public sealed class CrewSeats : MonoBehaviour
 {
 	[SerializeField] private TankCrew crew;
 	[SerializeField] private CrewLook look;
+	[SerializeField] private CrewDebugView debugView;
 	[SerializeField] private Transform driver;
 	[SerializeField] private Transform gunner;
 	[SerializeField] private Transform commander;
@@ -48,7 +49,7 @@ public sealed class CrewSeats : MonoBehaviour
 
 	private void Update()
 	{
-		if (!Application.isFocused) return;
+		if (!Application.isFocused || debugView != null && debugView.IsObserving) return;
 
 		ReadKeys(Keyboard.current);
 	}
