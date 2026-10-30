@@ -69,7 +69,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ecab4dd6225947f6ab0e42460bc55baa, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankCrew
   role: 0
 --- !u!114 &5891972552078842518
@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e88633132082fa43bc85954f190e00a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewSeats
   crew: {fileID: 7824237871169727887}
   look: {fileID: 7882333621128703582}
@@ -102,7 +102,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3472d45c816768d4589871b1ece1ad78, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewInteract
   view: {fileID: 9102191476171226941}
   crew: {fileID: 7824237871169727887}
@@ -114,7 +114,7 @@ MonoBehaviour:
   retainScale: 1.3
   blockers:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 435
   targets:
     serializedVersion: 2
     m_Bits: 256
@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c401ab3ff09cd074a9a7332ec868bd17, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDebugView
   playerView: {fileID: 9102191476171226941}
   observer: {fileID: 0}
