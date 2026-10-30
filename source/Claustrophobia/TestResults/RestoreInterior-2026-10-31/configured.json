@@ -1,0 +1,7 @@
+{
+  "seats": 3,
+  "devices": 20,
+  "hud": true,
+  "observer": "InteriorObserver",
+  "moved": []
+}

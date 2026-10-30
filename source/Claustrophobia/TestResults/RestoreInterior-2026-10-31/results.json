@@ -1,0 +1,910 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Play Mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Network startup isolated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "20 live device references",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "HUD wired to this player",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "HUD rows restored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "HUD markers restored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Digit 1 moves to restored anchor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Digit 2 moves to restored anchor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Digit 3 moves to restored anchor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner sight/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander sight/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Breech/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Breech/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Turret controls/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 1/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 1/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 2/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 2/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 3/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 3/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 4/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 4/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 5/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 5/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 6/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Gunner shell 6/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 1/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 1/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 2/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 2/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 reachable",
+      "passed": true,
+      "detail": "Rooms/UpperRoom/bullet (4)"
+    },
+    {
+      "name": "Commander shell 3/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 3/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 4/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 4/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 5/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 5/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 6/2 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander shell 6/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Commander map/3 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Drive controls/1 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Driver periscope/1 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 reachable",
+      "passed": true,
+      "detail": "No ray surface"
+    },
+    {
+      "name": "Driver map/1 selected with outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 rear camera restored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 camera stays behind player",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 sightLines restored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 selectionRing restored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 retainRing restored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "One camera and listener during F7 isolated test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 returns to first person",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}
