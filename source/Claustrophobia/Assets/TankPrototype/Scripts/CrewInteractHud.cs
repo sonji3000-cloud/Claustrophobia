@@ -17,7 +17,7 @@ public sealed class CrewInteractHud : MonoBehaviour
 	private string[] readyText;
 	private string[] activeText;
 	private string[,] reasons;
-	private static readonly string[] ReasonText = { "Ready", "Disabled", "Wrong role", "In use", "Too far / no surface in range", "Behind camera", "Outside center", "Occluded" };
+	private static readonly string[] ReasonText = { "Ready", "Disabled", "Wrong role", "In use", "Too far / no surface in range", "Behind camera", "Outside center", "Occluded", "Wrong layer / no active collider" };
 
 	private void Awake()
 	{

@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 [DefaultExecutionOrder(10)]
 public sealed class CrewInteract : MonoBehaviour
 {
-	public enum Reason { Ready, Disabled, Role, Busy, Range, Behind, Outside, Blocked }
+	public enum Reason { Ready, Disabled, Role, Busy, Range, Behind, Outside, Blocked, Layer }
 
 	public struct Candidate
 	{
@@ -27,6 +27,7 @@ public sealed class CrewInteract : MonoBehaviour
 	[SerializeField, Range(0.01f, 0.25f)] private float radius = 0.05f;
 	[SerializeField, Range(1f, 2f)] private float retainScale = 1.3f;
 	[SerializeField] private LayerMask blockers = Physics.DefaultRaycastLayers;
+	[SerializeField] private LayerMask targets;
 
 	private Candidate[] candidates;
 	private CrewDevice highlighted;
@@ -40,7 +41,7 @@ public sealed class CrewInteract : MonoBehaviour
 	public Candidate[] Candidates => candidates;
 	public float Radius => radius;
 	public float RetainRadius => radius * retainScale;
-	public float Reach => reach;
+	public float Reach => GetReach(Active != null ? Active : Selected);
 	public CrewDevice Selected { get; private set; }
 	public CrewDevice Active { get; private set; }
 	public bool IsObserving => debugView != null && debugView.IsObserving;
@@ -66,14 +67,15 @@ public sealed class CrewInteract : MonoBehaviour
 
 	public void RefreshSelection()
 	{
-		if (Active != null && (!Active.CanUse(crew) || Active.User != this || crew.CurrentRole != activeRole)) StopUse();
+		if (Active != null && (!Active.CanUse(crew) || !HasTarget(Active)
+			|| Active.User != this || crew.CurrentRole != activeRole)) StopUse();
 
 		CrewDevice best = null;
 		float bestOffset = float.PositiveInfinity;
 		float bestDistance = float.PositiveInfinity;
 		bool bestDirect = false;
 		Ray ray = view != null ? new Ray(view.transform.position, view.transform.forward) : default;
-		bool hitCenter = view != null && Physics.Raycast(ray, out centerHit, reach, blockers, QueryTriggerInteraction.Ignore);
+		bool hitCenter = view != null && HitCenter(ray);
 
 		for (int i = 0; i < devices.Length; i++)
 		{
@@ -105,6 +107,12 @@ public sealed class CrewInteract : MonoBehaviour
 		if (view == null || device == null || !device.isActiveAndEnabled) return result;
 
 		if (device.Parts.Length > 0 && device.Parts[0] != null) result.Point = device.Parts[0].bounds.center;
+		if (!HasTarget(device))
+		{
+			result.Reason = Reason.Layer;
+			return result;
+		}
+
 		if (!device.CanUse(crew))
 		{
 			result.Reason = Reason.Role;
@@ -117,7 +125,8 @@ public sealed class CrewInteract : MonoBehaviour
 			return result;
 		}
 
-		if (direct != null && device.Contains(direct))
+		float range = GetReach(device);
+		if (direct != null && centerHit.distance <= range && device.Contains(direct))
 			return new Candidate { Reason = Reason.Ready, Point = centerHit.point, Distance = centerHit.distance, Direct = true };
 
 		result.Reason = Reason.Range;
@@ -126,15 +135,47 @@ public sealed class CrewInteract : MonoBehaviour
 		for (int i = 0; i < parts.Length; i++)
 		{
 			Collider part = parts[i];
-			if (part == null || !part.enabled || part.isTrigger || !part.gameObject.activeInHierarchy) continue;
+			if (!IsTarget(part)) continue;
 
-			SamplePart(part, center, limit, ref result);
+			SamplePart(part, center, limit, range, ref result);
 		}
 
 		return result;
 	}
 
-	private void SamplePart(Collider part, Ray center, float limit, ref Candidate result)
+	private float GetReach(CrewDevice device) => device != null && device.Reach > 0f ? device.Reach : reach;
+
+	private bool HasTarget(CrewDevice device)
+	{
+		if ((targets.value & (1 << device.gameObject.layer)) == 0) return false;
+
+		for (int i = 0; i < device.Parts.Length; i++)
+			if (IsTarget(device.Parts[i])) return true;
+
+		return false;
+	}
+
+	private bool IsTarget(Collider part)
+	{
+		return part != null && part.enabled && !part.isTrigger && part.gameObject.activeInHierarchy
+			&& (targets.value & (1 << part.gameObject.layer)) != 0;
+	}
+
+	private bool HitCenter(Ray ray)
+	{
+		float range = reach;
+		for (int i = 0; i < devices.Length; i++)
+		{
+			CrewDevice device = devices[i];
+			if (device != null && device.CanUse(crew) && HasTarget(device)) range = Mathf.Max(range, GetReach(device));
+		}
+
+		return Physics.Raycast(ray, out centerHit, range, targets, QueryTriggerInteraction.Ignore)
+			&& Physics.Raycast(ray, out RaycastHit first, centerHit.distance + .01f, blockers, QueryTriggerInteraction.Ignore)
+			&& first.collider == centerHit.collider;
+	}
+
+	private void SamplePart(Collider part, Ray center, float limit, float range, ref Candidate result)
 	{
 		Bounds bounds = part.bounds;
 		// Sample the central ray, center and inset corners to cover partial visibility.
@@ -144,7 +185,7 @@ public sealed class CrewInteract : MonoBehaviour
 			if (delta.sqrMagnitude < .000001f) continue;
 
 			Ray ray = new Ray(view.transform.position, delta.normalized);
-			if (part.Raycast(ray, out RaycastHit surface, reach)) CheckSurface(part, ray, surface, limit, ref result);
+			if (part.Raycast(ray, out RaycastHit surface, range)) CheckSurface(part, ray, surface, limit, ref result);
 		}
 	}
 

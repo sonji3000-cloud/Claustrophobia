@@ -1,0 +1,150 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Play Mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Only InteriorDevice target mask",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Eight explicit devices",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "All registered colliders in target layer",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverViewScreen selected from assigned seat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverViewScreen white outline enabled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverViewScreen Space begins use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverViewScreen held Space does not toggle",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverViewScreen Space ends use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverMap selected from assigned seat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverMap white outline enabled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverMap Space begins use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverMap held Space does not toggle",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "DriverMap Space ends use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "CommanderMap selected from assigned seat",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "CommanderMap white outline enabled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "CommanderMap Space begins use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "CommanderMap held Space does not toggle",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "CommanderMap Space ends use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Default layer excludes center and fallback",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Restored layer restores selection",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Screen range applies to distant existing placement",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Default-layer wall still occludes layer-filtered target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Layer-filtered target restored after wall removal",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Changing active device layer ends use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner cannot use driver or commander screens",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Existing lever selection preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 rear view still uses player eyes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Layer and selection polling allocation",
+      "passed": true,
+      "detail": "0 bytes / 1000 warmed calls; Editor selector only"
+    }
+  ]
+}

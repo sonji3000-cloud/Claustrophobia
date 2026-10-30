@@ -10,10 +10,13 @@ public sealed class CrewDevice : MonoBehaviour
 
 	[SerializeField] private string label = "Device";
 	[SerializeField] private Roles roles = Roles.All;
+	[Tooltip("Non-VR selection distance. Zero uses the player's default.")]
+	[SerializeField, Min(0f)] private float reach;
 	[SerializeField] private Collider[] parts = Array.Empty<Collider>();
 	[SerializeField] private Renderer[] outlines = Array.Empty<Renderer>();
 
 	public string Label => label;
+	public float Reach => reach;
 	public Collider[] Parts => parts;
 	public CrewInteract User { get; private set; }
 	public event Action<CrewInteract, bool> UseChanged;

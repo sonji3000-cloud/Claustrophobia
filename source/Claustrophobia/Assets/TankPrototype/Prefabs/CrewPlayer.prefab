@@ -115,6 +115,9 @@ MonoBehaviour:
   blockers:
     serializedVersion: 2
     m_Bits: 4294967291
+  targets:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &4233343567803884395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,8 +136,11 @@ MonoBehaviour:
   observerAudio: {fileID: 0}
   interaction: {fileID: 2094782774886908951}
   sightLines: {fileID: 0}
+  selectionRing: {fileID: 0}
+  retainRing: {fileID: 0}
   distance: 2
-  sensitivity: 0.15
+  height: 0.45
+  side: 0.35
 --- !u!1 &33991732710468111
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,57 @@
+{
+  "layer": 8,
+  "count": 8,
+  "originalTransforms": 95,
+  "changed": [],
+  "materialsPreserved": true,
+  "devices": [
+    {
+      "path": "TankInterior/Devices/GameObject/objects/scope",
+      "label": "Gunner sight",
+      "range": 0.0,
+      "parts": 1
+    },
+    {
+      "path": "TankInterior/Devices/GameObject/objects/scope (1)",
+      "label": "Commander sight",
+      "range": 0.0,
+      "parts": 1
+    },
+    {
+      "path": "TankInterior/Devices/GameObject/objects/breech_block",
+      "label": "Breech",
+      "range": 0.0,
+      "parts": 2
+    },
+    {
+      "path": "TankInterior/Devices/GameObject/objects/joystick",
+      "label": "Turret controls",
+      "range": 0.0,
+      "parts": 2
+    },
+    {
+      "path": "TankInterior/Devices/GameObject/objects/DriveDevice",
+      "label": "Drive controls",
+      "range": 0.0,
+      "parts": 4
+    },
+    {
+      "path": "TankInterior/Devices/GameObject/objects/DriverViewScreen",
+      "label": "Driver periscope",
+      "range": 8.0,
+      "parts": 1
+    },
+    {
+      "path": "TankInterior/Devices/GameObject/objects/DriverMap",
+      "label": "Driver map",
+      "range": 8.0,
+      "parts": 1
+    },
+    {
+      "path": "TankInterior/Devices/GameObject/objects/CommanderMap",
+      "label": "Commander map",
+      "range": 8.0,
+      "parts": 1
+    }
+  ]
+}
