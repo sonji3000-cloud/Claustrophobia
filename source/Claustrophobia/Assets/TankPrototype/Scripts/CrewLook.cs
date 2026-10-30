@@ -41,7 +41,9 @@ public sealed class CrewLook : MonoBehaviour
 		bool hasView = view != null && view.isActiveAndEnabled;
 		SetBodyHidden(hasView);
 
-		if (!hasView || !Application.isFocused || yawPivot == null || pitchPivot == null)
+		bool canLook = view != null && view.gameObject.activeInHierarchy
+			&& (hasView || interaction != null && interaction.IsObserving);
+		if (!canLook || !Application.isFocused || yawPivot == null || pitchPivot == null)
 		{
 			ReleaseCursor();
 			return;
@@ -69,6 +71,11 @@ public sealed class CrewLook : MonoBehaviour
 			return;
 		}
 
+		ReadLook(mouse);
+	}
+
+	private void ReadLook(Mouse mouse)
+	{
 		Vector2 delta = mouse.delta.ReadValue() * sensitivity;
 		yaw = Mathf.Repeat(yaw + delta.x, 360f);
 		pitch = Mathf.Clamp(pitch - delta.y, minPitch, maxPitch);

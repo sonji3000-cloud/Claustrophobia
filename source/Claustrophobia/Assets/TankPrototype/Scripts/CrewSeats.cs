@@ -49,7 +49,7 @@ public sealed class CrewSeats : MonoBehaviour
 
 	private void Update()
 	{
-		if (!Application.isFocused || debugView != null && debugView.IsObserving) return;
+		if (!Application.isFocused) return;
 
 		ReadKeys(Keyboard.current);
 	}

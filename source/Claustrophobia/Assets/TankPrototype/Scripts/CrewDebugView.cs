@@ -13,10 +13,9 @@ public sealed class CrewDebugView : MonoBehaviour
 	[SerializeField] private LineRenderer selectionRing;
 	[SerializeField] private LineRenderer retainRing;
 	[SerializeField] private float distance = 2f;
-	[SerializeField] private float sensitivity = .15f;
+	[SerializeField] private float height = .45f;
+	[SerializeField] private float side = .35f;
 
-	private float yaw = -120f;
-	private float pitch = 20f;
 	private bool savedView;
 	private bool savedAudio;
 	private readonly Vector3[] points = new Vector3[16];
@@ -35,25 +34,13 @@ public sealed class CrewDebugView : MonoBehaviour
 			if (keyboard.f6Key.wasPressedThisFrame) ShowDebug = !ShowDebug;
 			if (keyboard.f7Key.wasPressedThisFrame) SetObserving(!IsObserving);
 		}
-
-		if (!IsObserving) return;
-		Mouse mouse = Mouse.current;
-		if (mouse == null) return;
-		if (mouse.rightButton.isPressed)
-		{
-			Vector2 delta = mouse.delta.ReadValue() * sensitivity;
-			yaw += delta.x;
-			pitch = Mathf.Clamp(pitch - delta.y, -75f, 75f);
-		}
-		distance = Mathf.Clamp(distance - mouse.scroll.ReadValue().y * .002f, .3f, 5f);
 	}
 
 	private void LateUpdate()
 	{
 		if (IsObserving && observer != null && playerView != null)
 		{
-			Quaternion rot = Quaternion.Euler(pitch, yaw, 0f);
-			observer.transform.SetPositionAndRotation(playerView.transform.position - rot * Vector3.forward * distance, rot);
+			UpdateFollow();
 		}
 
 		if (sightLines == null) return;
@@ -93,6 +80,15 @@ public sealed class CrewDebugView : MonoBehaviour
 		DrawRing(retainRing, interaction.RetainRadius, reach);
 	}
 
+	private void UpdateFollow()
+	{
+		// Follow the seated body, independently of the yaw/pitch used to aim the player's eyes.
+		Vector3 eye = playerView.transform.position;
+		Vector3 pos = eye + transform.rotation * new Vector3(side, height, -distance);
+		Vector3 target = eye + transform.forward * .8f;
+		observer.transform.SetPositionAndRotation(pos, Quaternion.LookRotation(target - pos, transform.up));
+	}
+
 	private void DrawRing(LineRenderer line, float radius, float reach)
 	{
 		if (line == null) return;
@@ -121,6 +117,7 @@ public sealed class CrewDebugView : MonoBehaviour
 			observer.enabled = true;
 			if (observerAudio != null) observerAudio.enabled = savedAudio;
 			ShowDebug = true;
+			UpdateFollow();
 		}
 		else
 		{

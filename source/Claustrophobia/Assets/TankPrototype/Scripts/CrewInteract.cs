@@ -199,7 +199,6 @@ public sealed class CrewInteract : MonoBehaviour
 
 		bool pressed = keyboard.spaceKey.isPressed && !spaceHeld;
 		spaceHeld = keyboard.spaceKey.isPressed;
-		if (IsObserving) return;
 		if (keyboard.escapeKey.wasPressedThisFrame)
 		{
 			StopUse();
@@ -214,7 +213,7 @@ public sealed class CrewInteract : MonoBehaviour
 	/// <summary>Begins local use of the currently selected device after revalidation.</summary>
 	public bool TryUse(CrewDevice device)
 	{
-		if (!isActiveAndEnabled || IsObserving || Active != null || device == null) return false;
+		if (!isActiveAndEnabled || Active != null || device == null) return false;
 
 		RefreshSelection();
 		if (Selected != device || !device.TryBegin(this)) return false;

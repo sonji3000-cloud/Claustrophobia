@@ -49,15 +49,12 @@ public sealed class CrewInteractHud : MonoBehaviour
 		ring.sizeDelta = Vector2.one * (2f * interaction.Radius * rect.height);
 		retainRing.sizeDelta = Vector2.one * (2f * interaction.RetainRadius * rect.height);
 
-		string text = observe ? "Observer | RMB - Orbit | Wheel - Zoom | F7 - Return" : "";
+		string text = observe ? "Rear view | Mouse - Look | F7 - First person" : "";
 		for (int i = 0; i < interaction.Devices.Length; i++)
 		{
 			CrewDevice device = interaction.Devices[i];
-			if (!observe)
-			{
-				if (device != null && device == interaction.Active) text = activeText[i];
-				else if (interaction.Active == null && device != null && device == interaction.Selected) text = readyText[i];
-			}
+			if (device != null && device == interaction.Active) text = activeText[i];
+			else if (interaction.Active == null && device != null && device == interaction.Selected) text = readyText[i];
 
 			CrewInteract.Candidate candidate = interaction.Candidates[i];
 			if (i < rows.Length && rows[i] != null)

@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Play Mode",
+      "passed": true
+    },
+    {
+      "name": "Camera behind seated body",
+      "passed": true
+    },
+    {
+      "name": "Switch does not rotate player eyes",
+      "passed": true
+    },
+    {
+      "name": "One output camera and listener",
+      "passed": true
+    },
+    {
+      "name": "Mouse handler rotates player yaw and pitch in rear view",
+      "passed": true
+    },
+    {
+      "name": "Rear camera stays fixed while eyes turn",
+      "passed": true
+    },
+    {
+      "name": "Debug ray follows player eyes",
+      "passed": true
+    },
+    {
+      "name": "Space works in rear view",
+      "passed": true
+    },
+    {
+      "name": "Seat keys work and release device in rear view",
+      "passed": true
+    },
+    {
+      "name": "Rear camera follows seat movement",
+      "passed": true
+    },
+    {
+      "name": "Return preserves eyes and restores first-person output",
+      "passed": true
+    },
+    {
+      "name": "Return keeps one listener",
+      "passed": true
+    }
+  ]
+}
