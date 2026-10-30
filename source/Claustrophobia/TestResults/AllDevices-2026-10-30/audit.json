@@ -1,0 +1,302 @@
+{
+  "rows": [
+    {
+      "device": "TankInterior/Devices/GameObject/objects/scope",
+      "label": "Gunner sight",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 3.5,
+      "point": "(-14.393, 3.613, 2.771)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/scope (1)",
+      "label": "Commander sight",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 3.5,
+      "point": "(-14.392, 3.614, -2.574)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/breech_block",
+      "label": "Breech",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 6.0,
+      "point": "(-13.851, 2.692, 1.338)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/breech_block",
+      "label": "Breech",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 6.0,
+      "point": "(-13.851, 2.692, -0.611)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/joystick",
+      "label": "Turret controls",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 4.0,
+      "point": "(-14.683, 0.752, 4.329)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet",
+      "label": "Gunner shell 1",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 5.5,
+      "point": "(-13.996, 2.921, 0.498)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet",
+      "label": "Gunner shell 1",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 5.5,
+      "point": "(-13.977, 2.927, 0.231)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (1)",
+      "label": "Gunner shell 2",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.0,
+      "point": "(-18.043, 0.999, 5.970)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (1)",
+      "label": "Gunner shell 2",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.0,
+      "point": "(-18.078, 0.969, 5.958)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (2)",
+      "label": "Gunner shell 3",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.0,
+      "point": "(-18.037, 1.863, 5.955)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (2)",
+      "label": "Gunner shell 3",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.0,
+      "point": "(-18.077, 1.855, 5.952)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (3)",
+      "label": "Gunner shell 4",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.0,
+      "point": "(-18.039, 2.722, 5.961)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (3)",
+      "label": "Gunner shell 4",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.0,
+      "point": "(-18.077, 2.740, 5.954)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (5)",
+      "label": "Gunner shell 5",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-18.045, 3.589, 5.975)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (5)",
+      "label": "Gunner shell 5",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-18.078, 3.626, 5.960)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (4)",
+      "label": "Gunner shell 6",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-18.050, 4.462, 5.987)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo/bullet (4)",
+      "label": "Gunner shell 6",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-18.079, 4.513, 5.965)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet",
+      "label": "Commander shell 1",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-18.079, 1.510, -5.859)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet",
+      "label": "Commander shell 1",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-18.047, 1.524, -5.872)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (1)",
+      "label": "Commander shell 2",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 9.5,
+      "point": "(-15.457, 1.883, -5.019)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (1)",
+      "label": "Commander shell 2",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 9.5,
+      "point": "(-15.499, 1.891, -5.037)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (2)",
+      "label": "Commander shell 3",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (4)",
+      "range": 10.5,
+      "point": "(-14.911, 1.592, -5.814)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (2)",
+      "label": "Commander shell 3",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-14.876, 1.888, -5.800)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (3)",
+      "label": "Commander shell 4",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-15.580, 1.882, -5.827)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (3)",
+      "label": "Commander shell 4",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.5,
+      "point": "(-15.608, 1.888, -5.838)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (5)",
+      "label": "Commander shell 5",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.0,
+      "point": "(-16.016, 1.883, -5.366)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (5)",
+      "label": "Commander shell 5",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 10.0,
+      "point": "(-16.039, 1.890, -5.376)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (4)",
+      "label": "Commander shell 6",
+      "seat": "gunner",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 9.5,
+      "point": "(-14.876, 1.882, -5.023)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet (4)",
+      "label": "Commander shell 6",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 9.5,
+      "point": "(-14.932, 1.890, -5.046)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/DriveDevice",
+      "label": "Drive controls",
+      "seat": "driver",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 0.0,
+      "point": "(0.356, 1.570, 1.015)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/DriverViewScreen",
+      "label": "Driver periscope",
+      "seat": "driver",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 8.0,
+      "point": "(4.440, 3.038, 0.020)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/DriverMap",
+      "label": "Driver map",
+      "seat": "driver",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 8.0,
+      "point": "(-0.681, 2.730, -4.170)"
+    },
+    {
+      "device": "TankInterior/Devices/GameObject/objects/CommanderMap",
+      "label": "Commander map",
+      "seat": "commander",
+      "clear": true,
+      "blocker": "No ray surface",
+      "range": 8.0,
+      "point": "(-13.259, 2.847, -7.040)"
+    }
+  ],
+  "missing": []
+}

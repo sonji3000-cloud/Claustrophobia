@@ -1,0 +1,32 @@
+[
+  {
+    "path": "TankInterior/Devices/GameObject/objects/ammo/bullet (1)",
+    "before": "(-18.493, 1.590, 8.960)",
+    "after": "(-18.536, 0.950, 6.100)"
+  },
+  {
+    "path": "TankInterior/Devices/GameObject/objects/ammo/bullet (2)",
+    "before": "(-18.493, 0.960, 8.200)",
+    "after": "(-18.536, 1.850, 6.100)"
+  },
+  {
+    "path": "TankInterior/Devices/GameObject/objects/ammo/bullet (3)",
+    "before": "(-18.493, 1.717, 8.151)",
+    "after": "(-18.536, 2.750, 6.100)"
+  },
+  {
+    "path": "TankInterior/Devices/GameObject/objects/ammo/bullet (5)",
+    "before": "(-18.493, 2.159, 8.609)",
+    "after": "(-18.536, 3.650, 6.100)"
+  },
+  {
+    "path": "TankInterior/Devices/GameObject/objects/ammo/bullet (4)",
+    "before": "(-18.493, 1.000, 8.960)",
+    "after": "(-18.536, 4.550, 6.100)"
+  },
+  {
+    "path": "TankInterior/Devices/GameObject/objects/ammo (1)/bullet",
+    "before": "(-16.809, 5.649, -13.754)",
+    "after": "(-18.100, 1.064, -6.000)"
+  }
+]

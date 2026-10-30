@@ -1,0 +1,1816 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Play Mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "All 20 devices registered",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "12 shells individually registered",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "All parts and outlines assigned",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight / Commander role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Gunner role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls / Commander role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Gunner wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6 / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Driver wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Gunner role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls / Commander role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Driver wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Gunner role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope / Commander role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Driver wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Gunner role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map / Commander role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Driver role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Gunner role denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander visible within configured range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander within mouse pitch range",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander selected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander white outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander Space begins",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander held Space stable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander wall blocks use",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander wall removal restores",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map / Commander wrong layer denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "20 device selection allocation",
+      "passed": true,
+      "detail": "0 bytes / 1000 warmed calls; Editor selector only"
+    }
+  ],
+  "pending": []
+}
