@@ -10,6 +10,7 @@ public sealed class CrewSeats : MonoBehaviour
 	[SerializeField] private TankCrew crew;
 	[SerializeField] private CrewLook look;
 	[SerializeField] private CrewDebugView debugView;
+	[SerializeField] private TankTestMode testMode;
 	[SerializeField] private Transform driver;
 	[SerializeField] private Transform gunner;
 	[SerializeField] private Transform commander;
@@ -56,7 +57,7 @@ public sealed class CrewSeats : MonoBehaviour
 
 	private void ReadKeys(Keyboard keyboard)
 	{
-		if (keyboard == null) return;
+		if (keyboard == null || testMode != null && !testMode.CanReadInterior) return;
 
 		if (keyboard.digit1Key.wasPressedThisFrame) RequestSeat(TankCrew.Role.Driver);
 		else if (keyboard.digit2Key.wasPressedThisFrame) RequestSeat(TankCrew.Role.Gunner);

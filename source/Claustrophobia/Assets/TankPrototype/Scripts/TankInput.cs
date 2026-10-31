@@ -8,6 +8,7 @@ public sealed class TankInput : MonoBehaviour
 {
 	[SerializeField, Min(0f)] private float leverChangeRate = 1f;
 	[SerializeField] private TankControl control;
+	[SerializeField] private TankTestMode testMode;
 
 	private void Awake()
 	{
@@ -16,9 +17,16 @@ public sealed class TankInput : MonoBehaviour
 
 	private void Update()
 	{
-		if (control == null || !control.isActiveAndEnabled) return;
+		if (!Application.isFocused) return;
 
-		Keyboard keyboard = Keyboard.current;
+		ReadKeys(Keyboard.current);
+	}
+
+	private void ReadKeys(Keyboard keyboard)
+	{
+		if (control == null || !control.isActiveAndEnabled
+			|| testMode != null && !testMode.CanReadExterior) return;
+
 		float dt = Time.deltaTime;
 
 		ReadRole(keyboard);
@@ -33,12 +41,18 @@ public sealed class TankInput : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (control == null || !control.isActiveAndEnabled || !Application.isFocused) return;
+		if (control == null || !control.isActiveAndEnabled || !Application.isFocused
+			|| testMode != null && !testMode.CanReadExterior) return;
 
 		Mouse mouse = Mouse.current;
 		if (mouse == null || !mouse.rightButton.isPressed) return;
 
 		control.Look(mouse.delta.ReadValue());
+	}
+
+	public void SuspendInput()
+	{
+		if (control != null) control.ApplyAim(0f, 0f, 0f);
 	}
 
 	private void ReadRole(Keyboard keyboard)

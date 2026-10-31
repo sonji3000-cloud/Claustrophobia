@@ -1,0 +1,1080 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Actual Play Mode",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Network startup transiently isolated",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Default exterior mode and HUD",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Initial exterior exactly one screen camera and listener",
+      "passed": true,
+      "detail": "Third Person Camera"
+    },
+    {
+      "name": "Initial exterior MainCamera agrees with output",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Exterior input armed after release",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Exterior digit2 only changes test role",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Exterior F2 gunner view",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "External gunner exactly one screen camera and listener",
+      "passed": true,
+      "detail": "Gunner Camera"
+    },
+    {
+      "name": "External gunner MainCamera agrees with output",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F9 switches mode immediately but blocks held controls",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F9 does not neutralize retained levers",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Interior entry exactly one screen camera and listener",
+      "passed": true,
+      "detail": "InteriorCamera"
+    },
+    {
+      "name": "Interior entry MainCamera agrees with output",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Held controls remain blocked across frames",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Interior input armed after release",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Interior digit1 applies seat only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Interior digit2 applies seat only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Interior digit3 applies seat only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Interior ignores external camera and drive keys",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "20 authored devices remain connected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner sight/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander sight/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Breech/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Turret controls/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 1/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 2/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 3/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 4/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 5/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Gunner shell 6/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 1/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 2/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 3/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 4/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 5/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/2 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander shell 6/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Commander map/3 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive controls/1 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver periscope/1 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 visible within reach",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 selected and outlined",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 HUD prompt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 Space starts without tank neutral",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Driver map/1 Space ends",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 selects rear camera",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 observer behind seated body",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 rear exactly one screen camera and listener",
+      "passed": true,
+      "detail": "InteriorObserver"
+    },
+    {
+      "name": "F7 rear MainCamera agrees with output",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 mouse rotates eyes independently of rear camera",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 sightLines",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 selectionRing",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 retainRing",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F8 ends device use, rear view and outline",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F8 preserves interior driver role and lever state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F8 enters exterior third person",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F8 from rear exactly one screen camera and listener",
+      "passed": true,
+      "detail": "Third Person Camera"
+    },
+    {
+      "name": "F8 from rear MainCamera agrees with output",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Exterior ignores F7 and seat keys",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Exterior Space retains original neutral action",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F9 restores same seat in first person",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "External camera APIs cannot steal interior output exactly one screen camera and listener",
+      "passed": true,
+      "detail": "InteriorCamera"
+    },
+    {
+      "name": "External camera APIs cannot steal interior output MainCamera agrees with output",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Interior camera retained after external API",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "InteriorDevice layer filtering retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Drive selection restored",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Wall occlusion retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Role restriction retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "F7 returns first person",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Repeated F9 is idempotent",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Final interior exactly one screen camera and listener",
+      "passed": true,
+      "detail": "InteriorCamera"
+    },
+    {
+      "name": "Final interior MainCamera agrees with output",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Repeated input and selector paths allocate zero managed bytes",
+      "passed": true,
+      "detail": "0 bytes / 200 loops, 19.4863 ms; editor direct-call measurement, stopwatch allocation excluded: 0"
+    },
+    {
+      "name": "Tank physics and action components still running",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}

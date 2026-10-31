@@ -1,0 +1,142 @@
+[
+  {
+    "path": "CrewDebugView.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "CrewDevice.cs",
+    "unchanged": true
+  },
+  {
+    "path": "CrewDevice.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "CrewInteract.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "CrewInteractHud.cs",
+    "unchanged": true
+  },
+  {
+    "path": "CrewInteractHud.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "CrewLook.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "CrewSeats.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "network.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankAim.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankAim.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankBallistics.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankBallistics.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankControl.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankControl.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankCrew.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankCrew.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankCrewCameras.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankGun.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankGun.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankGunRecoil.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankGunRecoil.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankHealth.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankHealth.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankInput.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankKeyboardDebug.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankKeyboardDebug.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankMotor.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankMotor.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankProjectile.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankProjectile.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "TankTrackAnimation.cs",
+    "unchanged": true
+  },
+  {
+    "path": "TankTrackAnimation.cs.meta",
+    "unchanged": true
+  },
+  {
+    "path": "network\\SessionJoinInit.cs",
+    "unchanged": true
+  },
+  {
+    "path": "network\\SessionJoinInit.cs.meta",
+    "unchanged": true
+  }
+]

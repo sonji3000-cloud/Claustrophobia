@@ -21,6 +21,7 @@ public sealed class CrewInteract : MonoBehaviour
 	[SerializeField] private TankCrew crew;
 	[SerializeField] private CrewSeats seats;
 	[SerializeField] private CrewDebugView debugView;
+	[SerializeField] private TankTestMode testMode;
 	[SerializeField] private CrewDevice[] devices = Array.Empty<CrewDevice>();
 	[SerializeField, Min(0.1f)] private float reach = 2f;
 	[Tooltip("Radius as a fraction of the camera's pixel height.")]
@@ -67,6 +68,12 @@ public sealed class CrewInteract : MonoBehaviour
 
 	public void RefreshSelection()
 	{
+		if (testMode != null && !testMode.IsInterior)
+		{
+			ClearSelection();
+			return;
+		}
+
 		if (Active != null && (!Active.CanUse(crew) || !HasTarget(Active)
 			|| Active.User != this || crew.CurrentRole != activeRole)) StopUse();
 
@@ -237,6 +244,11 @@ public sealed class CrewInteract : MonoBehaviour
 	private void ReadKeys(Keyboard keyboard)
 	{
 		if (keyboard == null) return;
+		if (testMode != null && !testMode.CanReadInterior)
+		{
+			spaceHeld = keyboard.spaceKey.isPressed;
+			return;
+		}
 
 		bool pressed = keyboard.spaceKey.isPressed && !spaceHeld;
 		spaceHeld = keyboard.spaceKey.isPressed;
@@ -254,7 +266,8 @@ public sealed class CrewInteract : MonoBehaviour
 	/// <summary>Begins local use of the currently selected device after revalidation.</summary>
 	public bool TryUse(CrewDevice device)
 	{
-		if (!isActiveAndEnabled || Active != null || device == null) return false;
+		if (!isActiveAndEnabled || Active != null || device == null
+			|| testMode != null && !testMode.IsInterior) return false;
 
 		RefreshSelection();
 		if (Selected != device || !device.TryBegin(this)) return false;
@@ -277,6 +290,13 @@ public sealed class CrewInteract : MonoBehaviour
 		SetHighlight(null);
 		device.ReportUse(this, false);
 		UseChanged?.Invoke(device, false);
+	}
+
+	public void ClearSelection()
+	{
+		StopUse();
+		Selected = null;
+		SetHighlight(null);
 	}
 
 	private void SetHighlight(CrewDevice device)
@@ -309,8 +329,6 @@ public sealed class CrewInteract : MonoBehaviour
 	private void OnDisable()
 	{
 		if (seats != null) seats.SeatApplied -= OnSeatApplied;
-		StopUse();
-		Selected = null;
-		SetHighlight(null);
+		ClearSelection();
 	}
 }

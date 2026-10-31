@@ -9,6 +9,7 @@ public sealed class CrewLook : MonoBehaviour
 	[SerializeField] private Transform yawPivot;
 	[SerializeField] private Transform pitchPivot;
 	[SerializeField] private CrewInteract interaction;
+	[SerializeField] private TankTestMode testMode;
 	[SerializeField] private Renderer[] bodyRenderers = System.Array.Empty<Renderer>();
 
 	[SerializeField, Min(0f)] private float sensitivity = 0.15f;
@@ -43,7 +44,8 @@ public sealed class CrewLook : MonoBehaviour
 
 		bool canLook = view != null && view.gameObject.activeInHierarchy
 			&& (hasView || interaction != null && interaction.IsObserving);
-		if (!canLook || !Application.isFocused || yawPivot == null || pitchPivot == null)
+		if (!canLook || !Application.isFocused || yawPivot == null || pitchPivot == null
+			|| testMode != null && !testMode.CanReadInterior)
 		{
 			ReleaseCursor();
 			return;
@@ -102,7 +104,7 @@ public sealed class CrewLook : MonoBehaviour
 		if (pitchPivot != null) pitchPivot.localRotation = pitchBase;
 	}
 
-	private void ReleaseCursor()
+	public void ReleaseCursor()
 	{
 		if (!ownsCursor) return;
 

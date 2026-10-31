@@ -9,6 +9,7 @@ public sealed class CrewDebugView : MonoBehaviour
 	[SerializeField] private AudioListener playerAudio;
 	[SerializeField] private AudioListener observerAudio;
 	[SerializeField] private CrewInteract interaction;
+	[SerializeField] private TankTestMode testMode;
 	[SerializeField] private LineRenderer sightLines;
 	[SerializeField] private LineRenderer selectionRing;
 	[SerializeField] private LineRenderer retainRing;
@@ -18,6 +19,7 @@ public sealed class CrewDebugView : MonoBehaviour
 
 	private bool savedView;
 	private bool savedAudio;
+	private bool outputEnabled = true;
 	private readonly Vector3[] points = new Vector3[16];
 	private readonly Vector3[] ringPoints = new Vector3[33];
 
@@ -28,7 +30,13 @@ public sealed class CrewDebugView : MonoBehaviour
 	{
 		if (!Application.isFocused) return;
 
-		Keyboard keyboard = Keyboard.current;
+		ReadKeys(Keyboard.current);
+	}
+
+	private void ReadKeys(Keyboard keyboard)
+	{
+		if (!outputEnabled || testMode != null && !testMode.CanReadInterior) return;
+
 		if (keyboard != null)
 		{
 			if (keyboard.f6Key.wasPressedThisFrame) ShowDebug = !ShowDebug;
@@ -105,6 +113,7 @@ public sealed class CrewDebugView : MonoBehaviour
 
 	public void SetObserving(bool enabled)
 	{
+		if (enabled && (!outputEnabled || !isActiveAndEnabled)) return;
 		if (IsObserving == enabled || playerView == null || observer == null) return;
 
 		IsObserving = enabled;
@@ -115,6 +124,8 @@ public sealed class CrewDebugView : MonoBehaviour
 			playerView.enabled = false;
 			if (playerAudio != null) playerAudio.enabled = false;
 			observer.enabled = true;
+			playerView.tag = "Untagged";
+			observer.tag = "MainCamera";
 			if (observerAudio != null) observerAudio.enabled = savedAudio;
 			ShowDebug = true;
 			UpdateFollow();
@@ -122,10 +133,33 @@ public sealed class CrewDebugView : MonoBehaviour
 		else
 		{
 			observer.enabled = false;
+			observer.tag = "Untagged";
 			if (observerAudio != null) observerAudio.enabled = false;
-			playerView.enabled = savedView;
-			if (playerAudio != null) playerAudio.enabled = savedAudio;
+			playerView.enabled = outputEnabled && savedView;
+			playerView.tag = playerView.enabled ? "MainCamera" : "Untagged";
+			if (playerAudio != null) playerAudio.enabled = outputEnabled && savedAudio;
 		}
+	}
+
+	public void SetOutput(bool enabled)
+	{
+		SetObserving(false);
+		outputEnabled = enabled;
+		if (observer != null)
+		{
+			observer.enabled = false;
+			observer.tag = "Untagged";
+		}
+		if (observerAudio != null) observerAudio.enabled = false;
+		if (playerView != null)
+		{
+			playerView.enabled = enabled;
+			playerView.tag = enabled ? "MainCamera" : "Untagged";
+		}
+		if (playerAudio != null) playerAudio.enabled = enabled;
+		if (sightLines != null) sightLines.enabled = false;
+		if (selectionRing != null) selectionRing.enabled = false;
+		if (retainRing != null) retainRing.enabled = false;
 	}
 
 	private void OnDisable()
