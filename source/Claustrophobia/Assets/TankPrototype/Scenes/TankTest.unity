@@ -3429,6 +3429,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 954159532f2c448ca83b1d4bf2463ebf, type: 3}
+--- !u!114 &991248471 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 554236047277161930, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
+  m_PrefabInstance: {fileID: 760878715}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e88633132082fa43bc85954f190e00a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CrewSeats
+--- !u!114 &991248472 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4242445332984875731, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
+  m_PrefabInstance: {fileID: 760878715}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecab4dd6225947f6ab0e42460bc55baa, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankCrew
 --- !u!1 &998917131
 GameObject:
   m_ObjectHideFlags: 0
@@ -4693,9 +4715,21 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: seats
+      value:
+      objectReference: {fileID: 991248471}
+    - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: testMode
       value:
       objectReference: {fileID: 1395586562}
+    - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: interaction
+      value:
+      objectReference: {fileID: 760878721}
+    - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: crew
+      value:
+      objectReference: {fileID: 991248472}
     - target: {fileID: 4479740928687001152, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_LocalPosition.y
       value: 6.98
@@ -4768,6 +4802,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7685796844441804652, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: crew
+      value:
+      objectReference: {fileID: 991248472}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4795,17 +4833,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 994be19240c392646a5291b576ee3aee, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::TankCrewCameras
---- !u!114 &1304813833 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
-  m_PrefabInstance: {fileID: 1304813830}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cc96d1b456c43cabe46665c2cc13ea2, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::TankInput
 --- !u!1001 &1308171173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4961,11 +4988,9 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::TankTestMode
   startMode: 0
-  tankInput: {fileID: 1304813833}
   tankCameras: {fileID: 1304813832}
   tankHud: {fileID: 1304813831}
   look: {fileID: 446121451}
-  interaction: {fileID: 760878721}
   debugView: {fileID: 760878717}
   interiorHud: {fileID: 1113783490}
   modeLabel: {fileID: 1654854125}

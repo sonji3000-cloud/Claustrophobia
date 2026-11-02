@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>Requests a seat and applies an approved position and local role together.</summary>
 [DisallowMultipleComponent]
@@ -10,7 +9,6 @@ public sealed class CrewSeats : MonoBehaviour
 	[SerializeField] private TankCrew crew;
 	[SerializeField] private CrewLook look;
 	[SerializeField] private CrewDebugView debugView;
-	[SerializeField] private TankTestMode testMode;
 	[SerializeField] private Transform driver;
 	[SerializeField] private Transform gunner;
 	[SerializeField] private Transform commander;
@@ -46,22 +44,6 @@ public sealed class CrewSeats : MonoBehaviour
 	private void OnEnable()
 	{
 		if (started && localSeats) RequestSeat(startSeat);
-	}
-
-	private void Update()
-	{
-		if (!Application.isFocused) return;
-
-		ReadKeys(Keyboard.current);
-	}
-
-	private void ReadKeys(Keyboard keyboard)
-	{
-		if (keyboard == null || testMode != null && !testMode.CanReadInterior) return;
-
-		if (keyboard.digit1Key.wasPressedThisFrame) RequestSeat(TankCrew.Role.Driver);
-		else if (keyboard.digit2Key.wasPressedThisFrame) RequestSeat(TankCrew.Role.Gunner);
-		else if (keyboard.digit3Key.wasPressedThisFrame) RequestSeat(TankCrew.Role.Commander);
 	}
 
 	/// <summary>Returns whether a request was accepted for processing, not whether it was approved.</summary>

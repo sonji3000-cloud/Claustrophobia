@@ -3,12 +3,18 @@ using UnityEngine.InputSystem;
 
 /// <summary>Translates prototype keyboard and mouse input into TankControl requests.</summary>
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(20)]
 [RequireComponent(typeof(TankControl))]
 public sealed class TankInput : MonoBehaviour
 {
 	[SerializeField, Min(0f)] private float leverChangeRate = 1f;
 	[SerializeField] private TankControl control;
 	[SerializeField] private TankTestMode testMode;
+	[SerializeField] private CrewSeats seats;
+	[SerializeField] private CrewInteract interaction;
+
+	private bool inputReady;
+	private bool spaceHeld;
 
 	private void Awake()
 	{
@@ -17,19 +23,37 @@ public sealed class TankInput : MonoBehaviour
 
 	private void Update()
 	{
-		if (!Application.isFocused) return;
+		Keyboard keyboard = Keyboard.current;
+		if (!Application.isFocused || keyboard == null)
+		{
+			if (inputReady) SuspendInput();
+			inputReady = false;
+			return;
+		}
 
-		ReadKeys(Keyboard.current);
+		if (!inputReady)
+		{
+			spaceHeld = keyboard.spaceKey.isPressed;
+			if (keyboard.anyKey.isPressed) return;
+
+			inputReady = true;
+		}
+
+		ReadKeys(keyboard);
 	}
 
 	private void ReadKeys(Keyboard keyboard)
 	{
+		ReadSeat(keyboard);
+
+		if (interaction != null && interaction.isActiveAndEnabled) interaction.RefreshSelection();
+		ReadUse(keyboard);
+
+		// Keep legacy exterior tank tests until driving is connected to device ownership.
 		if (control == null || !control.isActiveAndEnabled
-			|| testMode != null && !testMode.CanReadExterior) return;
+			|| testMode != null && testMode.IsInterior) return;
 
 		float dt = Time.deltaTime;
-
-		ReadRole(keyboard);
 
 		// Apply aim before a weapon request so a shot uses this frame's direction.
 		ReadAim(keyboard, dt);
@@ -41,8 +65,8 @@ public sealed class TankInput : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (control == null || !control.isActiveAndEnabled || !Application.isFocused
-			|| testMode != null && !testMode.CanReadExterior) return;
+		if (!inputReady || control == null || !control.isActiveAndEnabled || !Application.isFocused
+			|| testMode != null && testMode.IsInterior) return;
 
 		Mouse mouse = Mouse.current;
 		if (mouse == null || !mouse.rightButton.isPressed) return;
@@ -52,16 +76,34 @@ public sealed class TankInput : MonoBehaviour
 
 	public void SuspendInput()
 	{
+		if (interaction != null) interaction.StopUse();
 		if (control != null) control.ApplyAim(0f, 0f, 0f);
 	}
 
-	private void ReadRole(Keyboard keyboard)
+	private void ReadSeat(Keyboard keyboard)
 	{
-		if (keyboard == null) return;
+		if (seats == null || !seats.isActiveAndEnabled) return;
 
-		if (keyboard.digit1Key.wasPressedThisFrame) control.SetTestRole(TankCrew.Role.Driver);
-		else if (keyboard.digit2Key.wasPressedThisFrame) control.SetTestRole(TankCrew.Role.Gunner);
-		else if (keyboard.digit3Key.wasPressedThisFrame) control.SetTestRole(TankCrew.Role.Commander);
+		if (keyboard.digit1Key.wasPressedThisFrame) seats.RequestSeat(TankCrew.Role.Driver);
+		else if (keyboard.digit2Key.wasPressedThisFrame) seats.RequestSeat(TankCrew.Role.Gunner);
+		else if (keyboard.digit3Key.wasPressedThisFrame) seats.RequestSeat(TankCrew.Role.Commander);
+	}
+
+	private void ReadUse(Keyboard keyboard)
+	{
+		bool pressed = keyboard.spaceKey.isPressed && !spaceHeld;
+		spaceHeld = keyboard.spaceKey.isPressed;
+		if (interaction == null || !interaction.isActiveAndEnabled) return;
+
+		if (keyboard.escapeKey.wasPressedThisFrame)
+		{
+			interaction.StopUse();
+			return;
+		}
+		if (!pressed) return;
+
+		if (interaction.Active != null) interaction.StopUse();
+		else interaction.TryUse(interaction.Selected);
 	}
 
 	private void ReadAim(Keyboard keyboard, float dt)
@@ -89,12 +131,11 @@ public sealed class TankInput : MonoBehaviour
 		if (keyboard == null) return;
 
 		bool hasPreset = TryReadPreset(keyboard, out Vector2 preset);
-		bool neutral = keyboard.spaceKey.isPressed;
 		float step = leverChangeRate * dt;
 		float left = control.LeftLever;
 		float right = control.RightLever;
 
-		if (neutral || keyboard.qKey.isPressed) left = 0f;
+		if (keyboard.qKey.isPressed) left = 0f;
 		else if (hasPreset) left = preset.x;
 		else
 		{
@@ -102,7 +143,7 @@ public sealed class TankInput : MonoBehaviour
 			left += axis * step;
 		}
 
-		if (neutral || keyboard.uKey.isPressed) right = 0f;
+		if (keyboard.uKey.isPressed) right = 0f;
 		else if (hasPreset) right = preset.y;
 		else
 		{
@@ -138,5 +179,22 @@ public sealed class TankInput : MonoBehaviour
 		else if (keyboard.f2Key.wasPressedThisFrame) control.SwitchView(1);
 		else if (keyboard.f3Key.wasPressedThisFrame) control.SwitchView(2);
 		else if (keyboard.f4Key.wasPressedThisFrame) control.SwitchView(3);
+	}
+
+	private void OnEnable()
+	{
+		inputReady = false;
+	}
+
+	private void OnApplicationFocus(bool focused)
+	{
+		inputReady = false;
+		if (!focused) SuspendInput();
+	}
+
+	private void OnDisable()
+	{
+		inputReady = false;
+		SuspendInput();
 	}
 }

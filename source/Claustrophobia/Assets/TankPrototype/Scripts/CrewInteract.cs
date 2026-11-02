@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [DisallowMultipleComponent]
 [DefaultExecutionOrder(10)]
@@ -21,7 +20,6 @@ public sealed class CrewInteract : MonoBehaviour
 	[SerializeField] private TankCrew crew;
 	[SerializeField] private CrewSeats seats;
 	[SerializeField] private CrewDebugView debugView;
-	[SerializeField] private TankTestMode testMode;
 	[SerializeField] private CrewDevice[] devices = Array.Empty<CrewDevice>();
 	[SerializeField, Min(0.1f)] private float reach = 2f;
 	[Tooltip("Radius as a fraction of the camera's pixel height.")]
@@ -33,7 +31,6 @@ public sealed class CrewInteract : MonoBehaviour
 	private Candidate[] candidates;
 	private CrewDevice highlighted;
 	private TankCrew.Role activeRole;
-	private bool spaceHeld;
 	private RaycastHit centerHit;
 
 	public Camera View => view;
@@ -46,6 +43,9 @@ public sealed class CrewInteract : MonoBehaviour
 	public CrewDevice Selected { get; private set; }
 	public CrewDevice Active { get; private set; }
 	public bool IsObserving => debugView != null && debugView.IsObserving;
+	public bool CanSelect => isActiveAndEnabled && view != null && view.gameObject.activeInHierarchy
+		&& (view.isActiveAndEnabled || IsObserving);
+
 	public event Action<CrewDevice, bool> UseChanged;
 
 	private void Awake()
@@ -56,26 +56,18 @@ public sealed class CrewInteract : MonoBehaviour
 	private void OnEnable()
 	{
 		if (seats != null) seats.SeatApplied += OnSeatApplied;
-		spaceHeld = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
-	}
-
-	private void LateUpdate()
-	{
-		RefreshSelection();
-		if (Application.isFocused) ReadKeys(Keyboard.current);
-		else spaceHeld = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
 	}
 
 	public void RefreshSelection()
 	{
-		if (testMode != null && !testMode.IsInterior)
+		if (Active != null && (!Active.CanUse(crew) || !HasTarget(Active)
+			|| Active.User != this || crew.CurrentRole != activeRole)) StopUse();
+
+		if (!CanSelect)
 		{
 			ClearSelection();
 			return;
 		}
-
-		if (Active != null && (!Active.CanUse(crew) || !HasTarget(Active)
-			|| Active.User != this || crew.CurrentRole != activeRole)) StopUse();
 
 		CrewDevice best = null;
 		float bestOffset = float.PositiveInfinity;
@@ -241,33 +233,10 @@ public sealed class CrewInteract : MonoBehaviour
 		result = new Candidate { Reason = Reason.Ready, Point = surface.point, Offset = offset, Distance = surface.distance };
 	}
 
-	private void ReadKeys(Keyboard keyboard)
-	{
-		if (keyboard == null) return;
-		if (testMode != null && !testMode.CanReadInterior)
-		{
-			spaceHeld = keyboard.spaceKey.isPressed;
-			return;
-		}
-
-		bool pressed = keyboard.spaceKey.isPressed && !spaceHeld;
-		spaceHeld = keyboard.spaceKey.isPressed;
-		if (keyboard.escapeKey.wasPressedThisFrame)
-		{
-			StopUse();
-			return;
-		}
-		if (!pressed) return;
-
-		if (Active != null) StopUse();
-		else TryUse(Selected);
-	}
-
 	/// <summary>Begins local use of the currently selected device after revalidation.</summary>
 	public bool TryUse(CrewDevice device)
 	{
-		if (!isActiveAndEnabled || Active != null || device == null
-			|| testMode != null && !testMode.IsInterior) return false;
+		if (!CanSelect || Active != null || device == null) return false;
 
 		RefreshSelection();
 		if (Selected != device || !device.TryBegin(this)) return false;
@@ -294,9 +263,13 @@ public sealed class CrewInteract : MonoBehaviour
 
 	public void ClearSelection()
 	{
-		StopUse();
 		Selected = null;
 		SetHighlight(null);
+
+		if (candidates == null) return;
+
+		for (int i = 0; i < candidates.Length; i++)
+			candidates[i] = new Candidate { Reason = Reason.Disabled, Offset = float.PositiveInfinity };
 	}
 
 	private void SetHighlight(CrewDevice device)
@@ -329,6 +302,7 @@ public sealed class CrewInteract : MonoBehaviour
 	private void OnDisable()
 	{
 		if (seats != null) seats.SeatApplied -= OnSeatApplied;
+		StopUse();
 		ClearSelection();
 	}
 }

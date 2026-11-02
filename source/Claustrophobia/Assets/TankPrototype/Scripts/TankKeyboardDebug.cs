@@ -13,10 +13,10 @@ public sealed class TankKeyboardDebug : MonoBehaviour
     [SerializeField] private TankGun gun;
     [SerializeField] private TankHealth targetHealth;
     [SerializeField] private TankBallistics ballistics;
+	[SerializeField] private TankCrew crew;
     [SerializeField] private Vector3 cameraOffset = new Vector3(12f, 15f, -17f);
 
     private Rigidbody body;
-    private TankCrew crew;
     private GUIStyle valueStyle;
     // Update samples the completed physics state, independently of motor's write.
     public float CurrentForwardSpeed { get; private set; }
@@ -26,7 +26,7 @@ public sealed class TankKeyboardDebug : MonoBehaviour
     {
         if (motor == null) motor = GetComponent<TankMotor>();
         body = GetComponent<Rigidbody>();
-        crew = GetComponent<TankCrew>();
+		if (crew == null) crew = GetComponent<TankCrew>();
         if (aim == null) aim = GetComponent<TankAim>();
         if (gun == null) gun = GetComponent<TankGun>();
         if (ballistics == null) ballistics = GetComponent<TankBallistics>();

@@ -9,7 +9,6 @@ public sealed class CrewDebugView : MonoBehaviour
 	[SerializeField] private AudioListener playerAudio;
 	[SerializeField] private AudioListener observerAudio;
 	[SerializeField] private CrewInteract interaction;
-	[SerializeField] private TankTestMode testMode;
 	[SerializeField] private LineRenderer sightLines;
 	[SerializeField] private LineRenderer selectionRing;
 	[SerializeField] private LineRenderer retainRing;
@@ -35,7 +34,7 @@ public sealed class CrewDebugView : MonoBehaviour
 
 	private void ReadKeys(Keyboard keyboard)
 	{
-		if (!outputEnabled || testMode != null && !testMode.CanReadInterior) return;
+		if (!outputEnabled) return;
 
 		if (keyboard != null)
 		{
