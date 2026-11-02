@@ -1,3 +1,4 @@
+using Fusion;
 using UnityEngine;
 
 /// <summary>Routes tank action and observation requests to their owning components.</summary>
@@ -16,6 +17,9 @@ public sealed class TankControl : MonoBehaviour
 
 	private CrewInteract driver;
 	private TankCrew.Role lastRole;
+
+	private TankCrewNetworkInput pendingInput; // 공유할 데이터
+
 
 	public float LeftLever { get; private set; }
 	public float RightLever { get; private set; }
@@ -41,7 +45,10 @@ public sealed class TankControl : MonoBehaviour
 
 	private void Start()
 	{
-		RefreshCrew();
+        // 이동 테스트용: 로컬 역할을 조종수로 강제 지정
+        SetTestRole(TankCrew.Role.Driver);
+
+        RefreshCrew();
 	}
 
 	private void Update()
@@ -52,7 +59,10 @@ public sealed class TankControl : MonoBehaviour
 		if (gun != null) gun.TickRecovery();
 	}
 
-	private void FixedUpdate()
+	
+
+
+    private void FixedUpdate()
 	{
 		// Validate before TankMotor consumes the next physics command, including destroyed users.
 		if (!ReferenceEquals(driver, null) && !CanDrive(driver)) StopDrive();
@@ -76,12 +86,35 @@ public sealed class TankControl : MonoBehaviour
 	public void SetLeverInputs(CrewInteract user, float left, float right)
 	{
 		if (!CanDrive(user)) return;
+    }
+
+    // Local prototype shortcut; gameplay observation requests never assign roles.
+    public void SetTestRole(TankCrew.Role role)
+	{
+		if (!isActiveAndEnabled || crew == null || !crew.isActiveAndEnabled) return;
+
+		crew.SetRole(role);
+
+        Debug.Log(
+        $"[ROLE CHANGE] {gameObject.name} " +
+        $"ID={GetEntityId()} " +
+        $"Role={crew.CurrentRole}"
+    );
+
+        RefreshCrew();
+	}
+
+	public void SetLeverInputs(float left, float right)
+	{
+		if (!isActiveAndEnabled || crew == null || !crew.CanDrive)
+			return;
 
 		LeftLever = Mathf.Clamp(left, -1f, 1f);
 		RightLever = Mathf.Clamp(right, -1f, 1f);
-		motor.SetLeverInputs(LeftLever, RightLever);
-	}
 
+        pendingInput.LeftLever = LeftLever;
+        pendingInput.RightLever = RightLever;
+    }
 	public void EndDrive(CrewInteract user)
 	{
 		if (driver != user) return;
@@ -122,13 +155,14 @@ public sealed class TankControl : MonoBehaviour
 		StopDrive();
 	}
 
-	public void ApplyAim(float turret, float barrel, float dt)
+	
+
+    public void ApplyAim(float turret, float barrel, float dt)
 	{
 		if (!isActiveAndEnabled || crew == null || !crew.CanAim || aim == null) return;
 
-		RefreshCrew();
-		aim.ApplyInput(turret, barrel, dt);
-	}
+        pendingInput.Aim = new Vector2(turret, barrel);
+    }
 
 	public bool RequestInsert()
 	{
@@ -150,9 +184,12 @@ public sealed class TankControl : MonoBehaviour
 
 	public bool RequestFire()
 	{
-		return isActiveAndEnabled && crew != null && crew.CanFire
-			&& gun != null && gun.RequestFire();
-	}
+        if (crew == null || !crew.CanFire)
+            return false;
+
+        pendingInput.Buttons.Set(TankInputButton.Fire, true);
+        return true;
+    }
 
 	public void SwitchView(int station)
 	{
@@ -185,4 +222,16 @@ public sealed class TankControl : MonoBehaviour
 		if (crew == null || !crew.CanView((int)cameras.CurrentStation))
 			cameras.ExitObservation();
 	}
+
+    public void SubmitNetworkInput(NetworkInput input)
+    {
+        Debug.Log(
+        $"[SUBMIT] ID={GetEntityId()} " +
+        $"[SUBMIT] Role={crew.CurrentRole}, " +
+        $"L={pendingInput.LeftLever:F2}, " +
+        $"R={pendingInput.RightLever:F2}"
+    );
+
+        input.Set(pendingInput);
+    }
 }
