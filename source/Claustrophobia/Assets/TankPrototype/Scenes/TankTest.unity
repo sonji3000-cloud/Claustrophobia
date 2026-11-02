@@ -931,6 +931,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 156535441}
   m_CullTransparentMesh: 1
+--- !u!1 &163930601 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8302659691470270362, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
+  m_PrefabInstance: {fileID: 760878715}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &163930603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163930601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf1aba929902d904b9402bb6d08fd887, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankLever
+  control: {fileID: 1304813842}
+  handle: {fileID: 1795598542}
+  right: 0
+  pivot: {x: 0, y: 0.5497524, z: 0}
+  angle: 8
 --- !u!1001 &194849918
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2797,6 +2819,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1135668219597729944, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1795598546}
+    - targetCorrespondingSourceObject: {fileID: 8302659691470270362, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 163930603}
+    - targetCorrespondingSourceObject: {fileID: 1510305473927949774, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1685075973}
     - targetCorrespondingSourceObject: {fileID: 1597258711267061560, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 760878726}
@@ -5133,6 +5161,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 994be19240c392646a5291b576ee3aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankCrewCameras
+--- !u!114 &1304813842 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+  m_PrefabInstance: {fileID: 1304813830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6b98401c85b4c5e9ae34127ea8d176f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankControl
 --- !u!1001 &1308171173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6576,6 +6615,28 @@ RectTransform:
   m_AnchoredPosition: {x: 20, y: -363}
   m_SizeDelta: {x: 650, y: 24}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!1 &1685075971 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1510305473927949774, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
+  m_PrefabInstance: {fileID: 760878715}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1685075973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1685075971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf1aba929902d904b9402bb6d08fd887, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankLever
+  control: {fileID: 1304813842}
+  handle: {fileID: 1795598541}
+  right: 1
+  pivot: {x: 0, y: 0.5497524, z: 0}
+  angle: 8
 --- !u!1 &1687955324
 GameObject:
   m_ObjectHideFlags: 0
