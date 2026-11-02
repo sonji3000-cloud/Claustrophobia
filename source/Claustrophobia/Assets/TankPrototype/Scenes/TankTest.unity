@@ -4730,6 +4730,10 @@ PrefabInstance:
       propertyPath: crew
       value:
       objectReference: {fileID: 991248472}
+    - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: driveDevice
+      value:
+      objectReference: {fileID: 760878720}
     - target: {fileID: 4479740928687001152, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_LocalPosition.y
       value: 6.98

@@ -49,16 +49,16 @@ public sealed class TankInput : MonoBehaviour
 		if (interaction != null && interaction.isActiveAndEnabled) interaction.RefreshSelection();
 		ReadUse(keyboard);
 
-		// Keep legacy exterior tank tests until driving is connected to device ownership.
-		if (control == null || !control.isActiveAndEnabled
-			|| testMode != null && testMode.IsInterior) return;
+		if (control == null || !control.isActiveAndEnabled) return;
 
 		float dt = Time.deltaTime;
+		ReadLevers(keyboard, dt);
+
+		if (testMode != null && testMode.IsInterior) return;
 
 		// Apply aim before a weapon request so a shot uses this frame's direction.
 		ReadAim(keyboard, dt);
 		ReadWeapon(keyboard);
-		ReadLevers(keyboard, dt);
 
 		ReadView(keyboard);
 	}
@@ -77,7 +77,11 @@ public sealed class TankInput : MonoBehaviour
 	public void SuspendInput()
 	{
 		if (interaction != null) interaction.StopUse();
-		if (control != null) control.ApplyAim(0f, 0f, 0f);
+		if (control != null)
+		{
+			control.EndDrive(interaction);
+			control.ApplyAim(0f, 0f, 0f);
+		}
 	}
 
 	private void ReadSeat(Keyboard keyboard)
@@ -128,7 +132,7 @@ public sealed class TankInput : MonoBehaviour
 
 	private void ReadLevers(Keyboard keyboard, float dt)
 	{
-		if (keyboard == null) return;
+		if (keyboard == null || !control.CanDrive(interaction)) return;
 
 		bool hasPreset = TryReadPreset(keyboard, out Vector2 preset);
 		float step = leverChangeRate * dt;
@@ -151,7 +155,7 @@ public sealed class TankInput : MonoBehaviour
 			right += axis * step;
 		}
 
-		control.SetLeverInputs(left, right);
+		control.SetLeverInputs(interaction, left, right);
 	}
 
 	private static bool TryReadPreset(Keyboard keyboard, out Vector2 levers)

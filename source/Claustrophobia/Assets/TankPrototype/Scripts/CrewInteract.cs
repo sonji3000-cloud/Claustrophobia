@@ -245,6 +245,8 @@ public sealed class CrewInteract : MonoBehaviour
 		activeRole = crew.CurrentRole;
 		SetHighlight(device);
 		device.ReportUse(this, true);
+		if (Active != device) return false;
+
 		UseChanged?.Invoke(device, true);
 		return Active == device;
 	}

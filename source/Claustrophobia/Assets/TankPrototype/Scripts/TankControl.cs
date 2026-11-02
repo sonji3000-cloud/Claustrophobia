@@ -2,6 +2,7 @@ using UnityEngine;
 
 /// <summary>Routes tank action and observation requests to their owning components.</summary>
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(-10)]
 [RequireComponent(typeof(TankMotor))]
 [RequireComponent(typeof(TankCrew))]
 public sealed class TankControl : MonoBehaviour
@@ -11,7 +12,9 @@ public sealed class TankControl : MonoBehaviour
 	[SerializeField] private TankGun gun;
 	[SerializeField] private TankCrewCameras cameras;
 	[SerializeField] private TankCrew crew;
+	[SerializeField] private CrewDevice driveDevice;
 
+	private CrewInteract driver;
 	private TankCrew.Role lastRole;
 
 	public float LeftLever { get; private set; }
@@ -25,8 +28,15 @@ public sealed class TankControl : MonoBehaviour
 		if (cameras == null) cameras = GetComponent<TankCrewCameras>();
 		if (crew == null) crew = GetComponent<TankCrew>();
 
-		LeftLever = RightLever = 0f;
-		motor.SetLeverInputs(0f, 0f);
+		StopDrive();
+	}
+
+	private void OnEnable()
+	{
+		if (driveDevice == null) return;
+
+		driveDevice.UseChanged += OnDriveUse;
+		if (driveDevice.User != null) driveDevice.User.StopUse();
 	}
 
 	private void Start()
@@ -42,22 +52,74 @@ public sealed class TankControl : MonoBehaviour
 		if (gun != null) gun.TickRecovery();
 	}
 
-	// Local prototype shortcut; gameplay observation requests never assign roles.
-	public void SetTestRole(TankCrew.Role role)
+	private void FixedUpdate()
 	{
-		if (!isActiveAndEnabled || crew == null || !crew.isActiveAndEnabled) return;
-
-		crew.SetRole(role);
-		RefreshCrew();
+		// Validate before TankMotor consumes the next physics command, including destroyed users.
+		if (!ReferenceEquals(driver, null) && !CanDrive(driver)) StopDrive();
 	}
 
-	public void SetLeverInputs(float left, float right)
+	public bool TryBeginDrive(CrewInteract user)
 	{
-		if (!isActiveAndEnabled || crew == null || !crew.CanDrive) return;
+		if (!CanUseDrive(user) || driver != null && driver != user) return false;
+		if (driver == user) return true;
+
+		StopDrive();
+		driver = user;
+		return true;
+	}
+
+	public bool CanDrive(CrewInteract user)
+	{
+		return user != null && driver == user && CanUseDrive(user);
+	}
+
+	public void SetLeverInputs(CrewInteract user, float left, float right)
+	{
+		if (!CanDrive(user)) return;
 
 		LeftLever = Mathf.Clamp(left, -1f, 1f);
 		RightLever = Mathf.Clamp(right, -1f, 1f);
 		motor.SetLeverInputs(LeftLever, RightLever);
+	}
+
+	public void EndDrive(CrewInteract user)
+	{
+		if (driver != user) return;
+
+		StopDrive();
+	}
+
+	private bool CanUseDrive(CrewInteract user)
+	{
+		return isActiveAndEnabled && motor != null && motor.isActiveAndEnabled
+			&& user != null && user.isActiveAndEnabled
+			&& user.Crew != null && user.Crew.CanDrive && driveDevice != null
+			&& driveDevice.CanUse(user.Crew) && driveDevice.User == user && user.Active == driveDevice;
+	}
+
+	private void StopDrive()
+	{
+		CrewInteract user = driver;
+		driver = null;
+		LeftLever = RightLever = 0f;
+		if (motor != null) motor.SetLeverInputs(0f, 0f);
+
+		if (user != null && user.Active == driveDevice) user.StopUse();
+	}
+
+	private void OnDriveUse(CrewInteract user, bool active)
+	{
+		if (active)
+		{
+			if (!TryBeginDrive(user)) user.StopUse();
+		}
+		else EndDrive(user);
+	}
+
+	private void OnDisable()
+	{
+		if (driveDevice != null) driveDevice.UseChanged -= OnDriveUse;
+		StopDrive();
 	}
 
 	public void ApplyAim(float turret, float barrel, float dt)
