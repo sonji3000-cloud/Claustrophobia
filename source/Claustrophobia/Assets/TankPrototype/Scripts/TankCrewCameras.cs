@@ -30,8 +30,16 @@ public sealed class TankCrewCameras : MonoBehaviour
 	public CrewStation CurrentStation { get; private set; }
 	public float CommanderYaw => commanderYaw;
 	public float CommanderPitch => commanderPitch;
-	public Camera ActiveCamera => CurrentStation == CrewStation.ThirdPerson && thirdPersonCamera == null
-		? observationCamera : GetCamera(CurrentStation);
+	public Camera ActiveCamera
+	{
+		get
+		{
+			Camera camera = CurrentStation == CrewStation.ThirdPerson && thirdPersonCamera == null
+				? observationCamera : GetCamera(CurrentStation);
+
+			return camera != null && camera.targetTexture == null ? camera : null;
+		}
+	}
 
 	private Camera GetCamera(CrewStation station)
 	{
@@ -68,6 +76,7 @@ public sealed class TankCrewCameras : MonoBehaviour
 			if (observationListener != null) observationListener.enabled = false;
 		}
 		SwitchView((int)startingStation);
+		if (ActiveCamera == null) ExitObservation();
 	}
 
 	public void Look(Vector2 delta)
@@ -86,7 +95,7 @@ public sealed class TankCrewCameras : MonoBehaviour
 	{
 		if (station < 0 || station > 3) return;
 		Camera selected = GetCamera((CrewStation)station);
-		if (selected == null) return;
+		if (selected == null || selected.targetTexture != null) return;
 		if (observationCamera != null) observationCamera.enabled = false;
 		if (observationListener != null) observationListener.enabled = false;
 		CurrentStation = (CrewStation)station;
@@ -122,6 +131,13 @@ public sealed class TankCrewCameras : MonoBehaviour
 		{
 			Camera camera = cameras[i];
 			if (camera == null) continue;
+			if (camera.targetTexture != null)
+			{
+				// The monitor owns feed activation independently of the full-screen view.
+				camera.tag = "Untagged";
+				if (listeners[i] != null) listeners[i].enabled = false;
+				continue;
+			}
 
 			bool active = camera == selected;
 			camera.enabled = active;

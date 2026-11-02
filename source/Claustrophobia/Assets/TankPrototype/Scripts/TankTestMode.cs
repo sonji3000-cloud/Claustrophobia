@@ -68,7 +68,7 @@ public sealed class TankTestMode : MonoBehaviour
 		if (tankHud != null) tankHud.enabled = !IsInterior;
 		if (modeLabel != null) modeLabel.text = IsInterior
 			? "INTERIOR [F9]  |  F8 Exterior  |  1/2/3 Seat  |  Space Use  |  F7 Rear view"
-			: "EXTERIOR [F8]  |  F9 Interior  |  1/2/3 Seat  |  Space / Esc Exit device  |  F1-F4 View";
+			: "EXTERIOR [F8]  |  F9 Interior  |  1/2/3 Seat  |  Space / Esc Exit device  |  F2-F4 View";
 	}
 
 	private void OnDisable()

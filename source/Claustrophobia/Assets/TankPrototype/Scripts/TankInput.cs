@@ -179,8 +179,7 @@ public sealed class TankInput : MonoBehaviour
 	{
 		if (keyboard == null) return;
 
-		if (keyboard.f1Key.wasPressedThisFrame) control.SwitchView(0);
-		else if (keyboard.f2Key.wasPressedThisFrame) control.SwitchView(1);
+		if (keyboard.f2Key.wasPressedThisFrame) control.SwitchView(1);
 		else if (keyboard.f3Key.wasPressedThisFrame) control.SwitchView(2);
 		else if (keyboard.f4Key.wasPressedThisFrame) control.SwitchView(3);
 	}

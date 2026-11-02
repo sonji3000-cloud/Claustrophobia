@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>Routes tank action and observation requests to their owning components.</summary>
@@ -19,6 +20,9 @@ public sealed class TankControl : MonoBehaviour
 
 	public float LeftLever { get; private set; }
 	public float RightLever { get; private set; }
+	public bool IsDriving => CanDrive(driver);
+
+	public event Action DriveChanged;
 
 	private void Awake()
 	{
@@ -65,7 +69,8 @@ public sealed class TankControl : MonoBehaviour
 
 		StopDrive();
 		driver = user;
-		return true;
+		DriveChanged?.Invoke();
+		return CanDrive(user);
 	}
 
 	public bool CanDrive(CrewInteract user)
@@ -100,11 +105,13 @@ public sealed class TankControl : MonoBehaviour
 	private void StopDrive()
 	{
 		CrewInteract user = driver;
+		bool hadDriver = !ReferenceEquals(user, null);
 		driver = null;
 		LeftLever = RightLever = 0f;
 		if (motor != null) motor.SetLeverInputs(0f, 0f);
 
 		if (user != null && user.Active == driveDevice) user.StopUse();
+		if (hadDriver) DriveChanged?.Invoke();
 	}
 
 	private void OnDriveUse(CrewInteract user, bool active)
