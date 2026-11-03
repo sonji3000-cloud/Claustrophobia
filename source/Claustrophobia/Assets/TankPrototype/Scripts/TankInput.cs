@@ -18,7 +18,7 @@ public sealed class TankInput : MonoBehaviour
 
 	private void Awake()
 	{
-		if (control == null) control = GetComponent<TankControl>();
+		control = GetComponent<TankControl>();
 	}
 
 	private void Update()

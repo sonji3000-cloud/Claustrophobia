@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -171,7 +171,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &16295214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -261,7 +261,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -563,7 +563,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.2}
@@ -620,7 +620,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -643,7 +643,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &140831311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -654,7 +654,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -715,7 +715,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -738,7 +738,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &144052341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -749,7 +749,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -828,7 +828,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -903,7 +903,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -1074,7 +1074,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1097,7 +1097,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &208444565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1108,7 +1108,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -1320,7 +1320,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1343,7 +1343,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &285001873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1354,7 +1354,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -1406,7 +1406,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 994be19240c392646a5291b576ee3aee, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankCrewCameras
   driverCamera: {fileID: 883143243}
   gunnerCamera: {fileID: 540616799}
@@ -1520,8 +1520,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -1658,7 +1658,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.4}
@@ -1856,8 +1856,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
   m_CustomShadowLayers: 0
@@ -1884,7 +1884,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 466602cde0d8d2f438f16ab2cb6edfcc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewLook
 --- !u!1 &504125926
 GameObject:
@@ -1933,7 +1933,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -1990,7 +1990,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2013,7 +2013,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &535040115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2024,7 +2024,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -2108,8 +2108,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -2198,6 +2198,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1597258711267061560, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
   m_PrefabInstance: {fileID: 760878715}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &599344619 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6390709329587793397, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+  m_PrefabInstance: {fileID: 1304813830}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &648848319
 GameObject:
   m_ObjectHideFlags: 0
@@ -2245,7 +2250,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -2302,7 +2307,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2325,7 +2330,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &655336880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2336,7 +2341,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -2415,7 +2420,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -2510,15 +2515,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 554236047277161930, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: gunner
-      value:
+      value: 
       objectReference: {fileID: 1808661659}
     - target: {fileID: 554236047277161930, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: testMode
-      value:
+      value: 
       objectReference: {fileID: 1395586562}
     - target: {fileID: 554236047277161930, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: commander
-      value:
+      value: 
       objectReference: {fileID: 1808661658}
     - target: {fileID: 2251206449215140849, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2570,91 +2575,91 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4257832135518816514, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: testMode
-      value:
+      value: 
       objectReference: {fileID: 1395586562}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: testMode
-      value:
+      value: 
       objectReference: {fileID: 1395586562}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[0]'
-      value:
+      value: 
       objectReference: {fileID: 1808661676}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[1]'
-      value:
+      value: 
       objectReference: {fileID: 1808661675}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[2]'
-      value:
+      value: 
       objectReference: {fileID: 1808661674}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[3]'
-      value:
+      value: 
       objectReference: {fileID: 1808661673}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[4]'
-      value:
+      value: 
       objectReference: {fileID: 1808661672}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[5]'
-      value:
+      value: 
       objectReference: {fileID: 1808661671}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[6]'
-      value:
+      value: 
       objectReference: {fileID: 1808661670}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[7]'
-      value:
+      value: 
       objectReference: {fileID: 1808661669}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[8]'
-      value:
+      value: 
       objectReference: {fileID: 1808661668}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[9]'
-      value:
+      value: 
       objectReference: {fileID: 1808661667}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[10]'
-      value:
+      value: 
       objectReference: {fileID: 1808661666}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[11]'
-      value:
+      value: 
       objectReference: {fileID: 1808661665}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[12]'
-      value:
+      value: 
       objectReference: {fileID: 1808661664}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[13]'
-      value:
+      value: 
       objectReference: {fileID: 1808661663}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[14]'
-      value:
+      value: 
       objectReference: {fileID: 1808661662}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[15]'
-      value:
+      value: 
       objectReference: {fileID: 1808661661}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[16]'
-      value:
+      value: 
       objectReference: {fileID: 1808661660}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[17]'
-      value:
+      value: 
       objectReference: {fileID: 760878720}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[18]'
-      value:
+      value: 
       objectReference: {fileID: 760878719}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'devices.Array.data[19]'
-      value:
+      value: 
       objectReference: {fileID: 760878718}
     - target: {fileID: 5616333610899670948, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: m_Enabled
@@ -2666,31 +2671,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7288476998973176669, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
-      value:
+      value: 
       objectReference: {fileID: 2100000, guid: 7658fd1b144a50c419fb1c8ef0a43af8, type: 2}
     - target: {fileID: 7839268203582424119, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: observer
-      value:
+      value: 
       objectReference: {fileID: 1808661680}
     - target: {fileID: 7839268203582424119, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: testMode
-      value:
+      value: 
       objectReference: {fileID: 1395586562}
     - target: {fileID: 7839268203582424119, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: retainRing
-      value:
+      value: 
       objectReference: {fileID: 1808661657}
     - target: {fileID: 7839268203582424119, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: sightLines
-      value:
+      value: 
       objectReference: {fileID: 1808661678}
     - target: {fileID: 7839268203582424119, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: observerAudio
-      value:
+      value: 
       objectReference: {fileID: 1808661679}
     - target: {fileID: 7839268203582424119, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: selectionRing
-      value:
+      value: 
       objectReference: {fileID: 1808661677}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2717,7 +2722,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c401ab3ff09cd074a9a7332ec868bd17, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDebugView
 --- !u!114 &760878718 stripped
 MonoBehaviour:
@@ -2728,7 +2733,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &760878719 stripped
 MonoBehaviour:
@@ -2739,7 +2744,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &760878720 stripped
 MonoBehaviour:
@@ -2750,7 +2755,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &760878721 stripped
 MonoBehaviour:
@@ -2761,7 +2766,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3472d45c816768d4589871b1ece1ad78, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewInteract
 --- !u!4 &760878722 stripped
 Transform:
@@ -2778,7 +2783,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 228f99b4fbda60d46b6ef5633d3d4437, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DriverScreen
   feed: {fileID: 1698757515}
   display: {fileID: 959720327}
@@ -2829,7 +2834,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -2884,8 +2889,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_IsGlobal: 1
   priority: 0
   blendDistance: 0
@@ -2935,7 +2940,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2958,7 +2963,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &858020128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2969,7 +2974,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -3089,8 +3094,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -3371,7 +3376,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -3394,7 +3399,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &973060472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3405,7 +3410,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -3562,7 +3567,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e88633132082fa43bc85954f190e00a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewSeats
 --- !u!114 &991248472 stripped
 MonoBehaviour:
@@ -3573,7 +3578,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ecab4dd6225947f6ab0e42460bc55baa, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankCrew
 --- !u!1 &998917131
 GameObject:
@@ -3618,8 +3623,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a8fc8f91bb6824488e1999642dac4f2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SessionJoinInit
+  tankControl: {fileID: 1304813856}
 --- !u!114 &998917135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3630,7 +3636,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1199893898, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkRunner
 --- !u!1001 &1009429313
 PrefabInstance:
@@ -3736,7 +3742,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -3907,7 +3913,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b392e48232eeec42bc6441a861cf61e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewInteractHud
   interaction: {fileID: 760878721}
   debugView: {fileID: 760878717}
@@ -3967,7 +3973,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
@@ -4097,7 +4103,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4120,7 +4126,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1149798478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4131,7 +4137,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -4308,8 +4314,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -4443,7 +4449,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4466,7 +4472,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1215096950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4477,7 +4483,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -4556,7 +4562,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -4745,7 +4751,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -4840,23 +4846,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: seats
-      value:
+      value: 
       objectReference: {fileID: 991248471}
     - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: testMode
-      value:
+      value: 
       objectReference: {fileID: 1395586562}
     - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: interaction
-      value:
+      value: 
       objectReference: {fileID: 760878721}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: crew
-      value:
+      value: 
       objectReference: {fileID: 991248472}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: driveDevice
-      value:
+      value: 
       objectReference: {fileID: 760878720}
     - target: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_AllowMSAA
@@ -4864,7 +4870,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_TargetTexture
-      value:
+      value: 
       objectReference: {fileID: 8400000, guid: cdf7f875c918c45418fdc03e4eb92f4b, type: 2}
     - target: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_CullingMask.m_Bits
@@ -4944,35 +4950,125 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7685796844441804652, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: crew
-      value:
+      value: 
       objectReference: {fileID: 991248472}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6390709329587793397, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1304813847}
+    - targetCorrespondingSourceObject: {fileID: 6390709329587793397, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1304813846}
   m_SourcePrefab: {fileID: 100100000, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
 --- !u!114 &1304813831 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7685796844441804652, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
   m_PrefabInstance: {fileID: 1304813830}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 24df7ad7b107c3b4489e77b4fc8992c7, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankKeyboardDebug
 --- !u!114 &1304813832 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5128799699252321863, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
   m_PrefabInstance: {fileID: 1304813830}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 994be19240c392646a5291b576ee3aee, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankCrewCameras
+--- !u!114 &1304813838 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6645272728011381682, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+  m_PrefabInstance: {fileID: 1304813830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2658b5293818681498cea67e8fb081e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankMotor
+--- !u!114 &1304813846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 1511853578
+  SendPriority: 1
+  EnableInterpolation: 1
+  Flags: 262402
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1304813847}
+  - {fileID: 1304813838}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &1304813847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkTransform
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  ConfigFlags: 0
+  PhysicsSettings:
+    ForecastEnabled: 1
+    DebugPhysics: 0
+    GravityForecast: 2
+    MaxExtrapolationTime: 0.15
+    MinLinearDetectedError: 0.02
+    MinAngularDetectedError: 3
+    DeadzoneVelocityMode: 0
+    MaxLinearError: 0
+    MaxAngularError: 0
+    LowCorrectionProgressThreshold: 0.015
+    HighErrorSimilarityThreshold: 1
+    MaxErrorTotalTime: 0.5
+    MaxRemoteSleepIgnoreTime: 0.5
+    ErrorCorrectionType: 0
+    LinearVelCorrectionMul: 1
+    AngularVelCorrectionMul: 1
+    PositionCorrectionLerp: 0.15
+    RotationCorrectionLerp: 0.15
+    Spring: 75
+    Damper: 2
+    MinImpactfulCollisionAlignment: 0.3
+    ImpactStartCorrectionTime: 0.1
+    ImpactCorrectionTimeComplete: 0.3
+--- !u!114 &1304813856 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+  m_PrefabInstance: {fileID: 1304813830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6b98401c85b4c5e9ae34127ea8d176f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankControl
 --- !u!1001 &1308171173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5096,7 +5192,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 66401fe4b07d0aa4ca092d78ed63d859, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankHealth
 --- !u!1 &1395586561
 GameObject:
@@ -5125,7 +5221,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b289fd19da4c45a4ebf5f74487a8c4d6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankTestMode
   startMode: 0
   tankCameras: {fileID: 1304813832}
@@ -5197,7 +5293,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -5272,7 +5368,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -5329,7 +5425,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5352,7 +5448,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1428354674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5363,7 +5459,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -5424,7 +5520,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5447,7 +5543,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1432936059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5458,7 +5554,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -5609,7 +5705,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5632,7 +5728,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1509972249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5643,7 +5739,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -5722,7 +5818,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -5797,7 +5893,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -5854,7 +5950,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5877,7 +5973,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1539625967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5888,7 +5984,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -5967,7 +6063,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -6024,7 +6120,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6047,7 +6143,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1572336781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6058,7 +6154,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -6119,7 +6215,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6142,7 +6238,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1578639073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6153,7 +6249,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -6270,7 +6366,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6350,7 +6446,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6373,7 +6469,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1655560379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6384,7 +6480,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -6445,7 +6541,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6468,7 +6564,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1687955326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6479,7 +6575,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -6531,7 +6627,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 9002001001, guid: 5a7c5150bb9c2b24ba36c5cf2444f1db, type: 3}
       propertyPath: cameras
-      value:
+      value: 
       objectReference: {fileID: 294387885}
     - target: {fileID: 1286242536391279158, guid: 5a7c5150bb9c2b24ba36c5cf2444f1db, type: 3}
       propertyPath: m_Name
@@ -6543,11 +6639,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3193043947660887071, guid: 5a7c5150bb9c2b24ba36c5cf2444f1db, type: 3}
       propertyPath: targetHealth
-      value:
+      value: 
       objectReference: {fileID: 1315261815}
     - target: {fileID: 3193043947660887071, guid: 5a7c5150bb9c2b24ba36c5cf2444f1db, type: 3}
       propertyPath: observationCamera
-      value:
+      value: 
       objectReference: {fileID: 330585545}
     - target: {fileID: 5672093506493249783, guid: 5a7c5150bb9c2b24ba36c5cf2444f1db, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6653,7 +6749,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -6728,7 +6824,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6954,7 +7050,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661661 stripped
 MonoBehaviour:
@@ -6965,7 +7061,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661662 stripped
 MonoBehaviour:
@@ -6976,7 +7072,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661663 stripped
 MonoBehaviour:
@@ -6987,7 +7083,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661664 stripped
 MonoBehaviour:
@@ -6998,7 +7094,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661665 stripped
 MonoBehaviour:
@@ -7009,7 +7105,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661666 stripped
 MonoBehaviour:
@@ -7020,7 +7116,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661667 stripped
 MonoBehaviour:
@@ -7031,7 +7127,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661668 stripped
 MonoBehaviour:
@@ -7042,7 +7138,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661669 stripped
 MonoBehaviour:
@@ -7053,7 +7149,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661670 stripped
 MonoBehaviour:
@@ -7064,7 +7160,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661671 stripped
 MonoBehaviour:
@@ -7075,7 +7171,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661672 stripped
 MonoBehaviour:
@@ -7086,7 +7182,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661673 stripped
 MonoBehaviour:
@@ -7097,7 +7193,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661674 stripped
 MonoBehaviour:
@@ -7108,7 +7204,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661675 stripped
 MonoBehaviour:
@@ -7119,7 +7215,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!114 &1808661676 stripped
 MonoBehaviour:
@@ -7130,7 +7226,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
 --- !u!120 &1808661677 stripped
 LineRenderer:
@@ -7256,7 +7352,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -7332,7 +7428,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -7347,7 +7443,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -7427,7 +7523,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
@@ -7493,7 +7589,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -7516,7 +7612,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &1932855185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7527,7 +7623,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -7606,7 +7702,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -7738,7 +7834,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -7795,7 +7891,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -7818,7 +7914,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text:
+  m_Text: 
 --- !u!114 &2049084394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7829,7 +7925,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 1, y: -1}
@@ -7908,7 +8004,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 1, a: 1}

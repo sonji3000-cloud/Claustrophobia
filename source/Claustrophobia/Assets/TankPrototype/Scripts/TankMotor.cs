@@ -1,8 +1,9 @@
 using UnityEngine;
+using Fusion;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody))]
-public sealed class TankMotor : MonoBehaviour
+public sealed class TankMotor : NetworkBehaviour
 {
     [Header("Flat-ground motor")]
     [Min(0f)] public float MaxMoveSpeed = 5f;
@@ -67,5 +68,56 @@ public sealed class TankMotor : MonoBehaviour
             return Mathf.MoveTowards(current, 0f, deceleration * dt);
         float rate = Mathf.Abs(target) < Mathf.Abs(current) ? deceleration : acceleration;
         return Mathf.MoveTowards(current, target, rate * dt);
+    }
+
+    public override void Spawned()
+    {
+        Debug.Log(
+            $"[TANK SPAWNED] " +
+            $"Mode={Runner.GameMode}, " +
+            $"TankID={GetEntityId()}",
+            this
+        );
+
+        TankControl control = GetComponent<TankControl>();
+
+        SessionJoinInit session =
+            Runner.GetComponent<SessionJoinInit>();
+
+        Debug.Log(
+            $"[REGISTER CHECK] " +
+            $"Control={control != null}, " +
+            $"Session={session != null}"
+        );
+
+        
+    }
+    public override void FixedUpdateNetwork()
+    {
+        if (!HasStateAuthority)
+            return;
+
+        PlayerRef driver = Runner.LocalPlayer;
+
+        bool received =
+            Runner.TryGetInputForPlayer<TankCrewNetworkInput>(
+                driver, out var data
+            );
+
+        if (!received)
+        {
+            Debug.LogWarning(
+                $"[RECV FAILED] Driver={driver}"
+            );
+            return;
+        }
+
+        Debug.Log(
+            $"[RECV SUCCESS] Driver={driver}, " +
+            $"Left={data.LeftLever:F2}, " +
+            $"Right={data.RightLever:F2}"
+        );
+
+        SetLeverInputs(data.LeftLever, data.RightLever);
     }
 }

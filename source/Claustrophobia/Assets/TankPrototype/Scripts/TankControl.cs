@@ -1,3 +1,5 @@
+using Fusion;
+using Photon.Client.StructWrapping;
 using System;
 using UnityEngine;
 
@@ -18,7 +20,10 @@ public sealed class TankControl : MonoBehaviour
 	private CrewInteract driver;
 	private TankCrew.Role lastRole;
 
-	public float LeftLever { get; private set; }
+    // 입력을 전송하기 위한 구조체
+    private TankCrewNetworkInput pendingInput;
+
+    public float LeftLever { get; private set; }
 	public float RightLever { get; private set; }
 	public bool IsDriving => CanDrive(driver);
 
@@ -84,8 +89,17 @@ public sealed class TankControl : MonoBehaviour
 
 		LeftLever = Mathf.Clamp(left, -1f, 1f);
 		RightLever = Mathf.Clamp(right, -1f, 1f);
-		motor.SetLeverInputs(LeftLever, RightLever);
-	}
+
+        pendingInput.LeftLever = LeftLever;
+        pendingInput.RightLever = RightLever;
+
+		Debug.Log(
+			$"[Leftlever] ={pendingInput.LeftLever} " +
+			$"[righttlever] ={pendingInput.RightLever} "
+			);
+
+        //motor.SetLeverInputs(LeftLever, RightLever);
+    }
 
 	public void EndDrive(CrewInteract user)
 	{
@@ -192,4 +206,16 @@ public sealed class TankControl : MonoBehaviour
 		if (crew == null || !crew.CanView((int)cameras.CurrentStation))
 			cameras.ExitObservation();
 	}
+
+	public void SubmitNetworkInput(NetworkInput input)
+	{
+        Debug.Log(
+			$"[SUBMIT] ID={GetEntityId()} " +
+			$"[SUBMIT] Role={crew.CurrentRole}, " +
+			$"L={pendingInput.LeftLever:F2}, " +
+			$"R={pendingInput.RightLever:F2}"
+		);
+
+        input.Set(pendingInput);
+    }
 }
