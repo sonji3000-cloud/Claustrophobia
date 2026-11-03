@@ -122,6 +122,7 @@ public sealed class TankControl : MonoBehaviour
 		bool hadDriver = !ReferenceEquals(user, null);
 		driver = null;
 		LeftLever = RightLever = 0f;
+		pendingInput = default;
 		if (motor != null) motor.SetLeverInputs(0f, 0f);
 
 		if (user != null && user.Active == driveDevice) user.StopUse();
