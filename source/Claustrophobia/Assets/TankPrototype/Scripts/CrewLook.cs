@@ -54,7 +54,8 @@ public sealed class CrewLook : MonoBehaviour
 		Keyboard keyboard = Keyboard.current;
 		if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
 		{
-			if (interaction == null || interaction.Active == null) ReleaseCursor();
+			if (interaction == null || interaction.Active == null
+				&& (interaction.Carry == null || interaction.Carry.Held == null)) ReleaseCursor();
 			return;
 		}
 

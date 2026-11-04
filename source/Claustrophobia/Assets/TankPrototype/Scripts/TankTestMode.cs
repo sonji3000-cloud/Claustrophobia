@@ -18,6 +18,7 @@ public sealed class TankTestMode : MonoBehaviour
 	[SerializeField] private GameObject interiorHud;
 	[SerializeField] private Text modeLabel;
 	[SerializeField] private CrewDevice commanderSight;
+	[SerializeField] private CrewCarry carry;
 
 	private bool initialized;
 	private bool savedRearView;
@@ -61,6 +62,7 @@ public sealed class TankTestMode : MonoBehaviour
 		if (initialized && CurrentMode == mode) return;
 
 		StopSight();
+		if (carry != null) carry.ReturnRound();
 		if (tankInput != null) tankInput.ResetInput();
 		if (look != null) look.ReleaseCursor();
 
@@ -203,6 +205,7 @@ public sealed class TankTestMode : MonoBehaviour
 	{
 		if (commanderSight != null) commanderSight.UseChanged -= OnSightUse;
 		StopSight();
+		if (carry != null) carry.ReturnRound();
 		if (tankInput != null) tankInput.ResetInput();
 		if (look != null) look.ReleaseCursor();
 		if (debugView != null) debugView.SetOutput(false);

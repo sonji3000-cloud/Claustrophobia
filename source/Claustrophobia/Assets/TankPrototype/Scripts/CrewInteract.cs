@@ -20,6 +20,7 @@ public sealed class CrewInteract : MonoBehaviour
 	[SerializeField] private TankCrew crew;
 	[SerializeField] private CrewSeats seats;
 	[SerializeField] private CrewDebugView debugView;
+	[SerializeField] private CrewCarry carry;
 	[SerializeField] private CrewDevice[] devices = Array.Empty<CrewDevice>();
 	[SerializeField, Min(0.1f)] private float reach = 2f;
 	[Tooltip("Radius as a fraction of the camera's pixel height.")]
@@ -35,6 +36,7 @@ public sealed class CrewInteract : MonoBehaviour
 
 	public Camera View => view;
 	public TankCrew Crew => crew;
+	public CrewCarry Carry => carry;
 	public CrewDevice[] Devices => devices;
 	public Candidate[] Candidates => candidates;
 	public float Radius => radius;
@@ -233,13 +235,23 @@ public sealed class CrewInteract : MonoBehaviour
 		result = new Candidate { Reason = Reason.Ready, Point = surface.point, Offset = offset, Distance = surface.distance };
 	}
 
-	/// <summary>Begins local use of the currently selected device after revalidation.</summary>
+	/// <summary>Picks up a round or begins sustained use after revalidating selection.</summary>
 	public bool TryUse(CrewDevice device)
 	{
 		if (!CanSelect || Active != null || device == null) return false;
+		if (carry != null && carry.Held != null) return false;
 
 		RefreshSelection();
-		if (Selected != device || !device.TryBegin(this)) return false;
+		if (Selected != device) return false;
+
+		if (device.Round != null)
+		{
+			if (carry == null || !carry.TryTake(device.Round)) return false;
+
+			ClearSelection();
+			return true;
+		}
+		if (!device.TryBegin(this)) return false;
 
 		Active = device;
 		activeRole = crew.CurrentRole;
@@ -305,6 +317,7 @@ public sealed class CrewInteract : MonoBehaviour
 	{
 		if (seats != null) seats.SeatApplied -= OnSeatApplied;
 		StopUse();
+		if (carry != null) carry.ReturnRound();
 		ClearSelection();
 	}
 }

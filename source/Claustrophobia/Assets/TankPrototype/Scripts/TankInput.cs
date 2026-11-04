@@ -130,7 +130,8 @@ public sealed class TankInput : MonoBehaviour
 
 		if (keyboard.escapeKey.wasPressedThisFrame)
 		{
-			interaction.StopUse();
+			if (interaction.Active != null) interaction.StopUse();
+			else if (interaction.Carry != null) interaction.Carry.ReturnRound();
 			return;
 		}
 		if (!pressed) return;

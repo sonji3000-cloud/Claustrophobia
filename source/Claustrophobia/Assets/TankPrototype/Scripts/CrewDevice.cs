@@ -14,16 +14,19 @@ public sealed class CrewDevice : MonoBehaviour
 	[SerializeField, Min(0f)] private float reach;
 	[SerializeField] private Collider[] parts = Array.Empty<Collider>();
 	[SerializeField] private Renderer[] outlines = Array.Empty<Renderer>();
+	[SerializeField] private TankRound round;
 
 	public string Label => label;
 	public float Reach => reach;
 	public Collider[] Parts => parts;
+	public TankRound Round => round;
 	public CrewInteract User { get; private set; }
 	public event Action<CrewInteract, bool> UseChanged;
 
 	public bool CanUse(TankCrew crew)
 	{
-		if (!isActiveAndEnabled || crew == null || crew.CurrentRole == TankCrew.Role.None) return false;
+		if (!isActiveAndEnabled || crew == null || crew.CurrentRole == TankCrew.Role.None
+			|| round != null && (!round.isActiveAndEnabled || round.Holder != null)) return false;
 
 		return ((int)roles & (1 << ((int)crew.CurrentRole - 1))) != 0;
 	}
@@ -61,6 +64,7 @@ public sealed class CrewDevice : MonoBehaviour
 	private void OnDisable()
 	{
 		if (User != null) User.StopUse();
+		if (round != null && round.Holder != null) round.Holder.ReturnRound();
 		SetHighlight(false);
 	}
 }

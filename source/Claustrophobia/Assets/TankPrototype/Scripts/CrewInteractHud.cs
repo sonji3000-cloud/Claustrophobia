@@ -16,6 +16,7 @@ public sealed class CrewInteractHud : MonoBehaviour
 
 	private string[] readyText;
 	private string[] activeText;
+	private string[] heldText;
 	private string[,] reasons;
 	private static readonly string[] ReasonText = { "Ready", "Disabled", "Wrong role", "In use", "Too far / no surface in range", "Behind camera", "Outside center", "Occluded", "Wrong layer / no active collider" };
 
@@ -24,12 +25,14 @@ public sealed class CrewInteractHud : MonoBehaviour
 		CrewDevice[] devices = interaction.Devices;
 		readyText = new string[devices.Length];
 		activeText = new string[devices.Length];
+		heldText = new string[devices.Length];
 		reasons = new string[devices.Length, ReasonText.Length];
 		for (int i = 0; i < devices.Length; i++)
 		{
 			string label = devices[i] != null ? devices[i].Label : "Missing device";
-			readyText[i] = "Space - Use " + label;
+			readyText[i] = "Space - " + (devices[i] != null && devices[i].Round != null ? "Pick up " : "Use ") + label;
 			activeText[i] = label + " in use | Space / Esc - Exit";
+			heldText[i] = "Carrying " + label + " | Esc - Return to rack";
 			for (int j = 0; j < ReasonText.Length; j++) reasons[i, j] = label + ": " + ReasonText[j];
 		}
 	}
@@ -50,11 +53,13 @@ public sealed class CrewInteractHud : MonoBehaviour
 		retainRing.sizeDelta = Vector2.one * (2f * interaction.RetainRadius * rect.height);
 
 		string text = observe ? "Rear view | Mouse - Look | F7 - First person" : "";
+		TankRound held = interaction.Carry != null ? interaction.Carry.Held : null;
 		for (int i = 0; i < interaction.Devices.Length; i++)
 		{
 			CrewDevice device = interaction.Devices[i];
-			if (device != null && device == interaction.Active) text = activeText[i];
-			else if (interaction.Active == null && device != null && device == interaction.Selected) text = readyText[i];
+			if (held != null && device != null && device.Round == held) text = heldText[i];
+			else if (held == null && device != null && device == interaction.Active) text = activeText[i];
+			else if (held == null && interaction.Active == null && device != null && device == interaction.Selected) text = readyText[i];
 
 			CrewInteract.Candidate candidate = interaction.Candidates[i];
 			if (i < rows.Length && rows[i] != null)
