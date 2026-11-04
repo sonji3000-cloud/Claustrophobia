@@ -7,6 +7,7 @@ public sealed class CrewInteractHud : MonoBehaviour
 {
 	[SerializeField] private CrewInteract interaction;
 	[SerializeField] private CrewDebugView debugView;
+	[SerializeField] private TankControl control;
 	[SerializeField] private RectTransform reticle;
 	[SerializeField] private RectTransform ring;
 	[SerializeField] private RectTransform retainRing;
@@ -18,6 +19,9 @@ public sealed class CrewInteractHud : MonoBehaviour
 	private string[] activeText;
 	private string[] heldText;
 	private string[,] reasons;
+	private string fireReason;
+	private string fireText;
+	private bool usingJoystick;
 	private static readonly string[] ReasonText = { "Ready", "Disabled", "Wrong role", "In use", "Too far / no surface in range", "Behind camera", "Outside center", "Occluded", "Wrong layer / no active collider" };
 
 	private void Awake()
@@ -82,6 +86,27 @@ public sealed class CrewInteractHud : MonoBehaviour
 		if (interaction.Active == null && selected != null && selected.Breech != null)
 			text = selected.Breech.GetPrompt(interaction);
 
+		bool showFire = control != null && control.AimDevice != null
+			&& (interaction.Active == control.AimDevice || interaction.Active == null && selected == control.AimDevice);
+		Color color = Color.white;
+		if (showFire)
+		{
+			string reason = control.GetFireBlock(interaction);
+			bool active = interaction.Active == control.AimDevice;
+			if (fireText == null || fireReason != reason || usingJoystick != active)
+			{
+				fireReason = reason;
+				usingJoystick = active;
+				string keys = active
+					? "Turret controls | Arrows - Aim | Wheel - Zoom | Space / Esc - Exit\n"
+					: "Space - Use turret controls\n";
+				fireText = keys + (reason.Length == 0 ? "FIRE READY | Enter - Fire one round" : "FIRE BLOCKED: " + reason);
+			}
+			text = fireText;
+			color = reason.Length == 0 ? new Color(.4f, 1f, .5f) : new Color(1f, .85f, .35f);
+		}
+
 		if (prompt.text != text) prompt.text = text;
+		if (prompt.color != color) prompt.color = color;
 	}
 }

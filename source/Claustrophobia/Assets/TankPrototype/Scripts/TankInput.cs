@@ -15,6 +15,7 @@ public sealed class TankInput : MonoBehaviour
 
 	private bool inputReady;
 	private bool spaceHeld;
+	private bool enterHeld;
 
 	private void Awake()
 	{
@@ -34,6 +35,7 @@ public sealed class TankInput : MonoBehaviour
 		if (!inputReady)
 		{
 			spaceHeld = keyboard.spaceKey.isPressed;
+			enterHeld = keyboard.enterKey.isPressed;
 			if (keyboard.anyKey.isPressed) return;
 
 			inputReady = true;
@@ -44,6 +46,9 @@ public sealed class TankInput : MonoBehaviour
 
 	private void ReadKeys(Keyboard keyboard)
 	{
+		bool firePressed = keyboard.enterKey.isPressed && !enterHeld;
+		enterHeld = keyboard.enterKey.isPressed;
+
 		ReadSeat(keyboard);
 
 		if (interaction != null && interaction.isActiveAndEnabled) interaction.RefreshSelection();
@@ -63,12 +68,13 @@ public sealed class TankInput : MonoBehaviour
 		{
 			control.ApplyAim(interaction, aim.x, aim.y, dt);
 			ReadZoom();
+			if (firePressed) control.RequestFire(interaction);
 			return;
 		}
 
 		// Apply aim before a weapon request so a shot uses this frame's direction.
 		control.ApplyAim(aim.x, aim.y, dt);
-		ReadWeapon(keyboard);
+		ReadWeapon(keyboard, firePressed);
 
 		ReadView(keyboard);
 	}
@@ -160,11 +166,11 @@ public sealed class TankInput : MonoBehaviour
 		if (steps != 0f) control.ZoomSight(interaction, steps);
 	}
 
-	private void ReadWeapon(Keyboard keyboard)
+	private void ReadWeapon(Keyboard keyboard, bool firePressed)
 	{
 		if (keyboard == null) return;
 
-		if (keyboard.enterKey.wasPressedThisFrame) control.RequestFire();
+		if (firePressed) control.RequestFire(interaction);
 		else if (keyboard.rKey.wasPressedThisFrame) control.RequestInsert();
 		else if (keyboard.tKey.wasPressedThisFrame) control.RequestClose();
 		else if (keyboard.yKey.wasPressedThisFrame) control.RequestOpenEmpty();

@@ -12,7 +12,7 @@ public sealed class TankGun : MonoBehaviour
     public bool TestAllowFire = true;
     [Min(0.01f)] public float ProjectileSpeed = 20f;
     [Min(0.01f)] public float ShotDamage = 25f;
-    [Tooltip("Test delay for recovery, breech opening and case ejection; not final gameplay timing.")]
+    [Tooltip("Recovery delay after firing. The empty chamber stays closed until manually opened.")]
     [Min(0f)] public float RecoveryDuration = 1.5f;
 
     public ChamberState State { get; private set; } = ChamberState.EmptyOpen;
@@ -78,7 +78,9 @@ public sealed class TankGun : MonoBehaviour
     private string GetBlockReason()
     {
         if (!isActiveAndEnabled) return "Fire component inactive";
-        if (State != ChamberState.Ready) return "Chamber " + State + "; Ready required";
+        if (State == ChamberState.Recovering) return "Recovering after firing";
+        if (State == ChamberState.EmptyOpen || State == ChamberState.EmptyClosed) return "Not loaded - open chamber and insert a round";
+        if (State == ChamberState.LoadedOpen) return "Chamber open - close it before firing";
         if (!TestAllowFire) return "Test Allow Fire is false";
         if (muzzle == null) return "Missing Muzzle";
         if (ownerBody == null) return "Missing owner Rigidbody";
@@ -98,7 +100,7 @@ public sealed class TankGun : MonoBehaviour
     public void TickRecovery()
     {
         if (State == ChamberState.Recovering && Time.time >= recoveryEndsAt)
-            ChangeState(ChamberState.EmptyOpen);
+            ChangeState(ChamberState.EmptyClosed);
     }
 
     private void ChangeState(ChamberState next)

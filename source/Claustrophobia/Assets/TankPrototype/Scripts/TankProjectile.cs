@@ -23,14 +23,18 @@ public sealed class TankProjectile : MonoBehaviour
     private TankGun source;
     private Rigidbody owner;
     private float bornAt;
+	private readonly System.Collections.Generic.List<Rigidbody> checkBodies = new System.Collections.Generic.List<Rigidbody>(1);
+	private readonly System.Collections.Generic.List<Collider> checkColliders = new System.Collections.Generic.List<Collider>(1);
 
     public static bool ValidateConfiguration(TankProjectile projectile, out string reason)
     {
         if (projectile == null) { reason = "Missing Projectile Prefab"; return false; }
         if (!projectile.enabled || !projectile.gameObject.activeSelf)
         { reason = "Projectile must be active and enabled"; return false; }
-        var rb = projectile.GetComponent<Rigidbody>();
-        var collider = projectile.GetComponent<SphereCollider>();
+		if (projectile.body == null) projectile.body = projectile.GetComponent<Rigidbody>();
+		if (projectile.sphere == null) projectile.sphere = projectile.GetComponent<SphereCollider>();
+		var rb = projectile.body;
+		var collider = projectile.sphere;
         if (rb == null || collider == null)
         { reason = "Projectile requires its own Rigidbody and SphereCollider"; return false; }
         if (rb.isKinematic || !rb.useGravity || rb.linearDamping != 0f
@@ -44,8 +48,9 @@ public sealed class TankProjectile : MonoBehaviour
         Vector3 scale = projectile.transform.lossyScale;
         if (scale.x <= 0f || scale.y <= 0f || scale.z <= 0f)
         { reason = "Projectile scale must be positive"; return false; }
-        if (projectile.GetComponentsInChildren<Rigidbody>(true).Length != 1
-            || projectile.GetComponentsInChildren<Collider>(true).Length != 1)
+		projectile.GetComponentsInChildren(true, projectile.checkBodies);
+		projectile.GetComponentsInChildren(true, projectile.checkColliders);
+        if (projectile.checkBodies.Count != 1 || projectile.checkColliders.Count != 1)
         { reason = "Projectile must have exactly one Rigidbody and one Collider"; return false; }
         reason = ""; return true;
     }

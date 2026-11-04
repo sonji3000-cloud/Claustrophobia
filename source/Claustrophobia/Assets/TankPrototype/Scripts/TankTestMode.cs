@@ -197,7 +197,7 @@ public sealed class TankTestMode : MonoBehaviour
 		modeLabel.text = IsUsingSight
 			? "COMMANDER SIGHT  |  Hold RMB - Look  |  Space / Esc - Return  |  F8 Exterior"
 			: IsInterior
-				? "INTERIOR [F9]  |  F8 Exterior  |  1/2/3 Seat  |  Space Use  |  F7 Rear view  |  Joystick: Arrows Aim / Wheel Zoom"
+				? "INTERIOR [F9]  |  F8 Exterior  |  1/2/3 Seat  |  Space Use  |  F7 Rear view  |  Joystick: Arrows Aim / Wheel Zoom / Enter Fire"
 				: "EXTERIOR [F8]  |  F9 Interior  |  1/2/3 Seat  |  Space / Esc Exit device  |  F3 Commander / F4 Overview";
 	}
 

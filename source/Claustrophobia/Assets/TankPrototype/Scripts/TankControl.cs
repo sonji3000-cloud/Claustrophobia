@@ -227,11 +227,27 @@ public sealed class TankControl : MonoBehaviour
 			&& gun != null && gun.RequestOpenEmpty();
 	}
 
-	public bool RequestFire()
+	public CrewDevice AimDevice => aimDevice;
+
+	public string GetFireBlock(CrewInteract user)
 	{
-		return isActiveAndEnabled && crew != null && crew.CanFire
-			&& gun != null && gun.RequestFire();
+		if (!isActiveAndEnabled) return "Controls unavailable";
+		if (user == null || user.Crew == null || !user.Crew.CanFire) return "Gunner role required";
+		if (!CanAim(user) || !user.CanSelect) return "Use gunner joystick";
+		if (user.Carry != null && user.Carry.Held != null) return "Return the carried round first";
+		if (gun == null) return "Gun unavailable";
+
+		return gun.FireBlockReason;
 	}
+
+	public bool RequestFire(CrewInteract user)
+	{
+		if (GetFireBlock(user).Length != 0) return false;
+
+		return gun.RequestFire();
+	}
+
+	public bool RequestFire() => RequestFire(aimDevice != null ? aimDevice.User : null);
 
 	public void SwitchView(int station)
 	{

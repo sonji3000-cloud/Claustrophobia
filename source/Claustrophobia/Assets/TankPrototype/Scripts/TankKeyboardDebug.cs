@@ -112,7 +112,7 @@ public sealed class TankKeyboardDebug : MonoBehaviour
             GUILayout.Space(5);
             GUILayout.Label("Yaw + = RIGHT / Pitch + = UP", valueStyle);
             GUILayout.Label("Left/Right arrows: turret / Up/Down: gun", valueStyle);
-            GUILayout.Label("Enter: one shot per new press", valueStyle);
+            GUILayout.Label("Enter: gunner joystick only, one shot per press", valueStyle);
             GUILayout.Label("R: insert / T: close / Y: open EMPTY chamber", valueStyle);
             GUILayout.EndArea();
             // A third panel keeps the existing movement and aiming values visible.
@@ -137,7 +137,7 @@ public sealed class TankKeyboardDebug : MonoBehaviour
             GUILayout.Label("Latest impact:", valueStyle);
             GUILayout.Label(gun.LastHitSummary, valueStyle);
             GUILayout.Label("R insert -> T close -> Enter fire", valueStyle);
-            GUILayout.Label("Recovering: automatic opening/ejection", valueStyle);
+            GUILayout.Label("After recovery: chamber stays closed; open manually", valueStyle);
             GUILayout.EndArea();
         }
         GUI.matrix = original;
