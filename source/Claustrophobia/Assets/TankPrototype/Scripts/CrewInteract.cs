@@ -239,10 +239,11 @@ public sealed class CrewInteract : MonoBehaviour
 	public bool TryUse(CrewDevice device)
 	{
 		if (!CanSelect || Active != null || device == null) return false;
-		if (carry != null && carry.Held != null) return false;
 
 		RefreshSelection();
 		if (Selected != device) return false;
+		if (device.Breech != null) return device.Breech.TryUse(this);
+		if (carry != null && carry.Held != null) return false;
 
 		if (device.Round != null)
 		{

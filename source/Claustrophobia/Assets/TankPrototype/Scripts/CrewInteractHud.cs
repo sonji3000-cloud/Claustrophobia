@@ -78,6 +78,10 @@ public sealed class CrewInteractHud : MonoBehaviour
 			if (show) markers[i].position = screen;
 		}
 
+		CrewDevice selected = interaction.Selected;
+		if (interaction.Active == null && selected != null && selected.Breech != null)
+			text = selected.Breech.GetPrompt(interaction);
+
 		if (prompt.text != text) prompt.text = text;
 	}
 }

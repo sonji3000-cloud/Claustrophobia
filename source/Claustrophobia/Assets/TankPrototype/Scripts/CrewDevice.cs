@@ -15,18 +15,20 @@ public sealed class CrewDevice : MonoBehaviour
 	[SerializeField] private Collider[] parts = Array.Empty<Collider>();
 	[SerializeField] private Renderer[] outlines = Array.Empty<Renderer>();
 	[SerializeField] private TankRound round;
+	[SerializeField] private TankBreech breech;
 
 	public string Label => label;
 	public float Reach => reach;
 	public Collider[] Parts => parts;
 	public TankRound Round => round;
+	public TankBreech Breech => breech;
 	public CrewInteract User { get; private set; }
 	public event Action<CrewInteract, bool> UseChanged;
 
 	public bool CanUse(TankCrew crew)
 	{
 		if (!isActiveAndEnabled || crew == null || crew.CurrentRole == TankCrew.Role.None
-			|| round != null && (!round.isActiveAndEnabled || round.Holder != null)) return false;
+			|| round != null && (!round.isActiveAndEnabled || round.Holder != null || round.IsLoaded)) return false;
 
 		return ((int)roles & (1 << ((int)crew.CurrentRole - 1))) != 0;
 	}

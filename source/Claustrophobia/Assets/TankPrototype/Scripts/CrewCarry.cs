@@ -32,6 +32,14 @@ public sealed class CrewCarry : MonoBehaviour
 		round.Return(this);
 	}
 
+	internal TankRound CommitLoad(Transform loadPoint)
+	{
+		TankRound round = Held;
+		Held = null;
+		round.Load(this, loadPoint);
+		return round;
+	}
+
 	private void OnSeatApplied(TankCrew.Role role) => ReturnRound();
 
 	private void OnEnable()

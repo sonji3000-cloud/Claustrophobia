@@ -14,6 +14,7 @@ public sealed class TankRound : MonoBehaviour
 
 	public CrewDevice Device => device;
 	public CrewCarry Holder { get; private set; }
+	public bool IsLoaded { get; private set; }
 
 	private void Awake()
 	{
@@ -23,7 +24,7 @@ public sealed class TankRound : MonoBehaviour
 
 	internal bool TryHold(CrewCarry holder, Transform grip)
 	{
-		if (!isActiveAndEnabled || Holder != null || holder == null || grip == null
+		if (!isActiveAndEnabled || IsLoaded || Holder != null || holder == null || grip == null
 			|| device == null || device.User != null) return false;
 
 		home = transform.parent;
@@ -56,6 +57,16 @@ public sealed class TankRound : MonoBehaviour
 
 		for (int i = 0; i < device.Parts.Length; i++)
 			if (device.Parts[i] != null) device.Parts[i].enabled = colliderStates[i];
+	}
+
+	internal void Load(CrewCarry holder, Transform loadPoint)
+	{
+		if (Holder != holder) return;
+
+		Holder = null;
+		IsLoaded = true;
+		transform.SetParent(loadPoint, true);
+		transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 	}
 
 	private void OnDisable()

@@ -18,6 +18,8 @@ public sealed class TankGun : MonoBehaviour
     public ChamberState State { get; private set; } = ChamberState.EmptyOpen;
     public bool HasLiveRound => State == ChamberState.LoadedOpen || State == ChamberState.Ready;
     public bool CanInsert => isActiveAndEnabled && State == ChamberState.EmptyOpen;
+
+	public event Action<ChamberState> StateChanged;
     public float RecoverRemaining => State == ChamberState.Recovering
         ? Mathf.Max(0f, recoveryEndsAt - Time.time) : 0f;
     public string LastWeaponRequest { get; private set; } = "None";
@@ -104,6 +106,7 @@ public sealed class TankGun : MonoBehaviour
         ChamberState previous = State;
         State = next;
         Debug.Log($"Tank chamber: {previous} -> {next}", this);
+		StateChanged?.Invoke(next);
     }
 
     private bool Reject(string request, string reason)
@@ -147,6 +150,14 @@ public sealed class TankGun : MonoBehaviour
         if (State != ChamberState.EmptyClosed) return Reject("Open empty", "Requires EmptyClosed; current " + State);
         return CompleteOperation("Open empty", ChamberState.EmptyOpen);
     }
+
+	public bool RequestOpen()
+	{
+		TickRecovery();
+		if (!isActiveAndEnabled) return Reject("Open", "Weapon component inactive");
+		if (State == ChamberState.Ready) return CompleteOperation("Open", ChamberState.LoadedOpen);
+		return RequestOpenEmpty();
+	}
 
     // All requests are validated and consumed here, including rejected requests.
     public bool RequestFire()
