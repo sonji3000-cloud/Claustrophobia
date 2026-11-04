@@ -16,6 +16,8 @@ public sealed class TankControl : MonoBehaviour
 	[SerializeField] private TankCrewCameras cameras;
 	[SerializeField] private TankCrew crew;
 	[SerializeField] private CrewDevice driveDevice;
+	[SerializeField] private CrewDevice aimDevice;
+	[SerializeField] private GunnerSight sight;
 
 	private CrewInteract driver;
 	private TankCrew.Role lastRole;
@@ -42,10 +44,17 @@ public sealed class TankControl : MonoBehaviour
 
 	private void OnEnable()
 	{
-		if (driveDevice == null) return;
+		if (driveDevice != null)
+		{
+			driveDevice.UseChanged += OnDriveUse;
+			if (driveDevice.User != null) driveDevice.User.StopUse();
+		}
 
-		driveDevice.UseChanged += OnDriveUse;
-		if (driveDevice.User != null) driveDevice.User.StopUse();
+		if (aimDevice != null)
+		{
+			aimDevice.UseChanged += OnAimUse;
+			if (aimDevice.User != null) aimDevice.User.StopUse();
+		}
 	}
 
 	private void Start()
@@ -141,7 +150,55 @@ public sealed class TankControl : MonoBehaviour
 	private void OnDisable()
 	{
 		if (driveDevice != null) driveDevice.UseChanged -= OnDriveUse;
+		if (aimDevice != null)
+		{
+			aimDevice.UseChanged -= OnAimUse;
+			if (aimDevice.User != null) aimDevice.User.StopUse();
+		}
+
 		StopDrive();
+		if (Application.isPlaying) ClearAim();
+	}
+
+	public bool CanAim(CrewInteract user)
+	{
+		return isActiveAndEnabled && aim != null && aim.isActiveAndEnabled
+			&& user != null && user.isActiveAndEnabled
+			&& user.Crew != null && user.Crew.CanAim && aimDevice != null
+			&& aimDevice.CanUse(user.Crew) && aimDevice.User == user && user.Active == aimDevice;
+	}
+
+	public void ApplyAim(CrewInteract user, float turret, float barrel, float dt)
+	{
+		if (!CanAim(user)) return;
+
+		RefreshCrew();
+		aim.ApplyInput(turret, barrel, dt);
+	}
+
+	public void ZoomSight(CrewInteract user, float steps)
+	{
+		if (!CanAim(user) || sight == null) return;
+
+		sight.ApplyZoom(steps);
+	}
+
+	public void EndAim(CrewInteract user)
+	{
+		if (user == null || aimDevice == null || aimDevice.User != user) return;
+
+		user.StopUse();
+	}
+
+	private void OnAimUse(CrewInteract user, bool active)
+	{
+		if (!active) ClearAim();
+		else if (!CanAim(user)) user.StopUse();
+	}
+
+	private void ClearAim()
+	{
+		if (aim != null) aim.ApplyInput(0f, 0f, 0f);
 	}
 
 	public void ApplyAim(float turret, float barrel, float dt)

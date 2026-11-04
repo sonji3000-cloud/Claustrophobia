@@ -53,11 +53,17 @@ public sealed class TankInput : MonoBehaviour
 
 		float dt = Time.deltaTime;
 		ReadLevers(keyboard, dt);
+		Vector2 aim = ReadAim(keyboard);
 
-		if (testMode != null && testMode.IsInterior) return;
+		if (testMode != null && testMode.IsInterior)
+		{
+			control.ApplyAim(interaction, aim.x, aim.y, dt);
+			ReadZoom();
+			return;
+		}
 
 		// Apply aim before a weapon request so a shot uses this frame's direction.
-		ReadAim(keyboard, dt);
+		control.ApplyAim(aim.x, aim.y, dt);
 		ReadWeapon(keyboard);
 
 		ReadView(keyboard);
@@ -76,12 +82,21 @@ public sealed class TankInput : MonoBehaviour
 
 	public void SuspendInput()
 	{
+		ResetInput();
 		if (interaction != null) interaction.StopUse();
 		if (control != null)
 		{
 			control.EndDrive(interaction);
-			control.ApplyAim(0f, 0f, 0f);
 		}
+	}
+
+	public void ResetInput()
+	{
+		inputReady = false;
+		if (control == null || !Application.isPlaying) return;
+
+		control.EndAim(interaction);
+		control.ApplyAim(0f, 0f, 0f);
 	}
 
 	private void ReadSeat(Keyboard keyboard)
@@ -110,14 +125,24 @@ public sealed class TankInput : MonoBehaviour
 		else interaction.TryUse(interaction.Selected);
 	}
 
-	private void ReadAim(Keyboard keyboard, float dt)
+	private static Vector2 ReadAim(Keyboard keyboard)
 	{
 		float turret = keyboard == null ? 0f
 			: (keyboard.rightArrowKey.isPressed ? 1f : 0f) - (keyboard.leftArrowKey.isPressed ? 1f : 0f);
 		float barrel = keyboard == null ? 0f
 			: (keyboard.upArrowKey.isPressed ? 1f : 0f) - (keyboard.downArrowKey.isPressed ? 1f : 0f);
 
-		control.ApplyAim(turret, barrel, dt);
+		return new Vector2(turret, barrel);
+	}
+
+	private void ReadZoom()
+	{
+		Mouse mouse = Mouse.current;
+		if (mouse == null) return;
+
+		// The project's Input System normalizes each scroll tick to one unit.
+		float steps = mouse.scroll.ReadValue().y;
+		if (steps != 0f) control.ZoomSight(interaction, steps);
 	}
 
 	private void ReadWeapon(Keyboard keyboard)

@@ -3714,6 +3714,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GunnerSight
   feed: {fileID: 1304813833}
   display: {fileID: 2003211227}
+  minFov: 15
+  maxFov: 55
+  zoomStep: 5
 --- !u!1001 &904456196
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5437,6 +5440,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 991248472}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: sight
+      value:
+      objectReference: {fileID: 902150566}
+    - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: aimDevice
+      value:
+      objectReference: {fileID: 1808661673}
+    - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: driveDevice
       value: 
       objectReference: {fileID: 760878720}
@@ -5654,6 +5665,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b98401c85b4c5e9ae34127ea8d176f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankControl
+--- !u!114 &1304813865 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+  m_PrefabInstance: {fileID: 1304813830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc96d1b456c43cabe46665c2cc13ea2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankInput
 --- !u!1001 &1308171173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5809,6 +5831,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankTestMode
   startMode: 0
+  tankInput: {fileID: 1304813865}
   tankCameras: {fileID: 1304813832}
   tankHud: {fileID: 1304813831}
   look: {fileID: 446121451}

@@ -10,6 +10,7 @@ public sealed class TankTestMode : MonoBehaviour
 	public enum Mode { Exterior, Interior }
 
 	[SerializeField] private Mode startMode = Mode.Exterior;
+	[SerializeField] private TankInput tankInput;
 	[SerializeField] private TankCrewCameras tankCameras;
 	[SerializeField] private TankKeyboardDebug tankHud;
 	[SerializeField] private CrewLook look;
@@ -47,6 +48,7 @@ public sealed class TankTestMode : MonoBehaviour
 		if (mode != Mode.Exterior && mode != Mode.Interior) return;
 		if (initialized && CurrentMode == mode) return;
 
+		if (tankInput != null) tankInput.ResetInput();
 		if (look != null) look.ReleaseCursor();
 
 		// Turn both output owners off before enabling the selected side.
@@ -67,12 +69,13 @@ public sealed class TankTestMode : MonoBehaviour
 		if (interiorHud != null) interiorHud.SetActive(IsInterior);
 		if (tankHud != null) tankHud.enabled = !IsInterior;
 		if (modeLabel != null) modeLabel.text = IsInterior
-			? "INTERIOR [F9]  |  F8 Exterior  |  1/2/3 Seat  |  Space Use  |  F7 Rear view"
+			? "INTERIOR [F9]  |  F8 Exterior  |  1/2/3 Seat  |  Space Use  |  F7 Rear view  |  Joystick: Arrows Aim / Wheel Zoom"
 			: "EXTERIOR [F8]  |  F9 Interior  |  1/2/3 Seat  |  Space / Esc Exit device  |  F3 Commander / F4 Overview";
 	}
 
 	private void OnDisable()
 	{
+		if (tankInput != null) tankInput.ResetInput();
 		if (look != null) look.ReleaseCursor();
 		if (debugView != null) debugView.SetOutput(false);
 		if (tankCameras != null) tankCameras.SetOutput(false);
