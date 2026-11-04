@@ -49,7 +49,11 @@ public sealed class TankInput : MonoBehaviour
 		if (interaction != null && interaction.isActiveAndEnabled) interaction.RefreshSelection();
 		ReadUse(keyboard);
 
-		if (control == null || !control.isActiveAndEnabled) return;
+		if (control == null || !control.isActiveAndEnabled)
+		{
+			if (testMode != null) testMode.StopSight();
+			return;
+		}
 
 		float dt = Time.deltaTime;
 		ReadLevers(keyboard, dt);
@@ -71,10 +75,20 @@ public sealed class TankInput : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (!inputReady || control == null || !control.isActiveAndEnabled || !Application.isFocused
-			|| testMode != null && testMode.IsInterior) return;
+		if (!inputReady || control == null || !control.isActiveAndEnabled || !Application.isFocused) return;
 
-		Mouse mouse = Mouse.current;
+		ReadLook(Mouse.current);
+	}
+
+	private void ReadLook(Mouse mouse)
+	{
+		if (testMode != null && testMode.IsInterior)
+		{
+			if (testMode.IsUsingSight && testMode.SetDrag(mouse != null && mouse.rightButton.isPressed))
+				control.Look(mouse.delta.ReadValue());
+			return;
+		}
+
 		if (mouse == null || !mouse.rightButton.isPressed) return;
 
 		control.Look(mouse.delta.ReadValue());

@@ -25,6 +25,8 @@ public sealed class CrewLook : MonoBehaviour
 	private CursorLockMode savedLock;
 	private bool savedVisible;
 
+	public bool HasCursor => ownsCursor;
+
 	private void Awake()
 	{
 		yawBase = yawPivot != null ? yawPivot.localRotation : Quaternion.identity;
@@ -84,8 +86,10 @@ public sealed class CrewLook : MonoBehaviour
 		pitchPivot.localRotation = pitchBase * Quaternion.Euler(pitch, 0f, 0f);
 	}
 
-	private void CaptureCursor()
+	public void CaptureCursor()
 	{
+		if (ownsCursor || !isActiveAndEnabled || !Application.isFocused) return;
+
 		savedLock = Cursor.lockState;
 		savedVisible = Cursor.visible;
 		ownsCursor = true;

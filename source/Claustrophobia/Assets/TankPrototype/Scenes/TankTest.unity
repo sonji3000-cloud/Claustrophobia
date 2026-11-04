@@ -5838,6 +5838,7 @@ MonoBehaviour:
   debugView: {fileID: 760878717}
   interiorHud: {fileID: 1113783490}
   modeLabel: {fileID: 1654854125}
+  commanderSight: {fileID: 1808661675}
 --- !u!4 &1395586563
 Transform:
   m_ObjectHideFlags: 0
