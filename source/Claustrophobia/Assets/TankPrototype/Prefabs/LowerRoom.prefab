@@ -150,7 +150,7 @@ Transform:
   m_GameObject: {fileID: 1597258711267061560}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.9400024, y: 3.119995, z: 0}
+  m_LocalPosition: {x: 4.9400024, y: 2.1240005, z: 0.24000001}
   m_LocalScale: {x: 1, y: 2, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -254,6 +254,8 @@ MonoBehaviour:
   - {fileID: 8211802322272158262}
   outlines:
   - {fileID: 8875046425358115120}
+  round: {fileID: 0}
+  breech: {fileID: 0}
 --- !u!1 &2004532680508515498
 GameObject:
   m_ObjectHideFlags: 0
@@ -1149,6 +1151,8 @@ MonoBehaviour:
   - {fileID: 4225460945949602642}
   outlines:
   - {fileID: 2720638307961667564}
+  round: {fileID: 0}
+  breech: {fileID: 0}
 --- !u!1 &5861057071506687745
 GameObject:
   m_ObjectHideFlags: 0
@@ -1610,6 +1614,8 @@ MonoBehaviour:
   - {fileID: 400989721307796691}
   - {fileID: 5796670756635506950}
   - {fileID: 1619130925790439703}
+  round: {fileID: 0}
+  breech: {fileID: 0}
 --- !u!1001 &1744237769246412959
 PrefabInstance:
   m_ObjectHideFlags: 0

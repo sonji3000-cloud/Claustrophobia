@@ -1714,8 +1714,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3782688718097300848}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.6, y: 1.75, z: 3.18}
+  m_LocalRotation: {x: 0.02617695, y: 0, z: 0, w: 0.99965733}
+  m_LocalPosition: {x: -0.6, y: 1.6, z: 3.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1754,7 +1754,7 @@ Camera:
     height: 1
   near clip plane: 0.03
   far clip plane: 600
-  field of view: 70
+  field of view: 55
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -2892,6 +2892,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TankInput
   leverChangeRate: 1
   control: {fileID: 9002001002}
+  testMode: {fileID: 0}
+  seats: {fileID: 0}
+  interaction: {fileID: 0}
 --- !u!114 &9002001002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2904,11 +2907,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b98401c85b4c5e9ae34127ea8d176f, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::TankControl
-  crew: {fileID: 9003001002}
   motor: {fileID: 6645272728011381682}
   aim: {fileID: 5937393932700067239}
   gun: {fileID: 6616087051832642295}
   cameras: {fileID: 5128799699252321863}
+  crew: {fileID: 9003001002}
+  driveDevice: {fileID: 0}
+  aimDevice: {fileID: 0}
+  sight: {fileID: 0}
 --- !u!114 &9003001002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2941,6 +2947,7 @@ MonoBehaviour:
   gun: {fileID: 6616087051832642295}
   targetHealth: {fileID: 0}
   ballistics: {fileID: 4895437089772899164}
+  crew: {fileID: 0}
   cameraOffset: {x: 12, y: 15, z: -17}
 --- !u!114 &5937393932700067239
 MonoBehaviour:
