@@ -214,6 +214,37 @@ RectTransform:
   m_AnchoredPosition: {x: 20, y: -311}
   m_SizeDelta: {x: 650, y: 24}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!1 &25757831
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 25757832}
+  m_Layer: 0
+  m_Name: GunnerLeftElbowHint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &25757832
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25757831}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.55, y: 0.08, z: 0.05}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1795598543}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &41817605
 GameObject:
   m_ObjectHideFlags: 0
@@ -1061,7 +1092,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -2554,6 +2585,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 504125926}
   m_CullTransparentMesh: 1
+--- !u!1 &523161215 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8609973204349950225, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+  m_PrefabInstance: {fileID: 1808661655}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &535040113
 GameObject:
   m_ObjectHideFlags: 0
@@ -3205,7 +3241,7 @@ PrefabInstance:
       objectReference: {fileID: 1395586562}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: carry
-      value:
+      value: 
       objectReference: {fileID: 1795598547}
     - target: {fileID: 5433415636524262219, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       propertyPath: testMode
@@ -3360,6 +3396,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2411004693236817764, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 469200278}
+    - targetCorrespondingSourceObject: {fileID: 2411004693236817764, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 25757832}
     - targetCorrespondingSourceObject: {fileID: 2296546552158886060, guid: ab0a2ed98fa9cd8449c039297ce7cf9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1358474988}
@@ -3697,6 +3736,37 @@ RectTransform:
   m_AnchoredPosition: {x: 20, y: -51}
   m_SizeDelta: {x: 650, y: 24}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!1 &881427985
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 881427986}
+  m_Layer: 0
+  m_Name: LeftGrip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &881427986
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 881427985}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.6064931, y: 0.29866183, z: -0.47432268, w: 0.5639017}
+  m_LocalPosition: {x: -3.5602825, y: 4.2906036, z: 4.376996}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2131397548}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &883143242
 GameObject:
   m_ObjectHideFlags: 0
@@ -3939,7 +4009,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5bd37f35f29b9e4097a8c26d145873a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GunnerSight
   feed: {fileID: 1304813833}
   display: {fileID: 2003211227}
@@ -4399,7 +4469,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1 &1009166225
 GameObject:
@@ -5214,7 +5284,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1001 &1211542397
 PrefabInstance:
@@ -5541,7 +5611,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1001 &1254556131
 PrefabInstance:
@@ -5758,11 +5828,11 @@ PrefabInstance:
       objectReference: {fileID: 991248472}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: sight
-      value:
+      value: 
       objectReference: {fileID: 902150566}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: aimDevice
-      value:
+      value: 
       objectReference: {fileID: 1808661673}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: driveDevice
@@ -5770,7 +5840,7 @@ PrefabInstance:
       objectReference: {fileID: 760878720}
     - target: {fileID: 1769288639112650855, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_TargetTexture
-      value:
+      value: 
       objectReference: {fileID: 8400000, guid: 316dbc6fc4ff9e44fa191d9f9008f0b0, type: 2}
     - target: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_AllowMSAA
@@ -5991,7 +6061,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cc96d1b456c43cabe46665c2cc13ea2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankInput
 --- !u!114 &1304813867 stripped
 MonoBehaviour:
@@ -6002,8 +6072,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4816d6a3705165445b86f3e367402394, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankGun
+--- !u!114 &1304813870 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5937393932700067239, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+  m_PrefabInstance: {fileID: 1304813830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38244224542a74448aef15e233c651b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankAim
 --- !u!1001 &1308171173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7382,7 +7463,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1001 &1652122537
 PrefabInstance:
@@ -7939,6 +8020,24 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 294387885}
   m_SourcePrefab: {fileID: 100100000, guid: 5a7c5150bb9c2b24ba36c5cf2444f1db, type: 3}
+--- !u!114 &1776992749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523161215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 938edeecb0db4d340b848170206c4c4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankJoystick
+  control: {fileID: 1304813856}
+  aim: {fileID: 1304813870}
+  device: {fileID: 1808661673}
+  handle: {fileID: 2131397548}
+  pivot: {x: 0, y: 0, z: 0}
+  angle: 8
 --- !u!1 &1778299408
 GameObject:
   m_ObjectHideFlags: 0
@@ -8133,15 +8232,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CrewHandIK
   anim: {fileID: 1795598545}
   interaction: {fileID: 760878721}
-  device: {fileID: 760878720}
-  leftHand: {fileID: 2012798077}
-  rightHand: {fileID: 1234495436}
-  leftElbow: {fileID: 1172963047}
-  rightElbow: {fileID: 469200278}
+  grips:
+  - Device: {fileID: 760878720}
+    LeftHand: {fileID: 2012798077}
+    RightHand: {fileID: 1234495436}
+    LeftElbow: {fileID: 1172963047}
+    RightElbow: {fileID: 469200278}
+    Layer: Lever Grip
+  - Device: {fileID: 1808661673}
+    LeftHand: {fileID: 881427986}
+    RightHand: {fileID: 0}
+    LeftElbow: {fileID: 25757832}
+    RightElbow: {fileID: 0}
+    Layer: Joystick Grip
   blendTime: 0.25
   rotationWeight: 1
   elbowWeight: 0.65
-  gripLayer: Lever Grip
 --- !u!114 &1795598547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8152,7 +8258,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3a8db75bd4ece2449f9a8d83aa5e937, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewCarry
   interaction: {fileID: 760878721}
   seats: {fileID: 991248471}
@@ -8279,7 +8385,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 66446080893590008, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 2076169308}
     - target: {fileID: 1740862564978355424, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8327,31 +8433,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2216120226692926649, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 2118902735}
     - target: {fileID: 2892625213523058875, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 1900501075}
     - target: {fileID: 3513837188609338694, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 2102782678}
     - target: {fileID: 3961135821400986972, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 1246702499}
     - target: {fileID: 4238742000752216822, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 1808661676}
     - target: {fileID: 4400778740257817498, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: breech
-      value:
+      value: 
       objectReference: {fileID: 1905894540}
     - target: {fileID: 4441037996931997354, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 1209989819}
     - target: {fileID: 5201354295311021259, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8387,11 +8493,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5547480709028858594, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 1969372776}
     - target: {fileID: 5758668644067892521, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 2015782976}
     - target: {fileID: 6335423690991024545, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: m_Name
@@ -8399,24 +8505,56 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7951006632969923828, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 1599425527}
     - target: {fileID: 8219996264084746760, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 2034705152}
     - target: {fileID: 8659618187059829198, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
-      value:
+      value: 
       objectReference: {fileID: 2100000, guid: ca64a06195e093b4d8dd80171c1e5e91, type: 2}
     - target: {fileID: 8790846322248107947, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
-      value:
+      value: 
       objectReference: {fileID: 2100000, guid: ca64a06195e093b4d8dd80171c1e5e91, type: 2}
     - target: {fileID: 8806676126041586222, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       propertyPath: round
-      value:
+      value: 
       objectReference: {fileID: 1000386315}
+    - target: {fileID: 8950646628341597099, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950646628341597099, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950646628341597099, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950646628341597099, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -12.201578
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950646628341597099, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.048584
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950646628341597099, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4.0198536
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950646628341597099, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950646628341597099, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 8982137013194639524, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
@@ -8436,10 +8574,16 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2127527377003681439, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 191316443}
+    - targetCorrespondingSourceObject: {fileID: 2848273159074037361, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 881427986}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1643161080744725541, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1905894540}
+    - targetCorrespondingSourceObject: {fileID: 8609973204349950225, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1776992749}
     - targetCorrespondingSourceObject: {fileID: 1650937596469299103, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1808661676}
@@ -8645,7 +8789,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2671713491005805158, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
   m_PrefabInstance: {fileID: 1808661655}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 523161215}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
@@ -8683,7 +8827,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!120 &1808661677 stripped
 LineRenderer:
@@ -9032,7 +9176,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!4 &1905894539 stripped
 Transform:
@@ -9049,7 +9193,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c34159780c61434d823956caab7c0f1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankBreech
   device: {fileID: 1808661674}
   gun: {fileID: 1304813867}
@@ -9162,7 +9306,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1 &2003211224
 GameObject:
@@ -9317,7 +9461,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1 &2023107740
 GameObject:
@@ -9404,7 +9548,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1001 &2034717594
 PrefabInstance:
@@ -9643,7 +9787,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1 &2082658013
 GameObject:
@@ -9735,7 +9879,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!1 &2118902730 stripped
 GameObject:
@@ -9752,8 +9896,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
+--- !u!4 &2131397548 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2848273159074037361, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
+  m_PrefabInstance: {fileID: 1808661655}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
