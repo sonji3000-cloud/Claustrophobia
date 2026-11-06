@@ -72,7 +72,7 @@ public sealed class TankInput : MonoBehaviour
 			return;
 		}
 
-		// Apply aim before a weapon request so a shot uses this frame's direction.
+		// Apply local pitch before the weapon reads the muzzle direction.
 		control.ApplyAim(aim.x, aim.y, dt);
 		ReadWeapon(keyboard, firePressed);
 

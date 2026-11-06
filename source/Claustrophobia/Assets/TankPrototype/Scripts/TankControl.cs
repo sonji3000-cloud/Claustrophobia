@@ -131,7 +131,7 @@ public sealed class TankControl : MonoBehaviour
 		bool hadDriver = !ReferenceEquals(user, null);
 		driver = null;
 		LeftLever = RightLever = 0f;
-		pendingInput = default;
+		pendingInput.LeftLever = pendingInput.RightLever = 0f;
 		if (motor != null) motor.SetLeverInputs(0f, 0f);
 
 		if (user != null && user.Active == driveDevice) user.StopUse();
@@ -170,10 +170,13 @@ public sealed class TankControl : MonoBehaviour
 
 	public void ApplyAim(CrewInteract user, float turret, float barrel, float dt)
 	{
-		if (!CanAim(user)) return;
+		if (!CanAim(user))
+		{
+			pendingInput.Aim = Vector2.zero;
+			return;
+		}
 
-		RefreshCrew();
-		aim.ApplyInput(turret, barrel, dt);
+		SetAim(turret, barrel, dt);
 	}
 
 	public void ZoomSight(CrewInteract user, float steps)
@@ -198,14 +201,25 @@ public sealed class TankControl : MonoBehaviour
 
 	private void ClearAim()
 	{
+		pendingInput.Aim = Vector2.zero;
 		if (aim != null) aim.ApplyInput(0f, 0f, 0f);
 	}
 
 	public void ApplyAim(float turret, float barrel, float dt)
 	{
-		if (!isActiveAndEnabled || crew == null || !crew.CanAim || aim == null) return;
+		if (!isActiveAndEnabled || crew == null || !crew.CanAim || aim == null || !aim.isActiveAndEnabled)
+		{
+			pendingInput.Aim = Vector2.zero;
+			return;
+		}
 
+		SetAim(turret, barrel, dt);
+	}
+
+	private void SetAim(float turret, float barrel, float dt)
+	{
 		RefreshCrew();
+		pendingInput.Aim = new Vector2(turret, barrel);
 		aim.ApplyInput(turret, barrel, dt);
 	}
 
@@ -271,7 +285,7 @@ public sealed class TankControl : MonoBehaviour
 		if (role != lastRole)
 		{
 			lastRole = role;
-			if (aim != null) aim.ApplyInput(0f, 0f, 0f);
+			ClearAim();
 		}
 
 		if (cameras == null || !cameras.isActiveAndEnabled
