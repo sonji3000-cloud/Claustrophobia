@@ -5898,6 +5898,17 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 1769288639112650855, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
   m_PrefabInstance: {fileID: 1304813830}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1304813834 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5937393932700067239, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+  m_PrefabInstance: {fileID: 1304813830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38244224542a74448aef15e233c651b1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankAim
 --- !u!114 &1304813838 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6645272728011381682, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
@@ -5929,6 +5940,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 1304813847}
   - {fileID: 1304813838}
+  - {fileID: 1304813834}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1304813847
 MonoBehaviour:
