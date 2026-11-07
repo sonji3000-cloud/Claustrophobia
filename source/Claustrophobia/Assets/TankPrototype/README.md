@@ -1,5 +1,7 @@
 # TankTest 내부·외부 테스트 안내
 
+> **2026-11-07 씬 분리 인계:** 현재 씬 구성·실행·연결 API·파트별 수정 위치는 [TankTest 씬 분리 인계 README](../../Docs/TankTest-SceneSplit-README.md)를 먼저 읽으세요. TankTest 단독 Play가 내부를 자동 로드합니다. 아래 내용은 이전 기능 개발 기록을 포함하며, 일부 역할·키 입력·Inspector 직접 연결·검증 설명은 현재 코드와 다릅니다. 현재 동작과 기존 제한은 새 인계 문서를 기준으로 확인하세요.
+
 대상 씬: `Assets/TankPrototype/Scenes/TankTest.unity`
 
 Play 후 Game 뷰를 클릭합니다. 기본은 **외부 테스트 모드**입니다.
