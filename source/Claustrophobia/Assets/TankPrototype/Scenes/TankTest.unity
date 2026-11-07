@@ -4412,6 +4412,7 @@ GameObject:
   - component: {fileID: 998917132}
   - component: {fileID: 998917133}
   - component: {fileID: 998917135}
+  - component: {fileID: 2140000002}
   m_Layer: 0
   m_Name: NetworkAsset
   m_TagString: Untagged
@@ -6831,6 +6832,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1500235375}
+  - component: {fileID: 2140000001}
   m_Layer: 0
   m_Name: Rooms
   m_TagString: Untagged
@@ -9915,6 +9917,54 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2848273159074037361, guid: c638abda243ce1c4f9b3d0beebd115d6, type: 3}
   m_PrefabInstance: {fileID: 1808661655}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2140000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500235374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e154cebf06a428dc51ad2930e0e8, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankInterior
+  crew: {fileID: 991248472}
+  seats: {fileID: 991248471}
+  interaction: {fileID: 760878721}
+  mode: {fileID: 1395586562}
+  driveDevice: {fileID: 760878720}
+  aimDevice: {fileID: 1808661673}
+  sight: {fileID: 902150566}
+  driverScreen: {fileID: 760878726}
+  breech: {fileID: 1905894540}
+  levers:
+  - {fileID: 163930603}
+  - {fileID: 1685075973}
+  joystick: {fileID: 1776992749}
+  interactionHud: {fileID: 1113783491}
+--- !u!114 &2140000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998917131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91693de3c6d900d479d030179c5ba7a0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankSceneLink
+  interior: {fileID: 2140000001}
+  session: {fileID: 998917133}
+  control: {fileID: 1304813856}
+  input: {fileID: 1304813865}
+  cameras: {fileID: 1304813832}
+  tankHud: {fileID: 1304813831}
+  gun: {fileID: 1304813867}
+  aim: {fileID: 1304813834}
+  driverFeed: {fileID: 1698757515}
+  gunnerFeed: {fileID: 1304813833}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

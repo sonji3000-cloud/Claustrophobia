@@ -24,6 +24,8 @@ public sealed class CrewSeats : MonoBehaviour
 	public TankCrew.Role RequestedRole { get; private set; }
 	public uint PendingRequest { get; private set; }
 	public Transform Anchor { get; private set; }
+	public TankCrew Crew => crew;
+	public bool IsInitialized => started;
 
 	// Subscribe with localSeats disabled. The approver returns this request ID to ResolveSeat.
 	public event Action<TankCrew.Role, uint> SeatRequested;
@@ -31,14 +33,50 @@ public sealed class CrewSeats : MonoBehaviour
 
 	private void Awake()
 	{
+		CacheRefs();
+	}
+
+	private void CacheRefs()
+	{
 		if (crew == null) crew = GetComponent<TankCrew>();
 		if (look == null) look = GetComponent<CrewLook>();
 	}
 
-	private void Start()
+	private void Start() => Initialize();
+
+	/// <summary>Call after the interior's Awake phase. Repeated calls preserve the selected seat.</summary>
+	public bool Initialize()
 	{
+		if (started) return true;
+		CacheRefs();
+		if (!isActiveAndEnabled || crew == null || crew.gameObject != gameObject || !crew.isActiveAndEnabled) return false;
+		if (localSeats && !CanUseAnchor(startSeat)) return false;
+
 		started = true;
 		if (localSeats) RequestSeat(startSeat);
+		return true;
+	}
+
+	public bool ValidateRefs(out string reason)
+	{
+		if (crew == null || crew.gameObject != gameObject)
+		{
+			reason = "CrewSeats requires its own TankCrew.";
+			return false;
+		}
+		if (driver == null || gunner == null || commander == null)
+		{
+			reason = "CrewSeats requires all three seat anchors.";
+			return false;
+		}
+		if (driver.IsChildOf(transform) || gunner.IsChildOf(transform) || commander.IsChildOf(transform))
+		{
+			reason = "Seat anchors must be outside the player hierarchy.";
+			return false;
+		}
+
+		reason = null;
+		return true;
 	}
 
 	private void OnEnable()
@@ -86,8 +124,13 @@ public sealed class CrewSeats : MonoBehaviour
 
 	private bool CanApply(TankCrew.Role role)
 	{
+		return started && CanUseAnchor(role);
+	}
+
+	private bool CanUseAnchor(TankCrew.Role role)
+	{
 		Transform anchor = GetAnchor(role);
-		return started && isActiveAndEnabled && crew != null && crew.gameObject == gameObject
+		return isActiveAndEnabled && crew != null && crew.gameObject == gameObject
 			&& crew.isActiveAndEnabled && anchor != null && anchor.gameObject.activeInHierarchy
 			&& !anchor.IsChildOf(transform);
 	}

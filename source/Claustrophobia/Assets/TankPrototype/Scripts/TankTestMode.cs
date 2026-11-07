@@ -19,8 +19,13 @@ public sealed class TankTestMode : MonoBehaviour
 	[SerializeField] private Text modeLabel;
 	[SerializeField] private CrewDevice commanderSight;
 	[SerializeField] private CrewCarry carry;
+	[Tooltip("Wait for Bind and ApplyMode instead of applying output in Start.")]
+	[SerializeField] private bool waitForBind;
 
 	private bool initialized;
+	private bool outputApplied;
+	private bool bound;
+	private bool disconnected;
 	private bool savedRearView;
 	private bool savedLook;
 	private bool savedCursor;
@@ -29,16 +34,60 @@ public sealed class TankTestMode : MonoBehaviour
 	private bool savedVisible;
 
 	public Mode CurrentMode { get; private set; }
-	public bool IsInterior => initialized && CurrentMode == Mode.Interior;
+	public bool IsInterior => outputApplied && CurrentMode == Mode.Interior;
 	public bool IsUsingSight { get; private set; }
+	public bool IsBound => bound;
+	public bool CanApply => isActiveAndEnabled && !disconnected && (!waitForBind || bound);
+
+	/// <summary>Stores valid external references. ApplyMode enables output separately.</summary>
+	public bool Bind(TankInput input, TankCrewCameras cameras, TankKeyboardDebug hud)
+	{
+		if (input == null || cameras == null || hud == null || input.gameObject != cameras.gameObject
+			|| input.gameObject != hud.gameObject) return false;
+		if (tankInput == input && tankCameras == cameras && tankHud == hud && !disconnected)
+		{
+			bound = true;
+			return true;
+		}
+
+		disconnected = true;
+		if (isActiveAndEnabled) ClearOutput();
+		else outputApplied = false;
+		tankInput = input;
+		tankCameras = cameras;
+		tankHud = hud;
+		bound = true;
+		disconnected = false;
+		return true;
+	}
+
+	public void Unbind()
+	{
+		if (disconnected) return;
+		disconnected = true;
+		ClearOutput();
+		tankInput = null;
+		tankCameras = null;
+		tankHud = null;
+		bound = false;
+	}
+
+	public bool ApplyMode()
+	{
+		if (!CanApply) return false;
+		SetMode(initialized ? CurrentMode : startMode);
+		return outputApplied;
+	}
 
 	private void Start()
 	{
-		SetMode(startMode);
+		ApplyMode();
 	}
 
 	private void Update()
 	{
+		if (!CanApply) return;
+
 		if (IsUsingSight && (!CanUseSight(commanderSight != null ? commanderSight.User : null)
 			|| tankCameras.CurrentStation != TankCrewCameras.CrewStation.Commander
 			|| tankCameras.ActiveCamera == null || !tankCameras.ActiveCamera.isActiveAndEnabled)) StopSight();
@@ -50,7 +99,7 @@ public sealed class TankTestMode : MonoBehaviour
 
 	private void ReadKeys(Keyboard keyboard)
 	{
-		if (keyboard == null) return;
+		if (!CanApply || keyboard == null) return;
 
 		if (keyboard.f8Key.wasPressedThisFrame) SetMode(Mode.Exterior);
 		else if (keyboard.f9Key.wasPressedThisFrame) SetMode(Mode.Interior);
@@ -58,8 +107,9 @@ public sealed class TankTestMode : MonoBehaviour
 
 	public void SetMode(Mode mode)
 	{
+		if (!CanApply) return;
 		if (mode != Mode.Exterior && mode != Mode.Interior) return;
-		if (initialized && CurrentMode == mode) return;
+		if (outputApplied && CurrentMode == mode) return;
 
 		StopSight();
 		if (carry != null) carry.ReturnRound();
@@ -72,6 +122,7 @@ public sealed class TankTestMode : MonoBehaviour
 
 		CurrentMode = mode;
 		initialized = true;
+		outputApplied = true;
 		if (IsInterior)
 		{
 			if (debugView != null) debugView.SetOutput(true);
@@ -88,7 +139,7 @@ public sealed class TankTestMode : MonoBehaviour
 
 	private bool CanUseSight(CrewInteract user)
 	{
-		return isActiveAndEnabled && IsInterior && tankInput != null && tankInput.isActiveAndEnabled
+		return CanApply && IsInterior && tankInput != null && tankInput.CanInput
 			&& tankCameras != null && tankCameras.isActiveAndEnabled && debugView != null
 			&& user != null && user.isActiveAndEnabled && user.Crew != null && user.Crew.CanLook
 			&& commanderSight != null && commanderSight.CanUse(user.Crew)
@@ -146,7 +197,7 @@ public sealed class TankTestMode : MonoBehaviour
 		ReleaseDrag();
 		if (tankCameras != null) tankCameras.SetOutput(false);
 
-		bool restore = isActiveAndEnabled && IsInterior;
+		bool restore = CanApply && IsInterior;
 		if (restore && debugView != null)
 		{
 			debugView.SetOutput(true);
@@ -166,7 +217,7 @@ public sealed class TankTestMode : MonoBehaviour
 	// TankInput checks focus before calling. Ignore the capture frame's delta to prevent a jump.
 	public bool SetDrag(bool active)
 	{
-		if (!IsUsingSight || !active)
+		if (!CanApply || tankInput == null || !tankInput.CanInput || !IsUsingSight || !active)
 		{
 			ReleaseDrag();
 			return false;
@@ -204,12 +255,21 @@ public sealed class TankTestMode : MonoBehaviour
 	private void OnDisable()
 	{
 		if (commanderSight != null) commanderSight.UseChanged -= OnSightUse;
+		ClearOutput();
+	}
+
+	private void ClearOutput()
+	{
+		bool wasUsingSight = IsUsingSight;
 		StopSight();
 		if (carry != null) carry.ReturnRound();
-		if (tankInput != null) tankInput.ResetInput();
+		if (!wasUsingSight && tankInput != null) tankInput.ResetInput();
 		if (look != null) look.ReleaseCursor();
 		if (debugView != null) debugView.SetOutput(false);
 		if (tankCameras != null) tankCameras.SetOutput(false);
+		if (interiorHud != null) interiorHud.SetActive(false);
+		if (tankHud != null) tankHud.enabled = false;
+		outputApplied = false;
 	}
 
 	private void OnEnable()
@@ -221,7 +281,6 @@ public sealed class TankTestMode : MonoBehaviour
 		}
 		if (!initialized) return;
 
-		initialized = false;
-		SetMode(CurrentMode);
+		ApplyMode();
 	}
 }

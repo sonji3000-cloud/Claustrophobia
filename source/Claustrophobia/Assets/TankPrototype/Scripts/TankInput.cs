@@ -16,6 +16,51 @@ public sealed class TankInput : MonoBehaviour
 	private bool inputReady;
 	private bool spaceHeld;
 	private bool enterHeld;
+	private bool bound;
+	private bool disconnected;
+	private uint inputVersion;
+
+	public bool IsBound => bound;
+	public bool IsInputReady => inputReady && control != null && inputVersion == control.InputVersion;
+	public bool CanInput => isActiveAndEnabled && CanRead;
+	private bool CanRead => !disconnected && control != null && control.CanInput;
+
+	/// <summary>Invalid targets leave the previous binding unchanged.</summary>
+	public bool Bind(CrewSeats nextSeats, CrewInteract nextInteraction, TankTestMode nextMode)
+	{
+		if (nextSeats == null || nextInteraction == null || nextMode == null
+			|| nextSeats.gameObject != nextInteraction.gameObject) return false;
+		if (seats == nextSeats && interaction == nextInteraction && testMode == nextMode && !disconnected)
+		{
+			bound = true;
+			return true;
+		}
+
+		if (isActiveAndEnabled)
+		{
+			SuspendInput();
+			if (testMode != null) testMode.StopSight();
+		}
+		else inputReady = false;
+		seats = nextSeats;
+		interaction = nextInteraction;
+		testMode = nextMode;
+		bound = true;
+		disconnected = false;
+		return true;
+	}
+
+	public void Unbind()
+	{
+		if (disconnected) return;
+		SuspendInput();
+		if (testMode != null) testMode.StopSight();
+		seats = null;
+		interaction = null;
+		testMode = null;
+		bound = false;
+		disconnected = true;
+	}
 
 	private void Awake()
 	{
@@ -24,12 +69,36 @@ public sealed class TankInput : MonoBehaviour
 
 	private void Update()
 	{
+		if (!CanRead)
+		{
+			if (testMode != null) testMode.StopSight();
+			if (inputReady) SuspendInput();
+			return;
+		}
+
 		Keyboard keyboard = Keyboard.current;
 		if (!Application.isFocused || keyboard == null)
 		{
 			if (inputReady) SuspendInput();
 			inputReady = false;
 			return;
+		}
+
+		ReadKeys(keyboard);
+	}
+
+	private void ReadKeys(Keyboard keyboard)
+	{
+		if (!CanRead)
+		{
+			if (testMode != null) testMode.StopSight();
+			return;
+		}
+		if (keyboard == null) return;
+		if (inputVersion != control.InputVersion)
+		{
+			inputVersion = control.InputVersion;
+			inputReady = false;
 		}
 
 		if (!inputReady)
@@ -41,11 +110,6 @@ public sealed class TankInput : MonoBehaviour
 			inputReady = true;
 		}
 
-		ReadKeys(keyboard);
-	}
-
-	private void ReadKeys(Keyboard keyboard)
-	{
 		bool firePressed = keyboard.enterKey.isPressed && !enterHeld;
 		enterHeld = keyboard.enterKey.isPressed;
 
@@ -81,13 +145,15 @@ public sealed class TankInput : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (!inputReady || control == null || !control.isActiveAndEnabled || !Application.isFocused) return;
+		if (!inputReady || !CanRead || !Application.isFocused) return;
 
 		ReadLook(Mouse.current);
 	}
 
 	private void ReadLook(Mouse mouse)
 	{
+		if (!CanRead) return;
+
 		if (testMode != null && testMode.IsInterior)
 		{
 			if (testMode.IsUsingSight && testMode.SetDrag(mouse != null && mouse.rightButton.isPressed))
