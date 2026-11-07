@@ -187,7 +187,7 @@ public sealed class TankSceneLink : MonoBehaviour
 		if (!ValidateInterior(next, out string reason)) { LastError = reason; return false; }
 		if (boundInterior == next && stage == Stage.Ready) return true;
 
-		Unbind();
+		ClearBinding();
 		if (!CanBindSession()) return false;
 		uint request = ++version;
 		boundInterior = next;
@@ -196,7 +196,10 @@ public sealed class TankSceneLink : MonoBehaviour
 		if (request != version) return false;
 		try
 		{
-			if (!next.Prepare() || !Connect(next) || request != version || !CanBindSession())
+			if (!next.Prepare())
+				return Abort(next, request, "Interior preparation was rejected.");
+			if (request != version) return false;
+			if (!Connect(next, request) || request != version || !CanBindSession())
 				return Abort(next, request, "Interior connection was interrupted or rejected.");
 			if (SceneManager.GetActiveScene() != worldScene && !SceneManager.SetActiveScene(worldScene))
 				return Abort(next, request, "The external tank scene could not be made active.");
@@ -211,26 +214,39 @@ public sealed class TankSceneLink : MonoBehaviour
 		return IsReady;
 	}
 
-	private bool Connect(TankInterior next)
+	private bool Connect(TankInterior next, uint request)
 	{
-		if (!control.Bind(next.Crew, next.DriveDevice, next.AimDevice, next.Sight)
-			|| !input.Bind(next.Seats, next.Interaction, next.Mode) || !next.Mode.Bind(input, cameras, tankHud)
-			|| !next.DriverScreen.Bind(driverFeed) || !next.Sight.Bind(gunnerFeed) || !next.Breech.Bind(gun)) return false;
+		if (request != version || !control.Bind(next.Crew, next.DriveDevice, next.AimDevice, next.Sight)) return false;
+		if (request != version || !input.Bind(next.Seats, next.Interaction, next.Mode)) return false;
+		if (request != version || !next.Mode.Bind(input, cameras, tankHud)) return false;
+		if (request != version || !next.DriverScreen.Bind(driverFeed)) return false;
+		if (request != version || !next.Sight.Bind(gunnerFeed)) return false;
+		if (request != version || !next.Breech.Bind(gun)) return false;
+
 		for (int i = 0; i < next.Levers.Length; i++)
-			if (!next.Levers[i].Bind(control)) return false;
+			if (request != version || !next.Levers[i].Bind(control)) return false;
+
+		if (request != version) return false;
 		bool joystick = joystickAimBound ? next.Joystick.Bind(control, aim) : next.Joystick.BindControl(control);
-		return joystick && next.Hud.Bind(control) && tankHud.Bind(next.Crew);
+		return request == version && joystick && next.Hud.Bind(control)
+			&& request == version && tankHud.Bind(next.Crew);
 	}
 
 	public void Unbind()
 	{
+		ClearBinding();
+		SetStage(Stage.Idle);
+	}
+
+	private void ClearBinding()
+	{
+		// Internal transitions publish their final stage only after cleanup.
 		version++;
 		if (started) BlockInput();
 		TankInterior previous = boundInterior;
 		boundInterior = null;
 		if (!ReferenceEquals(previous, null)) Disconnect(previous);
 		if (started && Application.isPlaying) ShowExterior();
-		SetStage(Stage.Idle);
 	}
 
 	private void Disconnect(TankInterior previous)
@@ -259,9 +275,19 @@ public sealed class TankSceneLink : MonoBehaviour
 
 	private bool Abort(TankInterior next, uint request, string reason)
 	{
+		if (request != version)
+		{
+			if (boundInterior == null)
+			{
+				Disconnect(next);
+				if (started && Application.isPlaying) ShowExterior();
+			}
+			return false;
+		}
+
 		Disconnect(next);
 		if (boundInterior == next) boundInterior = null;
-		if (request == version) Fail(reason);
+		Fail(reason);
 		return false;
 	}
 
@@ -390,14 +416,24 @@ public sealed class TankSceneLink : MonoBehaviour
 			root.GetComponentsInChildren(true, candidates);
 			foreach (TankInterior candidate in candidates)
 			{
-				if (found != null) { Fail("The interior scene must contain exactly one TankInterior."); ReleaseInterior(); return; }
+				if (found != null)
+				{
+					Fail("The interior scene must contain exactly one TankInterior.", release: true);
+					return;
+				}
 				found = candidate;
 			}
 		}
-		if (found == null) { Fail("The interior scene contains no TankInterior."); ReleaseInterior(); return; }
+		if (found == null)
+		{
+			Fail("The interior scene contains no TankInterior.", release: true);
+			return;
+		}
 
 		interior = found;
-		if (!Bind(found)) Fail(LastError ?? "Interior binding failed.");
+		uint request = version;
+		// A callback may cancel this request or finish a newer binding.
+		if (!Bind(found) && request == version) Fail(LastError ?? "Interior binding failed.");
 	}
 
 	private void ReleaseInterior()
@@ -442,17 +478,18 @@ public sealed class TankSceneLink : MonoBehaviour
 
 	private void OnSessionStopped()
 	{
-		Unbind();
+		ClearBinding();
 		LastError = session != null ? session.LastError : "The session was destroyed.";
 		bool waiting = session != null && (session.CurrentState == SessionJoinInit.State.Starting || session.CurrentState == SessionJoinInit.State.Running);
-		SetStage(waiting ? Stage.Waiting : LastError == null ? Stage.Stopped : Stage.Failed);
 		if (!waiting) ReleaseInterior();
+		SetStage(waiting ? Stage.Waiting : LastError == null ? Stage.Stopped : Stage.Failed);
 	}
 
-	private void Fail(string reason)
+	private void Fail(string reason, bool release = false)
 	{
-		Unbind();
+		ClearBinding();
 		LastError = reason;
+		if (release) ReleaseInterior();
 		SetStage(Stage.Failed);
 	}
 
