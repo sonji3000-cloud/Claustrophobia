@@ -12,7 +12,32 @@ public sealed class GunnerSight : MonoBehaviour
 	[Tooltip("FOV change in degrees per scroll tick.")]
 	[SerializeField, Min(0f)] private float zoomStep = 5f;
 
-	private void OnEnable()
+	public Camera Feed => feed;
+
+	/// <summary>The camera must already target the display's authored RenderTexture.</summary>
+	public bool Bind(Camera next)
+	{
+		if (!CanBind(next)) return false;
+		if (feed == next) return true;
+
+		if (isActiveAndEnabled && feed != null) feed.enabled = false;
+		feed = next;
+		if (isActiveAndEnabled) ApplyFeed();
+		return true;
+	}
+
+	public bool CanBind(Camera next) => next != null && next.targetTexture != null && display != null
+		&& display.sharedMaterial != null && display.sharedMaterial.mainTexture == next.targetTexture;
+
+	public void Unbind()
+	{
+		if (isActiveAndEnabled) StopFeed();
+		feed = null;
+	}
+
+	private void OnEnable() => ApplyFeed();
+
+	private void ApplyFeed()
 	{
 		bool active = feed != null && feed.targetTexture != null && display != null;
 
@@ -30,7 +55,9 @@ public sealed class GunnerSight : MonoBehaviour
 		if (feed.fieldOfView != fov) feed.fieldOfView = fov;
 	}
 
-	private void OnDisable()
+	private void OnDisable() => StopFeed();
+
+	private void StopFeed()
 	{
 		if (feed != null) feed.enabled = false;
 		if (display != null) display.enabled = false;

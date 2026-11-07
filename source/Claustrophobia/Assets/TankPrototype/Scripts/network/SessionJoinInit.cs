@@ -1,115 +1,220 @@
-using Fusion;
-using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Fusion;
+using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static Unity.VectorGraphics.SVGParser;
 
 [RequireComponent(typeof(NetworkRunner))]
 public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 {
-    private NetworkRunner runner;
+	public enum State { Idle, Starting, Running, Stopped, Failed }
 
-    public TankControl tankControl;
+	public TankControl tankControl;
+	[SerializeField] private NetworkSceneManagerDefault sceneManager;
+	[Tooltip("Use the authored scene manager. Legacy prototype scenes may retain their old fallback.")]
+	[SerializeField] private bool requireSceneManager;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private async void Start()
-    {
-        runner = GetComponent<NetworkRunner>();
+	private NetworkRunner runner;
+	private bool attached;
+	private bool startSucceeded;
+	private bool sceneLoaded;
+	private bool sceneReady;
+	private uint version;
+	private Task stopTask;
+	private CancellationTokenSource startCancel;
+	private string scenePath;
+	private int sceneIndex = -1;
 
-        runner.AddCallbacks(this);
+	public NetworkRunner Runner => runner;
+	public State CurrentState { get; private set; }
+	public string TargetScenePath => scenePath;
+	public int TargetSceneIndex => sceneIndex;
+	public bool StartSucceeded => startSucceeded;
+	public bool HasSceneLoaded => sceneLoaded;
+	public bool IsSceneReady => sceneReady && isActiveAndEnabled && runner != null && runner.IsRunning;
+	public string LastError { get; private set; }
 
+	public event Action SceneReady;
+	public event Action Stopped;
 
-        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+	private void Awake()
+	{
+		runner = GetComponent<NetworkRunner>();
+		if (sceneManager == null) sceneManager = GetComponent<NetworkSceneManagerDefault>();
+		// Cache the owning scene before Fusion can move the runner to DontDestroyOnLoad.
+		scenePath = gameObject.scene.path;
+		sceneIndex = SceneUtility.GetBuildIndexByScenePath(scenePath);
+	}
 
-        if (sceneIndex < 0)
-        {
-            Debug.LogError("현재 씬이 Build Profiles에 등록되지 않았습니다.");
-            return;
-        }
+	private async void Start() => await StartSession();
 
-        SceneRef sceneRef = SceneRef.FromIndex(sceneIndex);
+	/// <summary>Returns startup success. SceneReady separately confirms the target scene callback.</summary>
+	public async Task<bool> StartSession()
+	{
+		if (!Application.isPlaying || !isActiveAndEnabled) return false;
+		if (CurrentState != State.Idle) return CurrentState == State.Running;
+		uint request = ++version;
+		CurrentState = State.Starting;
+		LastError = null;
+		if (sceneIndex < 0 || string.IsNullOrEmpty(scenePath))
+		{
+			EndSession("The owning scene is not enabled in Build Settings.");
+			return false;
+		}
+		if (sceneManager == null && !requireSceneManager)
+			sceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>();
+		if (sceneManager == null)
+		{
+			EndSession("The authored NetworkSceneManagerDefault is missing.");
+			return false;
+		}
 
-        NetworkSceneInfo sceneInfo = new NetworkSceneInfo();
-        sceneInfo.AddSceneRef(sceneRef, LoadSceneMode.Single);
+		Attach();
+		var scenes = new NetworkSceneInfo();
+		scenes.AddSceneRef(SceneRef.FromIndex(sceneIndex), LoadSceneMode.Single);
+		var cancel = new CancellationTokenSource();
+		startCancel = cancel;
+		try
+		{
+			var result = await runner.StartGame(new StartGameArgs
+			{
+				GameMode = GameMode.AutoHostOrClient,
+				SessionName = "MySession",
+				PlayerCount = 3,
+				IsOpen = true,
+				IsVisible = true,
+				Scene = scenes,
+				SceneManager = sceneManager,
+				StartGameCancellationToken = cancel.Token
+			});
+			if (request != version || !Application.isPlaying || !isActiveAndEnabled) return false;
+			if (!result.Ok)
+			{
+				EndSession(result.ShutdownReason.ToString());
+				return false;
+			}
 
-        // Fusion이 씬과 NetworkObject를 관리하도록 지정
-        NetworkSceneManagerDefault sceneManager =
-            GetComponent<NetworkSceneManagerDefault>();
+			startSucceeded = true;
+			CurrentState = State.Running;
+			ApplyReady();
+			return true;
+		}
+		catch (Exception e)
+		{
+			if (request == version) EndSession(e.Message);
+			return false;
+		}
+		finally
+		{
+			if (startCancel == cancel) startCancel = null;
+			cancel.Dispose();
+		}
+	}
 
-        if (sceneManager == null)
-            sceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>();
+	public Task StopSession()
+	{
+		EndSession(null);
+		startCancel?.Cancel();
+		if (stopTask == null) stopTask = ShutdownRunner();
+		return stopTask;
+	}
 
+	private async Task ShutdownRunner()
+	{
+		if (runner == null || runner.IsShutdown) return;
+		try { await runner.Shutdown(false); }
+		catch (Exception e) { LastError = e.Message; }
+	}
 
-        StartGameArgs startGameArgs = new StartGameArgs
-        {
-            GameMode = GameMode.AutoHostOrClient,
-            SessionName = "MySession",
-            PlayerCount = 3, // Set the maximum number of players for the session
-            IsOpen = true, // Allow other players to join the session
-            IsVisible = true, // Make the session visible in the lobby
+	private void ApplyReady()
+	{
+		if (sceneReady || !startSucceeded || !sceneLoaded || !isActiveAndEnabled
+			|| CurrentState != State.Running || runner == null || !runner.IsRunning) return;
 
-            Scene = sceneInfo,
-            SceneManager = sceneManager
+		sceneReady = true;
+		SceneReady?.Invoke();
+	}
 
-        };
+	private void EndSession(string error)
+	{
+		if (CurrentState == State.Stopped || CurrentState == State.Failed) return;
+		version++;
+		sceneReady = false;
+		startSucceeded = false;
+		sceneLoaded = false;
+		LastError = error;
+		CurrentState = error == null ? State.Stopped : State.Failed;
+		Stopped?.Invoke();
+	}
 
-        runner.StartGame(startGameArgs);
-    }
+	private void Attach()
+	{
+		if (attached || runner == null) return;
+		runner.AddCallbacks(this);
+		attached = true;
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private void Detach()
+	{
+		if (attached && runner != null) runner.RemoveCallbacks(this);
+		attached = false;
+	}
 
-    // Implementing INetworkRunnerCallbacks interface methods
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    { // when a player joins the session, this method is called
-        Debug.Log($"Player {player} joined the session.");
-    }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    { // when a player leaves the session, this method is called
-       
-        Debug.Log($"Player {player} left the session.");
-    }
-    public void OnInput(NetworkRunner runner, NetworkInput input)
-    {
-        if (tankControl == null)
-        {
-            input.Set(default(TankCrewNetworkInput));
-            return;
-        }
+	private async void OnDisable()
+	{
+		if (Application.isPlaying) await StopSession();
+		Detach();
+	}
 
+	public void OnInput(NetworkRunner source, NetworkInput input)
+	{
+		if (source != runner || !IsSceneReady || tankControl == null || !tankControl.CanInput)
+		{
+			input.Set(default(TankCrewNetworkInput));
+			return;
+		}
+		tankControl.SubmitNetworkInput(input);
+	}
 
-        tankControl.SubmitNetworkInput(input);
-    }
+	public void OnSceneLoadStart(NetworkRunner source)
+	{
+		if (source != runner || CurrentState != State.Starting && CurrentState != State.Running) return;
+		bool notify = sceneReady;
+		sceneReady = false;
+		sceneLoaded = false;
+		if (notify) Stopped?.Invoke();
+	}
 
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
-    public void OnConnectedToServer(NetworkRunner runner) 
-    {
-        Debug.Log("[CONNECTED] Server 연결됨");
-    }
-    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) 
-    {
-        
-    }
-    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
-    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
-    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
-    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
-    public void OnSceneLoadStart(NetworkRunner runner) { }
-    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
-    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+	public void OnSceneLoadDone(NetworkRunner source)
+	{
+		if (source != runner || !isActiveAndEnabled || CurrentState != State.Starting && CurrentState != State.Running) return;
+		Scene scene = SceneManager.GetSceneByPath(scenePath);
+		sceneLoaded = scene.IsValid() && scene.isLoaded && scene.buildIndex == sceneIndex;
+		ApplyReady();
+	}
 
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
-    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
+	public void OnShutdown(NetworkRunner source, ShutdownReason reason)
+	{
+		if (source == runner) EndSession(reason == ShutdownReason.Ok ? null : reason.ToString());
+	}
 
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ReadOnlySpan<byte> data) { }
-
+	public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) => Debug.Log($"Player {player} joined the session.");
+	public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) => Debug.Log($"Player {player} left the session.");
+	public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+	public void OnConnectedToServer(NetworkRunner runner) => Debug.Log("[CONNECTED] Server connected");
+	public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
+	public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
+	public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+	public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
+	public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
+	public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+	public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+	public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+	public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+	public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
+	public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
+	public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ReadOnlySpan<byte> data) { }
 }

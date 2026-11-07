@@ -20,6 +20,43 @@ public sealed class TankJoystick : MonoBehaviour
 	private float lastAngle = float.NaN;
 	private bool initialized;
 
+	public TankControl Control => control;
+	public TankAim Aim => aim;
+
+	/// <summary>Connects only control when the existing aim reference is explicitly deferred.</summary>
+	public bool BindControl(TankControl next)
+	{
+		if (next == null || aim != null && aim.gameObject != next.gameObject) return false;
+		if (control == next) return true;
+		control = next;
+		if (isActiveAndEnabled) ApplyHandle();
+		return true;
+	}
+
+	public void UnbindControl()
+	{
+		control = null;
+		if (isActiveAndEnabled) RestoreHandle();
+	}
+
+	public bool Bind(TankControl nextControl, TankAim nextAim)
+	{
+		if (nextControl == null || nextAim == null || nextControl.gameObject != nextAim.gameObject) return false;
+		if (control == nextControl && aim == nextAim) return true;
+
+		control = nextControl;
+		aim = nextAim;
+		if (isActiveAndEnabled) ApplyHandle();
+		return true;
+	}
+
+	public void Unbind()
+	{
+		control = null;
+		aim = null;
+		if (isActiveAndEnabled) RestoreHandle();
+	}
+
 	private void Awake()
 	{
 		if (handle == null || handle.parent != transform) return;
@@ -29,7 +66,11 @@ public sealed class TankJoystick : MonoBehaviour
 		initialized = true;
 	}
 
-	private void Update()
+	private void OnEnable() => ApplyHandle();
+
+	private void Update() => ApplyHandle();
+
+	private void ApplyHandle()
 	{
 		if (!initialized || handle == null) return;
 
@@ -47,7 +88,9 @@ public sealed class TankJoystick : MonoBehaviour
 		handle.SetLocalPositionAndRotation(pivot + tilt * (pos - pivot), tilt * rot);
 	}
 
-	private void OnDisable()
+	private void OnDisable() => RestoreHandle();
+
+	private void RestoreHandle()
 	{
 		if (initialized && handle != null) handle.SetLocalPositionAndRotation(pos, rot);
 

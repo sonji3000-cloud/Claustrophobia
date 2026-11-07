@@ -19,6 +19,24 @@ public sealed class TankLever : MonoBehaviour
 	private float lastAngle = float.NaN;
 	private bool initialized;
 
+	public TankControl Control => control;
+
+	public bool Bind(TankControl next)
+	{
+		if (next == null) return false;
+		if (control == next) return true;
+
+		control = next;
+		if (isActiveAndEnabled) ApplyHandle();
+		return true;
+	}
+
+	public void Unbind()
+	{
+		control = null;
+		if (isActiveAndEnabled) RestoreHandle();
+	}
+
 	private void Awake()
 	{
 		if (handle == null || handle.parent != transform) return;
@@ -28,7 +46,11 @@ public sealed class TankLever : MonoBehaviour
 		initialized = true;
 	}
 
-	private void Update()
+	private void OnEnable() => ApplyHandle();
+
+	private void Update() => ApplyHandle();
+
+	private void ApplyHandle()
 	{
 		if (!initialized || handle == null) return;
 
@@ -41,7 +63,9 @@ public sealed class TankLever : MonoBehaviour
 		handle.SetLocalPositionAndRotation(pivot + tilt * (pos - pivot), tilt * rot);
 	}
 
-	private void OnDisable()
+	private void OnDisable() => RestoreHandle();
+
+	private void RestoreHandle()
 	{
 		if (initialized && handle != null) handle.SetLocalPositionAndRotation(pos, rot);
 

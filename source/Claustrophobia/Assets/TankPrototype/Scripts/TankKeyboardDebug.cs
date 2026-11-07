@@ -18,6 +18,24 @@ public sealed class TankKeyboardDebug : MonoBehaviour
 
     private Rigidbody body;
     private GUIStyle valueStyle;
+	private bool crewAssigned;
+	[SerializeField] private bool waitForBind;
+
+	public TankCrew Crew => crew;
+
+	public bool Bind(TankCrew next)
+	{
+		if (next == null) return false;
+		crewAssigned = true;
+		crew = next;
+		return true;
+	}
+
+	public void Unbind()
+	{
+		crewAssigned = true;
+		crew = null;
+	}
     // Update samples the completed physics state, independently of motor's write.
     public float CurrentForwardSpeed { get; private set; }
     public float CurrentTurnSpeed { get; private set; }
@@ -26,7 +44,7 @@ public sealed class TankKeyboardDebug : MonoBehaviour
     {
         if (motor == null) motor = GetComponent<TankMotor>();
         body = GetComponent<Rigidbody>();
-		if (crew == null) crew = GetComponent<TankCrew>();
+		if (crew == null && !crewAssigned && !waitForBind) crew = GetComponent<TankCrew>();
         if (aim == null) aim = GetComponent<TankAim>();
         if (gun == null) gun = GetComponent<TankGun>();
         if (ballistics == null) ballistics = GetComponent<TankBallistics>();

@@ -2,58 +2,65 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>Manual U04 API checks on the selected link. Never saves scene or prefab assets.</summary>
+/// <summary>Manual session link checks. Never saves scene or prefab assets.</summary>
 public static class TankLinkDebug
 {
-	private const string BindPath = "Tools/Tank/Scene Link/Bind Input APIs (Play Mode)";
-	private const string UnbindPath = "Tools/Tank/Scene Link/Unbind Input APIs (Play Mode)";
+	private const string BindPath = "Tools/Tank/Scene Link/Bind Session APIs (Play Mode)";
+	private const string UnbindPath = "Tools/Tank/Scene Link/Unbind Session APIs (Play Mode)";
+	private const string ReportPath = "Tools/Tank/Scene Link/Report Presentation Bindings (Play Mode)";
+	private const string SessionPath = "Tools/Tank/Scene Link/Report Session Readiness (Play Mode)";
+
+	[MenuItem(SessionPath)]
+	public static void ReportSession()
+	{
+		TankSceneLink link = GetLink();
+		SessionJoinInit session = link.Session;
+		Debug.Log($"[TankLinkDebug] Stage={link.CurrentStage}, Ready={link.IsReady}, "
+			+ $"Session={session.CurrentState}, Started={session.StartSucceeded}, SceneLoaded={session.HasSceneLoaded}, "
+			+ $"SceneReady={session.IsSceneReady}, Target={session.TargetScenePath}, "
+			+ $"JoystickAimDeferred={link.JoystickAimDeferred}, Error={link.LastError ?? session.LastError}.", link);
+	}
+
+	[MenuItem(ReportPath)]
+	public static void ReportPresentation()
+	{
+		TankSceneLink link = GetLink();
+		var fields = new SerializedObject(link.Interior);
+		var driver = (DriverScreen)fields.FindProperty("driverScreen").objectReferenceValue;
+		var breech = (TankBreech)fields.FindProperty("breech").objectReferenceValue;
+		var joystick = (TankJoystick)fields.FindProperty("joystick").objectReferenceValue;
+		var hud = (CrewInteractHud)fields.FindProperty("interactionHud").objectReferenceValue;
+		var external = new SerializedObject(link);
+		var tankHud = (TankKeyboardDebug)external.FindProperty("tankHud").objectReferenceValue;
+
+		Debug.Log($"[TankLinkDebug] U05 references: DriverFeed={driver != null && driver.Feed != null}, "
+			+ $"GunnerFeed={link.Interior.Sight != null && link.Interior.Sight.Feed != null}, BreechGun={breech != null && breech.Gun != null}, "
+			+ $"JoystickControl={joystick != null && joystick.Control != null}, JoystickAim={joystick != null && joystick.Aim != null}, "
+			+ $"HudControl={hud != null && hud.Control != null}, HudCrew={tankHud != null && tankHud.Crew != null}. "
+			+ "Read-only report; no reference is repaired or rebound.", link);
+	}
 
 	[MenuItem(BindPath)]
 	public static void BindInput()
 	{
 		TankSceneLink link = GetLink();
-		if (!link.ValidateRefs(out string reason) || !link.PrepareInterior())
-			throw new InvalidOperationException(reason ?? "The active interior could not be prepared.");
-
-		var fields = new SerializedObject(link);
-		var control = (TankControl)fields.FindProperty("control").objectReferenceValue;
-		var input = (TankInput)fields.FindProperty("input").objectReferenceValue;
-		var cameras = (TankCrewCameras)fields.FindProperty("cameras").objectReferenceValue;
-		var hud = (TankKeyboardDebug)fields.FindProperty("tankHud").objectReferenceValue;
-		TankInterior interior = link.Interior;
-		control.SetInputEnabled(false);
-
-		bool bound = control.Bind(interior.Crew, interior.DriveDevice, interior.AimDevice, interior.Sight)
-			&& input.Bind(interior.Seats, interior.Interaction, interior.Mode)
-			&& interior.Mode.Bind(input, cameras, hud) && interior.Mode.ApplyMode();
-		if (!bound)
-		{
-			interior.Mode.Unbind();
-			input.Unbind();
-			control.Unbind();
-			throw new InvalidOperationException("Input API binding failed; input remains blocked.");
-		}
-
-		control.SetInputEnabled(true);
-		Debug.Log($"[TankLinkDebug] U04 input APIs bound. Control={control.IsBound}, Input={input.IsBound}, Mode={interior.Mode.IsBound}, CanInput={control.CanInput}. Release held keys before operating. Device/feed binding and scene loading remain outside this check.", link);
+		if (!link.Bind(link.Interior))
+			throw new InvalidOperationException(link.LastError ?? "The session or designated tank is not ready.");
+		Debug.Log($"[TankLinkDebug] U06 Stage={link.CurrentStage}, Ready={link.IsReady}, JoystickAimDeferred={link.JoystickAimDeferred}.", link);
 	}
 
 	[MenuItem(UnbindPath)]
 	public static void UnbindInput()
 	{
 		TankSceneLink link = GetLink();
-		var fields = new SerializedObject(link);
-		var control = (TankControl)fields.FindProperty("control").objectReferenceValue;
-		var input = (TankInput)fields.FindProperty("input").objectReferenceValue;
-		if (control != null) control.SetInputEnabled(false);
-		if (link.Interior != null && link.Interior.Mode != null) link.Interior.Mode.Unbind();
-		if (input != null) input.Unbind();
-		if (control != null) control.Unbind();
-		Debug.Log("[TankLinkDebug] U04 input APIs unbound; input and screen output are suspended. Use Bind Input APIs to reconnect, or exit Play Mode.", link);
+		link.Unbind();
+		Debug.Log("[TankLinkDebug] U06 connection released; input and output remain blocked until an explicit Bind or scene restart.", link);
 	}
 
 	[MenuItem(BindPath, true)]
 	[MenuItem(UnbindPath, true)]
+	[MenuItem(ReportPath, true)]
+	[MenuItem(SessionPath, true)]
 	private static bool CanDebug()
 	{
 		GameObject selected = Selection.activeGameObject;

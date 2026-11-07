@@ -13,6 +13,34 @@ public sealed class TankBreech : MonoBehaviour
 	[SerializeField] private Transform closedPose;
 
 	private TankRound loaded;
+	private TankGun loadedGun;
+	private TankGun subscribedGun;
+
+	public TankGun Gun => gun;
+
+	/// <summary>A loaded round stays with its gun; this API does not transfer ammunition.</summary>
+	public bool Bind(TankGun next)
+	{
+		if (!CanBind(next)) return false;
+		if (gun == next)
+		{
+			if (isActiveAndEnabled) Attach();
+			return true;
+		}
+
+		Detach();
+		gun = next;
+		if (isActiveAndEnabled) Attach();
+		return true;
+	}
+
+	public bool CanBind(TankGun next) => next != null && (loaded == null || loadedGun == null || loadedGun == next);
+
+	public void Unbind()
+	{
+		Detach();
+		gun = null;
+	}
 
 	public bool CanInsert(CrewInteract user)
 	{
@@ -45,6 +73,7 @@ public sealed class TankBreech : MonoBehaviour
 		if (!gun.RequestInsert()) return false;
 
 		loaded = user.Carry.CommitLoad(loadPoint);
+		loadedGun = gun;
 		user.ClearSelection();
 		return true;
 	}
@@ -68,6 +97,8 @@ public sealed class TankBreech : MonoBehaviour
 
 	private void OnStateChanged(TankGun.ChamberState state)
 	{
+		if (gun == null) return;
+
 		bool open = state == TankGun.ChamberState.EmptyOpen || state == TankGun.ChamberState.LoadedOpen;
 		Transform pose = open ? openPose : closedPose;
 		if (block != null && pose != null) block.SetPositionAndRotation(pose.position, pose.rotation);
@@ -76,18 +107,25 @@ public sealed class TankBreech : MonoBehaviour
 
 		loaded.gameObject.SetActive(false);
 		loaded = null;
+		loadedGun = null;
 	}
 
-	private void OnEnable()
-	{
-		if (gun == null) return;
+	private void OnEnable() => Attach();
 
-		gun.StateChanged += OnStateChanged;
+	private void Attach()
+	{
+		if (gun == null || subscribedGun == gun) return;
+
+		subscribedGun = gun;
+		subscribedGun.StateChanged += OnStateChanged;
 		OnStateChanged(gun.State);
 	}
 
-	private void OnDisable()
+	private void OnDisable() => Detach();
+
+	private void Detach()
 	{
-		if (gun != null) gun.StateChanged -= OnStateChanged;
+		if (subscribedGun != null) subscribedGun.StateChanged -= OnStateChanged;
+		subscribedGun = null;
 	}
 }

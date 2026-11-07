@@ -26,6 +26,11 @@ public sealed class TankInterior : MonoBehaviour
 	public CrewDevice DriveDevice => driveDevice;
 	public CrewDevice AimDevice => aimDevice;
 	public GunnerSight Sight => sight;
+	public DriverScreen DriverScreen => driverScreen;
+	public TankBreech Breech => breech;
+	public TankLever[] Levers => levers;
+	public TankJoystick Joystick => joystick;
+	public CrewInteractHud Hud => interactionHud;
 	public bool IsPrepared => prepared && seats != null && seats.IsInitialized;
 
 	public bool ValidateRefs(out string reason)

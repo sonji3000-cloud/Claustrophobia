@@ -24,6 +24,33 @@ public sealed class CrewInteractHud : MonoBehaviour
 	private bool usingJoystick;
 	private static readonly string[] ReasonText = { "Ready", "Disabled", "Wrong role", "In use", "Too far / no surface in range", "Behind camera", "Outside center", "Occluded", "Wrong layer / no active collider" };
 
+	public TankControl Control => control;
+
+	public bool Bind(TankControl next)
+	{
+		if (next == null) return false;
+		if (control == next) return true;
+
+		control = next;
+		ClearFireText();
+		if (isActiveAndEnabled) RefreshHud();
+		return true;
+	}
+
+	public void Unbind()
+	{
+		control = null;
+		ClearFireText();
+		if (isActiveAndEnabled) RefreshHud();
+	}
+
+	private void ClearFireText()
+	{
+		fireReason = null;
+		fireText = null;
+		usingJoystick = false;
+	}
+
 	private void Awake()
 	{
 		CrewDevice[] devices = interaction.Devices;
@@ -41,8 +68,14 @@ public sealed class CrewInteractHud : MonoBehaviour
 		}
 	}
 
-	private void LateUpdate()
+	private void OnEnable() => RefreshHud();
+
+	private void LateUpdate() => RefreshHud();
+
+	private void RefreshHud()
 	{
+		if (interaction == null || interaction.View == null || interaction.Candidates == null || readyText == null) return;
+
 		bool debug = debugView != null && debugView.ShowDebug;
 		bool observe = debugView != null && debugView.IsObserving;
 		Camera view = interaction.View;

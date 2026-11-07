@@ -979,7 +979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf1aba929902d904b9402bb6d08fd887, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankLever
-  control: {fileID: 1304813856}
+  control: {fileID: 0}
   handle: {fileID: 1795598542}
   right: 0
   pivot: {x: 0, y: 0.5497524, z: 0}
@@ -3505,7 +3505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 228f99b4fbda60d46b6ef5633d3d4437, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DriverScreen
-  feed: {fileID: 1698757515}
+  feed: {fileID: 0}
   display: {fileID: 959720327}
 --- !u!1 &765829106 stripped
 GameObject:
@@ -4011,7 +4011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5bd37f35f29b9e4097a8c26d145873a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GunnerSight
-  feed: {fileID: 1304813833}
+  feed: {fileID: 0}
   display: {fileID: 2003211227}
   minFov: 15
   maxFov: 55
@@ -4413,6 +4413,7 @@ GameObject:
   - component: {fileID: 998917133}
   - component: {fileID: 998917135}
   - component: {fileID: 2140000002}
+  - component: {fileID: 2140000003}
   m_Layer: 0
   m_Name: NetworkAsset
   m_TagString: Untagged
@@ -4448,6 +4449,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SessionJoinInit
   tankControl: {fileID: 1304813856}
+  sceneManager: {fileID: 2140000003}
+  requireSceneManager: 1
 --- !u!114 &998917135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4787,7 +4790,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CrewInteractHud
   interaction: {fileID: 760878721}
   debugView: {fileID: 760878717}
-  control: {fileID: 1304813856}
+  control: {fileID: 0}
   reticle: {fileID: 1781936919}
   ring: {fileID: 386978211}
   retainRing: {fileID: 116233417}
@@ -5814,31 +5817,31 @@ PrefabInstance:
     - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: seats
       value: 
-      objectReference: {fileID: 991248471}
+      objectReference: {fileID: 0}
     - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: testMode
       value: 
-      objectReference: {fileID: 1395586562}
+      objectReference: {fileID: 0}
     - target: {fileID: 9001001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: interaction
       value: 
-      objectReference: {fileID: 760878721}
+      objectReference: {fileID: 0}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: crew
       value: 
-      objectReference: {fileID: 991248472}
+      objectReference: {fileID: 0}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: sight
       value: 
-      objectReference: {fileID: 902150566}
+      objectReference: {fileID: 0}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: aimDevice
       value: 
-      objectReference: {fileID: 1808661673}
+      objectReference: {fileID: 0}
     - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: driveDevice
       value: 
-      objectReference: {fileID: 760878720}
+      objectReference: {fileID: 0}
     - target: {fileID: 1769288639112650855, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_TargetTexture
       value: 
@@ -5930,7 +5933,23 @@ PrefabInstance:
     - target: {fileID: 7685796844441804652, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: crew
       value: 
-      objectReference: {fileID: 991248472}
+      objectReference: {fileID: 0}
+    - target: {fileID: 9002001002, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: waitForBind
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1769288639112650855, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7685796844441804652, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: waitForBind
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6284,15 +6303,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankTestMode
   startMode: 0
-  tankInput: {fileID: 1304813865}
-  tankCameras: {fileID: 1304813832}
-  tankHud: {fileID: 1304813831}
+  tankInput: {fileID: 0}
+  tankCameras: {fileID: 0}
+  tankHud: {fileID: 0}
   look: {fileID: 446121451}
   debugView: {fileID: 760878717}
   interiorHud: {fileID: 1113783490}
   modeLabel: {fileID: 1654854125}
   commanderSight: {fileID: 1808661675}
   carry: {fileID: 1795598547}
+  waitForBind: 1
 --- !u!4 &1395586563
 Transform:
   m_ObjectHideFlags: 0
@@ -7727,7 +7747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf1aba929902d904b9402bb6d08fd887, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankLever
-  control: {fileID: 1304813856}
+  control: {fileID: 0}
   handle: {fileID: 1795598541}
   right: 1
   pivot: {x: 0, y: 0.5497524, z: 0}
@@ -8046,7 +8066,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938edeecb0db4d340b848170206c4c4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankJoystick
-  control: {fileID: 1304813856}
+  control: {fileID: 0}
   aim: {fileID: 1304813870}
   device: {fileID: 1808661673}
   handle: {fileID: 2131397548}
@@ -9210,7 +9230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankBreech
   device: {fileID: 1808661674}
-  gun: {fileID: 1304813867}
+  gun: {fileID: 0}
   loadPoint: {fileID: 312576059}
   block: {fileID: 658908862}
   openPose: {fileID: 1009166226}
@@ -9965,6 +9985,21 @@ MonoBehaviour:
   aim: {fileID: 1304813834}
   driverFeed: {fileID: 1698757515}
   gunnerFeed: {fileID: 1304813833}
+  bindJoystickAim: 0
+--- !u!114 &2140000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998917131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90a93abf1a391964a94e5c139605105b, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  IsSceneTakeOverEnabled: 1
+  LogSceneLoadErrors: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

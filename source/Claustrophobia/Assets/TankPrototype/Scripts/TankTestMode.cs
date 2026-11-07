@@ -81,7 +81,7 @@ public sealed class TankTestMode : MonoBehaviour
 
 	private void Start()
 	{
-		ApplyMode();
+		if (!ApplyMode()) ClearOutput();
 	}
 
 	private void Update()
