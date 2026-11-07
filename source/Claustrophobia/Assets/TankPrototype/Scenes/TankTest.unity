@@ -3167,7 +3167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91693de3c6d900d479d030179c5ba7a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankSceneLink
-  interior: {fileID: 0}
+  interiorPath: Assets/TankPrototype/Scenes/TankInterior.unity
   session: {fileID: 998917133}
   control: {fileID: 1304813856}
   input: {fileID: 1304813865}

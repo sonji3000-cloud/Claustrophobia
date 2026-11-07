@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,9 +9,9 @@ using UnityEngine.SceneManagement;
 [DefaultExecutionOrder(-300)]
 public sealed class TankSceneLink : MonoBehaviour
 {
-	public enum Stage { Idle, Waiting, Prepared, Binding, Ready, Stopped, Failed }
+	public enum Stage { Idle, Waiting, Prepared, Binding, Ready, Stopped, Failed, Loading }
 
-	[SerializeField] private TankInterior interior;
+	[SerializeField] private string interiorPath;
 	[SerializeField] private SessionJoinInit session;
 	[SerializeField] private TankControl control;
 	[SerializeField] private TankInput input;
@@ -26,6 +27,17 @@ public sealed class TankSceneLink : MonoBehaviour
 	private NetworkObject tankObject;
 	private Scene worldScene;
 	private string worldPath;
+	private TankInterior interior;
+	private Scene interiorScene;
+	private string loadedPath;
+	private bool ownsInterior;
+	private AsyncOperation loadOp;
+	private AsyncOperation unloadOp;
+	private string loadPath;
+	private uint loadVersion;
+	private bool destroyed;
+	private readonly List<GameObject> roots = new List<GameObject>(3);
+	private readonly List<TankInterior> candidates = new List<TankInterior>(2);
 	private TankInterior boundInterior;
 	private bool joystickAimBound;
 	private bool started;
@@ -36,13 +48,21 @@ public sealed class TankSceneLink : MonoBehaviour
 	public Stage CurrentStage => stage;
 	public TankInterior Interior => interior;
 	public SessionJoinInit Session => session;
-	public bool IsReady => stage == Stage.Ready && boundInterior != null && CanBindSession() && control.CanInput;
+	public bool IsReady => stage == Stage.Ready && boundInterior != null && HasInterior && CanBindSession() && control.CanInput;
+	public string InteriorPath => interiorPath;
+	public Scene InteriorScene => interiorScene;
+	public bool OwnsInterior => ownsInterior && interiorScene.IsValid() && interiorScene.isLoaded;
+	public bool IsLoading => loadOp != null;
+	public bool IsUnloading => unloadOp != null;
 	public bool JoystickAimDeferred => !bindJoystickAim;
 	public string LastError { get; private set; }
 	public event Action<Stage> StageChanged;
+	private bool HasInterior => interior != null && interiorScene.isLoaded
+		&& interior.gameObject.scene == interiorScene && loadedPath == interiorPath;
 
 	private void Awake()
 	{
+		destroyed = false;
 		if (control == null) return;
 		tankObject = control.GetComponent<NetworkObject>();
 		worldScene = control.gameObject.scene;
@@ -62,7 +82,7 @@ public sealed class TankSceneLink : MonoBehaviour
 	{
 		started = true;
 		BlockInput();
-		if (!ValidateRefs(out string reason)) { Fail(reason); return; }
+		if (!ValidateWorld(out string reason) || !ValidatePath(out reason)) { Fail(reason); return; }
 		SetStage(Stage.Waiting);
 		TryConnect();
 	}
@@ -70,17 +90,21 @@ public sealed class TankSceneLink : MonoBehaviour
 	private void Update()
 	{
 		if (stage == Stage.Waiting) TryConnect();
-		else if (stage == Stage.Ready && !CanBindSession()) OnSessionStopped();
+		else if (stage == Stage.Ready || stage == Stage.Loading)
+		{
+			if (!CanBindSession()) OnSessionStopped();
+			else if (stage == Stage.Ready && !HasInterior) Fail("The bound interior scene is no longer available.");
+		}
 	}
 
 	public bool ValidateRefs(out string reason) => ValidateInterior(interior, out reason);
 
-	private bool ValidateInterior(TankInterior next, out string reason)
+	private bool ValidateWorld(out string reason)
 	{
-		if (next == null || session == null || control == null || input == null || cameras == null
+		if (session == null || control == null || input == null || cameras == null
 			|| tankHud == null || gun == null || aim == null || driverFeed == null || gunnerFeed == null)
 		{
-			reason = "TankSceneLink requires an interior and all explicit external endpoints.";
+			reason = "TankSceneLink requires all explicit external endpoints.";
 			return false;
 		}
 		if (input.gameObject != control.gameObject || cameras.gameObject != control.gameObject
@@ -90,14 +114,43 @@ public sealed class TankSceneLink : MonoBehaviour
 			reason = "TankSceneLink endpoints must belong to the designated tank.";
 			return false;
 		}
-		if (!next.ValidateRefs(out reason)) return false;
-		if (!control.isActiveAndEnabled || !input.isActiveAndEnabled || !next.Mode.isActiveAndEnabled)
+		if (!control.isActiveAndEnabled || !input.isActiveAndEnabled)
 		{
-			reason = "The control, input and mode must be active before completing the scene link.";
+			reason = "The control and input must be active before completing the scene link.";
 			return false;
 		}
 		if (driverFeed == gunnerFeed || !driverFeed.transform.IsChildOf(control.transform)
-			|| !gunnerFeed.transform.IsChildOf(control.transform) || !next.DriverScreen.CanBind(driverFeed)
+			|| !gunnerFeed.transform.IsChildOf(control.transform))
+		{
+			reason = "The two monitor feeds must belong to the designated tank.";
+			return false;
+		}
+		reason = null;
+		return true;
+	}
+
+	private bool ValidatePath(out string reason)
+	{
+		if (string.IsNullOrWhiteSpace(interiorPath) || interiorPath == worldPath
+			|| SceneUtility.GetBuildIndexByScenePath(interiorPath) < 0)
+		{
+			reason = "The interior path must name a separate enabled scene in Build Settings.";
+			return false;
+		}
+		reason = null;
+		return true;
+	}
+
+	private bool ValidateInterior(TankInterior next, out string reason)
+	{
+		if (!ValidateWorld(out reason)) return false;
+		if (next == null || next != interior || !HasInterior)
+		{
+			reason = "The designated interior scene has not been acquired.";
+			return false;
+		}
+		if (!next.ValidateRefs(out reason)) return false;
+		if (!next.Mode.isActiveAndEnabled || !next.DriverScreen.CanBind(driverFeed)
 			|| !next.Sight.CanBind(gunnerFeed) || !next.Breech.CanBind(gun))
 		{
 			reason = "A monitor feed or chamber endpoint cannot bind to the designated tank.";
@@ -175,7 +228,7 @@ public sealed class TankSceneLink : MonoBehaviour
 		if (started) BlockInput();
 		TankInterior previous = boundInterior;
 		boundInterior = null;
-		if (previous != null) Disconnect(previous);
+		if (!ReferenceEquals(previous, null)) Disconnect(previous);
 		if (started && Application.isPlaying) ShowExterior();
 		SetStage(Stage.Idle);
 	}
@@ -183,20 +236,23 @@ public sealed class TankSceneLink : MonoBehaviour
 	private void Disconnect(TankInterior previous)
 	{
 		if (input != null) input.SuspendInput();
-		if (previous.Mode != null) previous.Mode.Unbind();
+		if (previous != null && previous.Mode != null) previous.Mode.Unbind();
 		if (input != null) input.Unbind();
-		if (previous.Interaction != null) previous.Interaction.StopUse();
-		if (previous.DriverScreen != null) previous.DriverScreen.Unbind();
-		if (previous.Sight != null) previous.Sight.Unbind();
-		if (previous.Breech != null) previous.Breech.Unbind();
-		foreach (TankLever lever in previous.Levers)
-			if (lever != null) lever.Unbind();
-		if (previous.Joystick != null)
+		if (previous != null)
 		{
-			if (joystickAimBound) previous.Joystick.Unbind();
-			else previous.Joystick.UnbindControl();
+			if (previous.Interaction != null) previous.Interaction.StopUse();
+			if (previous.DriverScreen != null) previous.DriverScreen.Unbind();
+			if (previous.Sight != null) previous.Sight.Unbind();
+			if (previous.Breech != null) previous.Breech.Unbind();
+			foreach (TankLever lever in previous.Levers)
+				if (lever != null) lever.Unbind();
+			if (previous.Joystick != null)
+			{
+				if (joystickAimBound) previous.Joystick.Unbind();
+				else previous.Joystick.UnbindControl();
+			}
+			if (previous.Hud != null) previous.Hud.Unbind();
 		}
-		if (previous.Hud != null) previous.Hud.Unbind();
 		if (tankHud != null) tankHud.Unbind();
 		if (control != null) control.Unbind();
 	}
@@ -232,7 +288,151 @@ public sealed class TankSceneLink : MonoBehaviour
 			OnSessionStopped();
 			return;
 		}
-		if (CanBindSession() && !Bind(interior)) Fail(LastError ?? "Interior binding failed.");
+		if (!CanBindSession()) return;
+		if (loadOp != null)
+		{
+			loadVersion = version;
+			SetStage(Stage.Loading);
+			return;
+		}
+		if (unloadOp != null) { SetStage(Stage.Loading); return; }
+		if (!ValidateWorld(out string reason) || !ValidatePath(out reason)) { Fail(reason); return; }
+		if (interiorScene.IsValid() && loadedPath != interiorPath)
+		{
+			ReleaseInterior();
+			if (unloadOp != null) { SetStage(Stage.Loading); return; }
+		}
+		if (!FindScene(interiorPath, out Scene scene, out reason)) { Fail(reason); return; }
+		if (scene.IsValid())
+		{
+			if (!scene.isLoaded) { Fail("The interior scene is being loaded outside this link."); return; }
+			if (scene != interiorScene) ownsInterior = false;
+			interiorScene = scene;
+			loadedPath = interiorPath;
+			AcquireInterior();
+			return;
+		}
+
+		loadPath = interiorPath;
+		loadVersion = version;
+		try
+		{
+			loadOp = SceneManager.LoadSceneAsync(loadPath, LoadSceneMode.Additive);
+			if (loadOp == null) { Fail("The interior load returned no operation."); return; }
+			SetStage(Stage.Loading);
+			loadOp.completed += OnLoadDone;
+		}
+		catch (Exception e) { loadOp = null; Fail(e.Message); }
+	}
+
+	/// <summary>Requests acquisition or retry. A pending load is shared across repeated requests.</summary>
+	public bool LoadInterior()
+	{
+		if (!Application.isPlaying || !isActiveAndEnabled || !started || destroyed) return false;
+		if (IsReady || stage == Stage.Loading) return true;
+		if (!ValidateWorld(out string reason) || !ValidatePath(out reason)) { Fail(reason); return false; }
+
+		LastError = null;
+		SetStage(Stage.Waiting);
+		TryConnect();
+		return stage != Stage.Failed && stage != Stage.Stopped;
+	}
+
+	private static bool FindScene(string path, out Scene scene, out string reason)
+	{
+		scene = default;
+		for (int i = 0; i < SceneManager.sceneCount; i++)
+		{
+			Scene candidate = SceneManager.GetSceneAt(i);
+			if (candidate.path != path) continue;
+			if (scene.IsValid()) { reason = "More than one interior scene is loaded at the configured path."; return false; }
+			scene = candidate;
+		}
+		reason = null;
+		return true;
+	}
+
+	private void OnLoadDone(AsyncOperation operation)
+	{
+		if (operation != loadOp) return;
+		loadOp = null;
+		if (!Application.isPlaying) return;
+		if (!FindScene(loadPath, out Scene scene, out string reason) || !scene.IsValid() || !scene.isLoaded)
+		{
+			if (!destroyed && this != null && isActiveAndEnabled) Fail(reason ?? "The completed interior scene could not be found.");
+			return;
+		}
+
+		interiorScene = scene;
+		loadedPath = loadPath;
+		ownsInterior = true;
+		bool wanted = !destroyed && this != null && isActiveAndEnabled && started
+			&& loadVersion == version && stage == Stage.Loading && loadPath == interiorPath && CanBindSession();
+		loadPath = null;
+		if (wanted) AcquireInterior();
+		else
+		{
+			ReleaseInterior();
+			if (!destroyed && this != null && isActiveAndEnabled && stage == Stage.Loading)
+			{
+				SetStage(Stage.Waiting);
+				TryConnect();
+			}
+		}
+	}
+
+	private void AcquireInterior()
+	{
+		TankInterior found = null;
+		interiorScene.GetRootGameObjects(roots);
+		foreach (GameObject root in roots)
+		{
+			root.GetComponentsInChildren(true, candidates);
+			foreach (TankInterior candidate in candidates)
+			{
+				if (found != null) { Fail("The interior scene must contain exactly one TankInterior."); ReleaseInterior(); return; }
+				found = candidate;
+			}
+		}
+		if (found == null) { Fail("The interior scene contains no TankInterior."); ReleaseInterior(); return; }
+
+		interior = found;
+		if (!Bind(found)) Fail(LastError ?? "Interior binding failed.");
+	}
+
+	private void ReleaseInterior()
+	{
+		Scene previous = interiorScene;
+		string previousPath = loadedPath;
+		bool release = ownsInterior && previous.IsValid() && previous.isLoaded;
+		interior = null;
+		interiorScene = default;
+		loadedPath = null;
+		ownsInterior = false;
+		if (!release || !Application.isPlaying) return;
+
+		try
+		{
+			unloadOp = SceneManager.UnloadSceneAsync(previous);
+			if (unloadOp == null) throw new InvalidOperationException("The owned interior could not be unloaded.");
+			unloadOp.completed += OnUnloadDone;
+		}
+		catch (Exception e)
+		{
+			interiorScene = previous;
+			loadedPath = previousPath;
+			ownsInterior = true;
+			LastError = e.Message;
+		}
+	}
+
+	private void OnUnloadDone(AsyncOperation operation)
+	{
+		if (operation != unloadOp) return;
+		unloadOp = null;
+		if (!Application.isPlaying || destroyed || this == null || !isActiveAndEnabled || stage != Stage.Loading) return;
+		SetStage(Stage.Waiting);
+		TryConnect();
 	}
 
 	private void OnSessionReady()
@@ -246,6 +446,7 @@ public sealed class TankSceneLink : MonoBehaviour
 		LastError = session != null ? session.LastError : "The session was destroyed.";
 		bool waiting = session != null && (session.CurrentState == SessionJoinInit.State.Starting || session.CurrentState == SessionJoinInit.State.Running);
 		SetStage(waiting ? Stage.Waiting : LastError == null ? Stage.Stopped : Stage.Failed);
+		if (!waiting) ReleaseInterior();
 	}
 
 	private void Fail(string reason)
@@ -274,6 +475,13 @@ public sealed class TankSceneLink : MonoBehaviour
 		Unbind();
 	}
 
+	private void OnDestroy()
+	{
+		destroyed = true;
+		version++;
+		ReleaseInterior();
+	}
+
 	private void SetStage(Stage next)
 	{
 		if (stage == next) return;
@@ -285,5 +493,5 @@ public sealed class TankSceneLink : MonoBehaviour
 	private void DebugPrepare() => Debug.Log($"[TankSceneLink] Prepared={PrepareInterior()}, Stage={stage}.", this);
 
 	[ContextMenu("Debug/Report Readiness")]
-	private void ReportReadiness() => Debug.Log($"[TankSceneLink] Stage={stage}, Ready={IsReady}, JoystickAimDeferred={JoystickAimDeferred}, Error={LastError}", this);
+	private void ReportReadiness() => Debug.Log($"[TankSceneLink] Stage={stage}, Ready={IsReady}, Interior={interiorPath}, Loading={IsLoading}, Owned={ownsInterior}, JoystickAimDeferred={JoystickAimDeferred}, Error={LastError}", this);
 }

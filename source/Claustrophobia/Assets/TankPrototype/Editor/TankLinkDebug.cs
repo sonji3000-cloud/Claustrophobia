@@ -9,6 +9,7 @@ public static class TankLinkDebug
 	private const string UnbindPath = "Tools/Tank/Scene Link/Unbind Session APIs (Play Mode)";
 	private const string ReportPath = "Tools/Tank/Scene Link/Report Presentation Bindings (Play Mode)";
 	private const string SessionPath = "Tools/Tank/Scene Link/Report Session Readiness (Play Mode)";
+	private const string LoadPath = "Tools/Tank/Scene Link/Load Interior (Play Mode)";
 
 	[MenuItem(SessionPath)]
 	public static void ReportSession()
@@ -16,15 +17,21 @@ public static class TankLinkDebug
 		TankSceneLink link = GetLink();
 		SessionJoinInit session = link.Session;
 		Debug.Log($"[TankLinkDebug] Stage={link.CurrentStage}, Ready={link.IsReady}, "
-			+ $"Session={session.CurrentState}, Started={session.StartSucceeded}, SceneLoaded={session.HasSceneLoaded}, "
-			+ $"SceneReady={session.IsSceneReady}, Target={session.TargetScenePath}, "
-			+ $"JoystickAimDeferred={link.JoystickAimDeferred}, Error={link.LastError ?? session.LastError}.", link);
+			+ $"Session={session?.CurrentState}, Started={session != null && session.StartSucceeded}, SceneLoaded={session != null && session.HasSceneLoaded}, "
+			+ $"SceneReady={session != null && session.IsSceneReady}, Target={session?.TargetScenePath}, "
+			+ $"Interior={link.InteriorPath}, Loading={link.IsLoading}, Unloading={link.IsUnloading}, Owned={link.OwnsInterior}, "
+			+ $"JoystickAimDeferred={link.JoystickAimDeferred}, Error={link.LastError ?? session?.LastError}.", link);
 	}
 
 	[MenuItem(ReportPath)]
 	public static void ReportPresentation()
 	{
 		TankSceneLink link = GetLink();
+		if (link.Interior == null)
+		{
+			Debug.Log($"[TankLinkDebug] Interior is not acquired. Stage={link.CurrentStage}, Path={link.InteriorPath}, Error={link.LastError}.", link);
+			return;
+		}
 		var fields = new SerializedObject(link.Interior);
 		var driver = (DriverScreen)fields.FindProperty("driverScreen").objectReferenceValue;
 		var breech = (TankBreech)fields.FindProperty("breech").objectReferenceValue;
@@ -38,6 +45,14 @@ public static class TankLinkDebug
 			+ $"JoystickControl={joystick != null && joystick.Control != null}, JoystickAim={joystick != null && joystick.Aim != null}, "
 			+ $"HudControl={hud != null && hud.Control != null}, HudCrew={tankHud != null && tankHud.Crew != null}. "
 			+ "Read-only report; no reference is repaired or rebound.", link);
+	}
+
+	[MenuItem(LoadPath)]
+	public static void LoadInterior()
+	{
+		TankSceneLink link = GetLink();
+		if (!link.LoadInterior()) throw new InvalidOperationException(link.LastError ?? "The interior load request was rejected.");
+		Debug.Log($"[TankLinkDebug] Interior requested. Stage={link.CurrentStage}, Path={link.InteriorPath}.", link);
 	}
 
 	[MenuItem(BindPath)]
@@ -61,6 +76,7 @@ public static class TankLinkDebug
 	[MenuItem(UnbindPath, true)]
 	[MenuItem(ReportPath, true)]
 	[MenuItem(SessionPath, true)]
+	[MenuItem(LoadPath, true)]
 	private static bool CanDebug()
 	{
 		GameObject selected = Selection.activeGameObject;
