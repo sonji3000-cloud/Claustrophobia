@@ -54,14 +54,14 @@ public sealed class TankSceneLink : MonoBehaviour
 		Attach();
 		SetStage(Stage.Waiting);
 		if (!started) return;
-		BlockWorld();
+		BlockInput();
 		TryConnect();
 	}
 
 	private void Start()
 	{
 		started = true;
-		BlockWorld();
+		BlockInput();
 		if (!ValidateRefs(out string reason)) { Fail(reason); return; }
 		SetStage(Stage.Waiting);
 		TryConnect();
@@ -172,10 +172,11 @@ public sealed class TankSceneLink : MonoBehaviour
 	public void Unbind()
 	{
 		version++;
-		if (started) BlockWorld();
+		if (started) BlockInput();
 		TankInterior previous = boundInterior;
 		boundInterior = null;
 		if (previous != null) Disconnect(previous);
+		if (started && Application.isPlaying) ShowExterior();
 		SetStage(Stage.Idle);
 	}
 
@@ -208,11 +209,18 @@ public sealed class TankSceneLink : MonoBehaviour
 		return false;
 	}
 
-	private void BlockWorld()
+	private void BlockInput()
 	{
 		if (control != null) control.SetInputEnabled(false);
-		if (cameras != null) cameras.SetOutput(false);
-		if (tankHud != null) tankHud.enabled = false;
+	}
+
+	private void ShowExterior()
+	{
+		if (cameras == null || !cameras.isActiveAndEnabled) return;
+
+		cameras.ExitObservation();
+		cameras.SetOutput(true);
+		if (tankHud != null) tankHud.enabled = true;
 	}
 
 	private void TryConnect()

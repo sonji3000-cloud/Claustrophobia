@@ -54,7 +54,7 @@ public static class TankLinkDebug
 	{
 		TankSceneLink link = GetLink();
 		link.Unbind();
-		Debug.Log("[TankLinkDebug] U06 connection released; input and output remain blocked until an explicit Bind or scene restart.", link);
+		Debug.Log("[TankLinkDebug] Connection released; input remains blocked and the exterior view is restored.", link);
 	}
 
 	[MenuItem(BindPath, true)]

@@ -270,6 +270,7 @@ public sealed class TankTestMode : MonoBehaviour
 		if (interiorHud != null) interiorHud.SetActive(false);
 		if (tankHud != null) tankHud.enabled = false;
 		outputApplied = false;
+		RefreshLabel();
 	}
 
 	private void OnEnable()
