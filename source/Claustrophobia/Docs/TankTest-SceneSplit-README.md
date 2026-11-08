@@ -2,16 +2,18 @@
 
 작성일: 2026-11-07 · 작업 브랜치: `ksc` · 검증 Unity: **6000.6.3f1**
 
+갱신일: 2026-11-08 · 조이스틱 aim 연결 복구. 저장된 설정·참조와 컴파일 상태를 확인한 뒤, 사용자가 실제 동작 확인을 완료했다.
+
 이 문서는 `TankTest` 내부를 새 `TankInterior` 씬으로 분리한 구성과 코드 변경, 팀별 수정 위치, 실행·디버그 방법을 설명한다. 경로는 Unity 프로젝트 루트인 `source/Claustrophobia/`를 기준으로 한다.
 
 바로 찾기:
 
 - [실행 방법](#1-빠른-실행) · [분리 전후·씬 배치](#2-분리-전후와-현재-배치) · [시작·준비 상태](#3-시작-순서와-준비-상태)
-- [Inspector·경계 참조](#4-inspector-연결과-18개-경계-참조) · [코드·API 변경](#5-파트별-코드api-변경) · [해제·수명 계약](#6-연결-해제실패씬-소유권-계약)
+- [Inspector·경계 참조](#4-inspector-연결과-19개-경계-참조) · [코드·API 변경](#5-파트별-코드api-변경) · [해제·수명 계약](#6-연결-해제실패씬-소유권-계약)
 - [앞으로 수정할 위치](#7-앞으로-수정할-위치와-인계-시-주의점) · [현재 조작](#8-현재-조작과-기능-확인-순서) · [디버그](#9-디버그-메뉴와-문제-확인)
 - [기존 제한](#10-기존-제한과-유지한-예외) · [검증·산출물](#11-검증-근거와-로컬-산출물) · [변경 파일·재검증·복구](#12-파일-변경설정재검증과-복구)
 
-**씬 분리 구현, Editor 회귀, Windows Player 빌드와 실제 별도 Host·Client 검증을 완료했다.** 현재 네트워크 담당자가 구현한 기능 범위에서 동작을 유지하는 것이 완료 기준이다. 기존 aim 누락과 게스트 포수 권한·원격 IK 등의 미구현 범위는 그대로다.
+**씬 분리 구현, Editor 회귀, Windows Player 빌드와 실제 별도 Host·Client 검증을 완료했다.** 아래 검증 기록은 작성 당시 aim 연결을 보류한 기준이다. 2026-11-08에는 조이스틱 aim 연결을 복구했으며, 게스트 포수 권한·원격 IK 등의 미구현 범위는 그대로다.
 
 | 비교 기준 | 커밋 / 의미 |
 | --- | --- |
@@ -33,7 +35,7 @@
 4. Game 뷰에 포커스를 주고 키·버튼을 놓은 뒤 `F9`로 내부, `F8`로 외부를 확인한다.
 5. 연결 상태를 확인하려면 Play 중 Hierarchy의 `NetworkAsset`을 선택하고 `Tools > Tank > Scene Link > Report Session Readiness (Play Mode)`를 실행한다.
 
-정상 자동 시작의 기대값은 `Stage=Ready`, `Ready=true`, `SceneReady=true`, `Loading=false`, `Unloading=false`, `Owned=true`, `JoystickAimDeferred=true`, Error 비어 있음이다. `JoystickAimDeferred=true`는 현재 유지한 aim 예외를 뜻한다.
+정상 자동 시작의 기대값은 `Stage=Ready`, `Ready=true`, `SceneReady=true`, `Loading=false`, `Unloading=false`, `Owned=true`, `JoystickAimDeferred=false`, Error 비어 있음이다. `JoystickAimDeferred=false`는 조이스틱에 control과 aim을 모두 연결하도록 설정됐다는 뜻이다.
 
 두 씬을 미리 열어 시작하는 경우도 검증했다. Fusion이 시작 과정에서 미리 열린 내부를 제거할 수 있으므로, 플레이 전 내부 객체나 씬 handle을 계속 보관해 사용하는 코드는 작성하지 않는다. **TankInterior 단독 Play는 전체 전차 기능의 실행 진입점이 아니다.**
 
@@ -112,7 +114,7 @@ flowchart TD
 
 고정된 몇 초 대기나 새 로딩 UI를 추가하지 않았다. 준비 중에는 입력을 보호하고 외부 화면을 유지한다. 화면 출력과 AudioListener는 정상 조작 중 하나씩이며, 모니터용 RT 카메라는 별도로 동작한다.
 
-## 4. Inspector 연결과 18개 경계 참조
+## 4. Inspector 연결과 19개 경계 참조
 
 ### 고정 구성의 원본
 
@@ -132,12 +134,12 @@ TankSceneLink의 외부 endpoint는 **지정한 같은 전차**를 가리켜야 
 | 내부 TankTestMode | 외부 input / cameras / tankHud | 3 |
 | 외부 TankKeyboardDebug | 내부 crew | 1 |
 | 내부 좌우 TankLever | 외부 control, 각각 하나 | 2 |
-| 내부 TankJoystick | 외부 control | 1 |
+| 내부 TankJoystick | 외부 control / aim | 2 |
 | 내부 DriverScreen | 외부 driverFeed | 1 |
 | 내부 GunnerSight | 외부 gunnerFeed | 1 |
 | 내부 TankBreech | 외부 gun | 1 |
 | 내부 CrewInteractHud | 외부 control | 1 |
-| 합계 | aim 보류 1개를 제외한 기존 정상 연결 | **18** |
+| 합계 | 조이스틱 aim을 포함한 연결 | **19** |
 
 **저장된 경계 슬롯이 비어 있는 것은 의도된 구성이다.** 씬 간 객체를 Inspector로 다시 직접 연결해 저장하지 않는다. 로컬 참조는 각 씬 안에 저장하고 경계 참조는 위 Bind 과정에서 전달한다. 저장된 유효 씬 간 직렬화 참조는 0개다.
 
@@ -177,7 +179,7 @@ TankSceneLink의 외부 endpoint는 **지정한 같은 전차**를 가리켜야 
 | [GunnerSight.cs](../Assets/TankPrototype/Scripts/GunnerSight.cs) | DriverScreen과 같은 연결 API | 기존 줌 계산·FOV 범위. 재연결 때문에 배율을 초기화하지 않음 |
 | [TankBreech.cs](../Assets/TankPrototype/Scripts/TankBreech.cs) | `Bind(TankGun)`, `CanBind`, `Unbind`, `Gun`. 실제 구독 중인 gun과 장전 탄의 원래 gun 추적 | 기존 삽입·포미·탄 소비. 장전된 탄을 다른 gun으로 옮기는 Bind는 거부하고 같은 gun 재연결 시 현재 상태 반영 |
 | [TankLever.cs](../Assets/TankPrototype/Scripts/TankLever.cs) | `Bind(TankControl)`, `Unbind`, `Control`. 적용·복원 함수를 활성화/연결에서도 재사용 | 기존 손잡이 기울기 계산. 해제 시 원래 손잡이 자세 복원 |
-| [TankJoystick.cs](../Assets/TankPrototype/Scripts/TankJoystick.cs) | `Bind(control, aim)`, `Unbind`, `Control`, `Aim`. aim 보류용 `BindControl`/`UnbindControl` 추가 | 기존 기울기 계산과 해제 시 복원. 현재 씬의 aim 보류 상태 유지 |
+| [TankJoystick.cs](../Assets/TankPrototype/Scripts/TankJoystick.cs) | `Bind(control, aim)`, `Unbind`, `Control`, `Aim`. aim 보류용 `BindControl`/`UnbindControl`도 유지 | 현재 씬은 control과 aim을 함께 연결. 기존 기울기 계산과 해제 시 복원 유지 |
 | [CrewInteractHud.cs](../Assets/TankPrototype/Scripts/CrewInteractHud.cs) | `Bind(TankControl)`, `Unbind`, `Control`. 연결 변경 때 발사 안내 캐시 정리와 즉시 갱신 | 기존 역할·선택·가림 조건의 안내. 고정 UI를 런타임에 다시 생성하지 않음 |
 | [TankKeyboardDebug.cs](../Assets/TankPrototype/Scripts/TankKeyboardDebug.cs) | `Bind(TankCrew)`, `Unbind`, `Crew`, `waitForBind`. 내부 crew를 명시적으로 받음 | 기존 진단 HUD와 카메라 추적. 준비 중 crew 미연결의 NONE 표시는 가능 |
 
@@ -268,7 +270,7 @@ TankTestMode의 `Bind`는 참조를 받고, `ApplyMode`가 현재/시작 모드 
 외부 R/T/Y의 약실 테스트 요청 코드는 남아 있으나 현재 발사는 `RequestFire(interaction)`의 역할·장치 조건을 통과해야 한다. 무기 기능 확인은 아래 내부 상호작용 경로를 사용한다.
 
 1. Ready를 확인하고 F9 → 키 해제 → 상단 1 → 주행 장치를 보고 Space. 레버 입력 후 Q/U로 중립, Space/Esc로 사용 종료를 확인한다.
-2. 상단 2 → 조이스틱 Space → 방향키·휠. 실제 포탑/포신·모니터 배율과 해제 후 입력 정리를 확인한다. **손잡이 기울기는 aim 예외로 미동작 상태다.**
+2. 상단 2 → 조이스틱 Space → 방향키·휠. 실제 포탑/포신·모니터 배율과 해제 후 입력 정리를 확인한다. 손잡이 앞뒤·좌우 기울기와 왼손 IK의 추종, 입력 해제 시 중립 복귀도 확인한다.
 3. 보이는 포탄(예: Gunner shell 2)을 Space로 집고 Esc로 선반 복귀. 다시 집어 열린 포미에 삽입하고 Space로 닫는다.
 4. 조이스틱 사용 상태에서 Enter로 한 발 발사한다. 중복 입력 거부와 회복, 이후 포미 조작을 확인한다.
 5. 상단 3 → 전차장 관측 장치(`Rooms/UpperRoom/scope (1)`) Space → 우클릭 관측 → Space/Esc 복귀를 확인한다.
@@ -285,7 +287,7 @@ TankTestMode의 `Bind`는 참조를 받고, `ApplyMode`가 현재/시작 모드 
 | 메뉴 | 용도 / 기대 결과 |
 | --- | --- |
 | Report Session Readiness (Play Mode) | Stage/Ready, 세션 시작·씬 준비, 경로·로딩·소유 여부와 오류 조회 |
-| Report Presentation Bindings (Play Mode) | feed/gun/joystick control/HUD 연결 조회. 현재 JoystickAim만 false가 정상 기대값 |
+| Report Presentation Bindings (Play Mode) | feed/gun/joystick control·aim/HUD 연결 조회. JoystickAim=true가 정상 기대값 |
 | Unbind Session APIs (Play Mode) | 입력 차단·외부 화면 복원·Idle. 내부 씬은 유지 |
 | Bind Session APIs (Play Mode) | 이미 확보된 같은 내부를 재연결. 정상 세션/전차 조건을 우회하지 않음 |
 | Load Interior (Play Mode) | 내부 확보/복구 요청. 구성 오류를 고친 뒤 사용하며 완료는 Ready로 확인 |
@@ -298,10 +300,10 @@ Session=Running, Started=True, SceneLoaded=True, SceneReady=True
 Target=Assets/TankPrototype/Scenes/TankTest.unity
 Interior=Assets/TankPrototype/Scenes/TankInterior.unity
 Loading=False, Unloading=False, Owned=True
-JoystickAimDeferred=True, Error=<비어 있음>
+JoystickAimDeferred=False, Error=<비어 있음>
 ```
 
-외부에서 이미 로드한 씬을 빌린 정상 구성에서는 Owned=false일 수 있다. 표현 보고는 DriverFeed/GunnerFeed/BreechGun/JoystickControl/HudControl/HudCrew=true, JoystickAim=false다. 아직 내부가 없으면 표현 보고는 그 상태를 출력하며 참조를 자동 수리하지 않는다.
+외부에서 이미 로드한 씬을 빌린 정상 구성에서는 Owned=false일 수 있다. 표현 보고의 DriverFeed/GunnerFeed/BreechGun/JoystickControl/JoystickAim/HudControl/HudCrew는 모두 true가 기대값이다. 아직 내부가 없으면 표현 보고는 그 상태를 출력하며 참조를 자동 수리하지 않는다.
 
 | 증상 | 먼저 확인할 내용 |
 | --- | --- |
@@ -312,7 +314,7 @@ JoystickAimDeferred=True, Error=<비어 있음>
 | 다른 탱크/Runner 오류 | SceneLink endpoints와 SessionJoinInit.tankControl이 같은 지정 전차인지 |
 | 재연결 후 키 무반응 | Ready와 포커스 확인 → 모든 키·버튼 해제 → 새 입력. 계속되면 연결/허용 상태 확인 |
 | HUD 역할 NONE | 준비 중 crew 미연결일 수 있음. Ready 뒤 실제 crew 연결을 표현 보고로 확인 |
-| 조이스틱 손잡이만 무반응 | 현재 aim 보류 예외. 네트워크 yaw/로컬 pitch와 별도로 확인 |
+| 조이스틱 손잡이만 무반응 | SceneLink의 Bind Joystick Aim=true, 준비 완료 후 JoystickAim=true인지 확인. 네트워크 yaw/로컬 pitch와 별도로 확인 |
 | 같은 경로 씬 중복 | Hierarchy의 중복 씬과 로드 호출 주체 확인. 정상 반복 요청은 SceneLink 한 경로 사용 |
 | 종료 뒤 화면 소실 | Fusion이 외부 월드 자체를 제거한 종료 구간인지 확인. 살아 있는 외부의 준비/내부 실패 구간과 구별 |
 
@@ -320,11 +322,11 @@ JoystickAimDeferred=True, Error=<비어 있음>
 
 ## 10. 기존 제한과 유지한 예외
 
-### aim 연결 보류
+### 조이스틱 aim 연결 복구 (2026-11-08)
 
-TankJoystick.Aim은 분리 전부터 실제 null/Missing이었다. 현재 TankTest의 SceneLink는 **bindJoystickAim=false**이며 control만 연결한다. Ready는 이 정책을 포함한 준비 완료를 뜻한다.
+씬 분리 인계 당시에는 aim 누락을 보류해 `bindJoystickAim=false`로 저장했고 control만 연결했다. 2026-11-08에 TankTest의 SceneLink를 **bindJoystickAim=true**로 변경해 기존 `TankJoystick.Bind(control, aim)` 경로로 조준 입력을 연결하도록 복구했다.
 
-기존 깨진 fileID `1304813870`은 이동·저장 중 새 씬에서 0으로 정규화됐다. 실제 미연결 상태와 손잡이 기울기 미반응은 유지됐다. 담당자가 연결할 때는 SceneLink의 `bindJoystickAim`과 `TankJoystick.Bind(control, aim)` 경로를 검토하고, 재연결·기울기·그립 반응을 별도 재검증한다. 씬 간 직접 aim 참조를 저장하는 방식은 사용하지 않는다.
+TankInterior에 저장된 외부 control/aim 슬롯은 계속 비워 두며, 내부 확보 후 같은 전차의 참조를 전달한다. 손잡이·왼손 IK 목표·Animator·8도 기울기 설정과 씬 분리 구조는 유지했다. 저장 설정·참조와 컴파일 상태를 확인했고, 사용자가 실제 동작 확인 완료를 알려왔다. 이를 재연결 등 모든 수명 경로의 회귀 검증으로 확대하지 않는다. 씬 간 직접 aim 참조를 저장하는 방식은 사용하지 않는다.
 
 ### 네트워크 범위
 
@@ -410,4 +412,4 @@ QAPlayer/QAClient는 계측용 개발 산출물이며 임시 Runtime Pipeline을
 3. 실제 이동 전 정상 한 씬 기준은 `2951646`이다. 로컬 U07 보고서/백업의 전체 복구 절차를 함께 확인한다. 자동 로더가 없는 중간 `a15458c`를 완료본으로 넘기지 않는다.
 4. 복원 뒤 컴파일, 저장 씬 재열기, 단독 Play와 해당 기능을 확인한다. 이후 팀원 수정까지 과거 백업으로 덮지 않게 복원 파일을 구분한다.
 
-이번 인계 기준에는 기존 aim 예외와 이미 구현된 네트워크 범위가 포함돼 있다. 후속 변경은 담당 파트의 씬/소유 API에서 수행하고, 이 문서의 실행·연결·제한·검증 기준을 함께 갱신한다.
+작성 당시 인계·검증 기록에는 aim 보류 예외가 포함돼 있다. 현재 설정은 위의 2026-11-08 복구 내용을 따르며, 과거 빌드 검증을 이번 복구의 동작 검증으로 해석하지 않는다. 후속 변경은 담당 파트의 씬/소유 API에서 수행하고, 이 문서의 실행·연결·제한·검증 기준을 함께 갱신한다.

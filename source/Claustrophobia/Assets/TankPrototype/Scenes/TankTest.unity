@@ -3177,7 +3177,7 @@ MonoBehaviour:
   aim: {fileID: 1304813834}
   driverFeed: {fileID: 1698757515}
   gunnerFeed: {fileID: 1304813833}
-  bindJoystickAim: 0
+  bindJoystickAim: 1
 --- !u!114 &2140000003
 MonoBehaviour:
   m_ObjectHideFlags: 0
