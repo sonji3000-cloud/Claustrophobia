@@ -25,6 +25,7 @@ public sealed class TankSceneLink : MonoBehaviour
 	[SerializeField] private bool bindJoystickAim = true;
 
 	private NetworkObject tankObject;
+	private TankCrewRegistry crewRegistry;
 	private Scene worldScene;
 	private string worldPath;
 	private TankInterior interior;
@@ -65,6 +66,7 @@ public sealed class TankSceneLink : MonoBehaviour
 		destroyed = false;
 		if (control == null) return;
 		tankObject = control.GetComponent<NetworkObject>();
+		crewRegistry = control.GetComponent<TankCrewRegistry>();
 		worldScene = control.gameObject.scene;
 		worldPath = worldScene.path;
 	}
@@ -216,6 +218,7 @@ public sealed class TankSceneLink : MonoBehaviour
 
 	private bool Connect(TankInterior next, uint request)
 	{
+		if (crewRegistry != null && !crewRegistry.BindSeats(next.Seats)) return false;
 		if (request != version || !control.Bind(next.Crew, next.DriveDevice, next.AimDevice, next.Sight)) return false;
 		if (request != version || !input.Bind(next.Seats, next.Interaction, next.Mode)) return false;
 		if (request != version || !next.Mode.Bind(input, cameras, tankHud)) return false;
@@ -256,6 +259,7 @@ public sealed class TankSceneLink : MonoBehaviour
 		if (input != null) input.Unbind();
 		if (previous != null)
 		{
+			if (crewRegistry != null) crewRegistry.UnbindSeats(previous.Seats);
 			if (previous.Interaction != null) previous.Interaction.StopUse();
 			if (previous.DriverScreen != null) previous.DriverScreen.Unbind();
 			if (previous.Sight != null) previous.Sight.Unbind();

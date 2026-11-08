@@ -21,6 +21,7 @@ public sealed class TankAim : NetworkBehaviour
 
 	private Quaternion turretBase;
 	private Quaternion gunBase;
+	private TankCrewRegistry crewRegistry;
 	private bool hasNetworkObject;
 	private float localYaw;
 
@@ -33,16 +34,17 @@ public sealed class TankAim : NetworkBehaviour
 		turretBase = turretPivot != null ? turretPivot.localRotation : Quaternion.identity;
 		gunBase = gunPivot != null ? gunPivot.localRotation : Quaternion.identity;
 		hasNetworkObject = TryGetComponent<NetworkObject>(out _);
+		crewRegistry = GetComponent<TankCrewRegistry>();
 	}
 
 	public override void Spawned() => ApplyYaw(TurretYaw);
 
 	public override void FixedUpdateNetwork()
 	{
-		if (!HasStateAuthority || !isActiveAndEnabled || turretPivot == null) return;
+		if (!HasStateAuthority || !isActiveAndEnabled || turretPivot == null || crewRegistry == null) return;
 
-		PlayerRef gunner = Runner.LocalPlayer;
-		float input = Runner.TryGetInputForPlayer<TankCrewNetworkInput>(gunner, out var data)
+		PlayerRef gunner = crewRegistry.GunnerPlayer;
+		float input = !gunner.IsNone && Runner.TryGetInputForPlayer<TankCrewNetworkInput>(gunner, out var data)
 			? Mathf.Clamp(data.Aim.x, -1f, 1f)
 			: 0f;
 

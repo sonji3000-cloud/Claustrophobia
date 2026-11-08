@@ -18,6 +18,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	[SerializeField] private bool requireSceneManager;
 
 	private NetworkRunner runner;
+	private TankCrewRegistry crewRegistry;
 	private bool attached;
 	private bool startSucceeded;
 	private bool sceneLoaded;
@@ -43,6 +44,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	private void Awake()
 	{
 		runner = GetComponent<NetworkRunner>();
+		if (tankControl != null) crewRegistry = tankControl.GetComponent<TankCrewRegistry>();
 		if (sceneManager == null) sceneManager = GetComponent<NetworkSceneManagerDefault>();
 		// Cache the owning scene before Fusion can move the runner to DontDestroyOnLoad.
 		scenePath = gameObject.scene.path;
@@ -73,6 +75,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 		}
 
 		Attach();
+		runner.ProvideInput = true;
 		var scenes = new NetworkSceneInfo();
 		scenes.AddSceneRef(SceneRef.FromIndex(sceneIndex), LoadSceneMode.Single);
 		var cancel = new CancellationTokenSource();
@@ -201,8 +204,17 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 		if (source == runner) EndSession(reason == ShutdownReason.Ok ? null : reason.ToString());
 	}
 
-	public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) => Debug.Log($"Player {player} joined the session.");
-	public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) => Debug.Log($"Player {player} left the session.");
+	public void OnPlayerJoined(NetworkRunner source, PlayerRef player)
+	{
+		if (source == runner && source.IsServer && crewRegistry != null) crewRegistry.Register(player);
+		Debug.Log($"Player {player} joined the session.");
+	}
+
+	public void OnPlayerLeft(NetworkRunner source, PlayerRef player)
+	{
+		if (source == runner && source.IsServer && crewRegistry != null) crewRegistry.Unregister(player);
+		Debug.Log($"Player {player} left the session.");
+	}
 	public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
 	public void OnConnectedToServer(NetworkRunner runner) => Debug.Log("[CONNECTED] Server connected");
 	public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
