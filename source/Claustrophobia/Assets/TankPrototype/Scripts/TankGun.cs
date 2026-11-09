@@ -301,24 +301,24 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
         if (predictor != null && predictor.isActiveAndEnabled && predictor.PredictionEnabled)
             predicted = predictor.Predict(conditions, ownerColliders);
         predicted.CopyIdentity();
+        int shot = ShotCount + 1;
         TankProjectile projectile = null;
         try
         {
-            projectile = Instantiate(projectilePrefab, conditions.Position, conditions.Rotation);
-            if (projectile.transform.parent != null) projectile.transform.SetParent(null, true);
-            if (!projectile.Initialize(ShotCount + 1, this, ownerBody,
+            projectile = UsesNetwork
+                ? Runner.Spawn(projectilePrefab, conditions.Position, conditions.Rotation,
+                    onBeforeSpawned: (_, obj) => obj.GetComponent<TankProjectile>().SetShotId(shot))
+                : Instantiate(projectilePrefab, conditions.Position, conditions.Rotation);
+            if (projectile == null) throw new InvalidOperationException("Projectile spawn failed");
+            if (!UsesNetwork && projectile.transform.parent != null) projectile.transform.SetParent(null, true);
+            if (!projectile.Initialize(shot, this, ownerBody,
                 ownerColliders, conditions, damage, out reason))
                 throw new InvalidOperationException(reason);
             projectile.SetLaunchPrediction(predicted);
         }
         catch (Exception exception)
         {
-            if (projectile != null)
-            {
-                var collider = projectile.GetComponent<Collider>();
-                if (collider != null) collider.enabled = false;
-                Destroy(projectile.gameObject);
-            }
+            if (projectile != null) projectile.Remove();
             LastFireResult = "Failed: " + exception.Message;
             LastWeaponResult = LastFireResult;
             Debug.Log("Tank fire: " + LastFireResult, this);
@@ -327,7 +327,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 
         if (UsesNetwork) RecoveryTimer = TickTimer.CreateFromSeconds(Runner, recovery);
         else recoveryEndsAt = Time.time + recovery;
-        ShotCount++;
+        ShotCount = shot;
         if (UsesNetwork) NetworkShots = ShotCount;
         LastSuccessfulFireTime = Time.time;
         LastFireResult = "Fired #" + ShotCount;
