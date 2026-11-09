@@ -110,10 +110,20 @@ public sealed class CrewSeats : MonoBehaviour
 		TankCrew.Role role = RequestedRole;
 		PendingRequest = 0;
 		RequestedRole = TankCrew.Role.None;
-		if (!approved || !CanApply(role)) return false;
+		return approved && ApplyRole(role);
+	}
 
-		Transform anchor = GetAnchor(role);
-		transform.SetPositionAndRotation(anchor.position, anchor.rotation);
+	public bool ApplyRole(TankCrew.Role role)
+	{
+		if (!started || !isActiveAndEnabled || crew == null || !crew.isActiveAndEnabled) return false;
+
+		Transform anchor = role == TankCrew.Role.None ? null : GetAnchor(role);
+		if (role != TankCrew.Role.None && !CanUseAnchor(anchor)) return false;
+		if (role == CurrentRole && anchor == Anchor) return true;
+
+		PendingRequest = 0;
+		RequestedRole = TankCrew.Role.None;
+		if (anchor != null) transform.SetPositionAndRotation(anchor.position, anchor.rotation);
 		crew.SetRole(role);
 		Anchor = anchor;
 		if (look != null) look.ResetLook();
@@ -127,9 +137,10 @@ public sealed class CrewSeats : MonoBehaviour
 		return started && CanUseAnchor(role);
 	}
 
-	private bool CanUseAnchor(TankCrew.Role role)
+	private bool CanUseAnchor(TankCrew.Role role) => CanUseAnchor(GetAnchor(role));
+
+	private bool CanUseAnchor(Transform anchor)
 	{
-		Transform anchor = GetAnchor(role);
 		return isActiveAndEnabled && crew != null && crew.gameObject == gameObject
 			&& crew.isActiveAndEnabled && anchor != null && anchor.gameObject.activeInHierarchy
 			&& !anchor.IsChildOf(transform);

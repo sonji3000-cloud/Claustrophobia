@@ -13,6 +13,7 @@ public sealed class TankInput : MonoBehaviour
 	[SerializeField] private CrewSeats seats;
 	[SerializeField] private CrewInteract interaction;
 
+	private TankCrewRegistry crewRegistry;
 	private bool inputReady;
 	private bool spaceHeld;
 	private bool enterHeld;
@@ -65,6 +66,7 @@ public sealed class TankInput : MonoBehaviour
 	private void Awake()
 	{
 		control = GetComponent<TankControl>();
+		crewRegistry = GetComponent<TankCrewRegistry>();
 	}
 
 	private void Update()
@@ -187,6 +189,12 @@ public sealed class TankInput : MonoBehaviour
 
 	private void ReadSeat(Keyboard keyboard)
 	{
+		if (crewRegistry != null)
+		{
+			if (keyboard.f10Key.wasPressedThisFrame) crewRegistry.RequestSwap();
+			return;
+		}
+
 		if (seats == null || !seats.isActiveAndEnabled) return;
 
 		if (keyboard.digit1Key.wasPressedThisFrame) seats.RequestSeat(TankCrew.Role.Driver);

@@ -14,6 +14,8 @@ public sealed class TankMotor : NetworkBehaviour
     [Min(0f)] public float TurnDeceleration = 180f;
 
     private Rigidbody body;
+    private TankCrewRegistry crewRegistry;
+    private PlayerRef lastDriver;
     private float requestedLeft;
     private float requestedRight;
 
@@ -24,8 +26,13 @@ public sealed class TankMotor : NetworkBehaviour
     public float TurnCommand { get; private set; }
     public float TargetForwardSpeed { get; private set; }
     public float TargetTurnSpeed { get; private set; }
+    public bool UsesCrewRegistry => crewRegistry != null;
 
-    private void Awake() => body = GetComponent<Rigidbody>();
+    private void Awake()
+    {
+        body = GetComponent<Rigidbody>();
+        crewRegistry = GetComponent<TankCrewRegistry>();
+    }
 
     public void SetLeverInputs(float left, float right)
     {
@@ -35,6 +42,12 @@ public sealed class TankMotor : NetworkBehaviour
 
     private void FixedUpdate()
     {
+        if (UsesCrewRegistry)
+        {
+            if (Object == null || !Object.IsValid || !HasStateAuthority) return;
+            if (lastDriver != crewRegistry.DriverPlayer) SetLeverInputs(0f, 0f);
+        }
+
         LeftInput = requestedLeft;
         RightInput = requestedRight;
         ForwardCommand = (LeftInput + RightInput) * 0.5f;
@@ -94,30 +107,18 @@ public sealed class TankMotor : NetworkBehaviour
     }
     public override void FixedUpdateNetwork()
     {
-        if (!HasStateAuthority)
-            return;
+        if (!HasStateAuthority || crewRegistry == null) return;
 
-        PlayerRef driver = Runner.LocalPlayer;
+        PlayerRef driver = crewRegistry.DriverPlayer;
+        bool wasNeutral = requestedLeft == 0f && requestedRight == 0f;
+        if (!driver.IsNone && Runner.TryGetInputForPlayer<TankCrewNetworkInput>(driver, out var data))
+            SetLeverInputs(data.LeftLever, data.RightLever);
+        else
+            SetLeverInputs(0f, 0f);
 
-        bool received =
-            Runner.TryGetInputForPlayer<TankCrewNetworkInput>(
-                driver, out var data
-            );
-
-        if (!received)
-        {
-            Debug.LogWarning(
-                $"[RECV FAILED] Driver={driver}"
-            );
-            return;
-        }
-
-        Debug.Log(
-            $"[RECV SUCCESS] Driver={driver}, " +
-            $"Left={data.LeftLever:F2}, " +
-            $"Right={data.RightLever:F2}"
-        );
-
-        SetLeverInputs(data.LeftLever, data.RightLever);
+        bool isNeutral = requestedLeft == 0f && requestedRight == 0f;
+        if (lastDriver != driver || wasNeutral != isNeutral)
+            Debug.Log($"[DRIVE INPUT] Driver={driver}, Left={requestedLeft:F2}, Right={requestedRight:F2}", this);
+        lastDriver = driver;
     }
 }

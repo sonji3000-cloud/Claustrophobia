@@ -1,11 +1,14 @@
+using Fusion;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody), typeof(SphereCollider))]
-public sealed class TankProjectile : MonoBehaviour
+public sealed class TankProjectile : NetworkBehaviour
 {
     public const float TestLifetime = 5f;
     [Min(0.01f)] public float Lifetime = TestLifetime;
+    [Networked] private int NetworkShotId { get; set; }
+
     public TankShotConditions LaunchConditions { get; private set; }
     public TankPrediction LaunchPrediction { get; private set; }
     public TankImpactComparison ImpactComparison { get; private set; }
@@ -25,6 +28,27 @@ public sealed class TankProjectile : MonoBehaviour
     private float bornAt;
 	private readonly System.Collections.Generic.List<Rigidbody> checkBodies = new System.Collections.Generic.List<Rigidbody>(1);
 	private readonly System.Collections.Generic.List<Collider> checkColliders = new System.Collections.Generic.List<Collider>(1);
+
+	private void Awake()
+	{
+		body = GetComponent<Rigidbody>();
+		sphere = GetComponent<SphereCollider>();
+	}
+
+	internal void SetShotId(int id) => ShotId = id;
+
+	public override void Spawned()
+	{
+		if (HasStateAuthority)
+			NetworkShotId = ShotId;
+		else
+		{
+			ShotId = NetworkShotId;
+			sphere.enabled = false;
+		}
+
+		Debug.Log($"[PROJECTILE SPAWN] ShotId={ShotId}, NetId={Object.Id}, Authority={HasStateAuthority}", this);
+	}
 
     public static bool ValidateConfiguration(TankProjectile projectile, out string reason)
     {
@@ -59,11 +83,11 @@ public sealed class TankProjectile : MonoBehaviour
         System.Collections.Generic.IReadOnlyList<Collider> ownerColliders, TankShotConditions conditions, float damage, out string reason)
     {
         if (IsInitialized) { reason = "Projectile was already initialized"; return false; }
+        if (Object != null && Object.IsValid && !HasStateAuthority)
+        { reason = "Projectile initialization requires State Authority"; return false; }
         if (!ValidateConfiguration(this, out reason)) return false;
         if (ownerBody == null || ownerColliders == null || gun == null)
         { reason = "Missing projectile owner"; return false; }
-        body = GetComponent<Rigidbody>();
-        sphere = GetComponent<SphereCollider>();
         if (body == ownerBody) { reason = "Projectile cannot use the Tank Rigidbody"; return false; }
         for (int i = 0; i < ownerColliders.Count; i++)
         {
@@ -137,7 +161,23 @@ public sealed class TankProjectile : MonoBehaviour
         }
         finally
         {
-            Destroy(gameObject);
+            Remove();
         }
     }
+
+	internal void Remove()
+	{
+		if (Object != null && Object.IsValid)
+		{
+			if (HasStateAuthority)
+			{
+				sphere.enabled = false;
+				Runner.Despawn(Object);
+			}
+			return;
+		}
+
+		sphere.enabled = false;
+		Destroy(gameObject);
+	}
 }

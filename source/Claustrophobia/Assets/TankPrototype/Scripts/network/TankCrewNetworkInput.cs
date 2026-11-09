@@ -6,7 +6,8 @@ public enum TankInputButton
     Fire,
     Insert,
     Close,
-    OpenEmpty
+    OpenEmpty,
+    Open
 }
 
 public struct TankCrewNetworkInput : INetworkInput

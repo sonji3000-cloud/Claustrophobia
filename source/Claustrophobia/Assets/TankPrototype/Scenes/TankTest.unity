@@ -2449,6 +2449,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6390709329587793397, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1304813846}
+    - targetCorrespondingSourceObject: {fileID: 6390709329587793397, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1304813868}
   m_SourcePrefab: {fileID: 100100000, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
 --- !u!114 &1304813831 stripped
 MonoBehaviour:
@@ -2520,6 +2523,8 @@ MonoBehaviour:
   - {fileID: 1304813847}
   - {fileID: 1304813838}
   - {fileID: 1304813834}
+  - {fileID: 1304813867}
+  - {fileID: 1304813868}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1304813847
 MonoBehaviour:
@@ -2595,6 +2600,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4816d6a3705165445b86f3e367402394, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankGun
+--- !u!114 &1304813868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2bcef173b019c245adc269d8fc07985, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankCrewRegistry
 --- !u!1001 &1308171173
 PrefabInstance:
   m_ObjectHideFlags: 0
