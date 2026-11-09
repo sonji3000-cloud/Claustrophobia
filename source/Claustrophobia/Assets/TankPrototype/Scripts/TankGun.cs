@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public sealed class TankGun : MonoBehaviour
+public sealed class TankGun : NetworkBehaviour, IAfterTick
 {
     public enum ChamberState { EmptyOpen, EmptyClosed, LoadedOpen, Ready, Recovering }
     [SerializeField] private Transform muzzle;
@@ -15,19 +17,30 @@ public sealed class TankGun : MonoBehaviour
     [Tooltip("Recovery delay after firing. The empty chamber stays closed until manually opened.")]
     [Min(0f)] public float RecoveryDuration = 1.5f;
 
+    [Networked, OnChangedRender(nameof(ApplyNetworkState))]
+    private ChamberState NetworkState { get; set; }
+    [Networked] private TickTimer RecoveryTimer { get; set; }
+    [Networked, OnChangedRender(nameof(ApplyNetworkShot))]
+    private int NetworkShots { get; set; }
+
     public ChamberState State { get; private set; } = ChamberState.EmptyOpen;
     public bool HasLiveRound => State == ChamberState.LoadedOpen || State == ChamberState.Ready;
     public bool CanInsert => isActiveAndEnabled && State == ChamberState.EmptyOpen;
+    public bool UsesNetwork { get; private set; }
 
 	public event Action<ChamberState> StateChanged;
-    public float RecoverRemaining => State == ChamberState.Recovering
-        ? Mathf.Max(0f, recoveryEndsAt - Time.time) : 0f;
+	internal event Action<int, bool> LoadResolved;
+    public float RecoverRemaining => State != ChamberState.Recovering ? 0f
+        : IsSpawned ? RecoveryTimer.RemainingTime(Runner) ?? 0f
+        : Mathf.Max(0f, recoveryEndsAt - Time.time);
     public string LastWeaponRequest { get; private set; } = "None";
     public string LastWeaponResult { get; private set; } = "No request";
     public int DamageHitCount { get; private set; }
     public string LastHitSummary { get; private set; } = "No impact";
     private float recoveryEndsAt;
-    private readonly System.Collections.Generic.List<Collider> ownerColliders = new System.Collections.Generic.List<Collider>();
+    private TankCrewRegistry crewRegistry;
+    private readonly List<Collider> ownerColliders = new();
+    private readonly Queue<(PlayerRef player, TankInputButton action, int load)> requests = new(4);
 
     public Transform Muzzle => muzzle;
     public TankProjectile ProjectilePrefab => projectilePrefab;
@@ -43,6 +56,107 @@ public sealed class TankGun : MonoBehaviour
     public string LastHitName { get; private set; } = "None";
     public Vector3 LastHitPoint { get; private set; }
     public TankImpactComparison LastImpactComparison { get; private set; }
+
+	private bool IsSpawned => Object != null && Object.IsValid;
+
+	private void Awake()
+	{
+		UsesNetwork = TryGetComponent<NetworkObject>(out _);
+		crewRegistry = GetComponent<TankCrewRegistry>();
+	}
+
+	public override void Spawned()
+	{
+		ShotCount = NetworkShots;
+		LastSuccessfulFireTime = -1f;
+		ApplyNetworkState();
+	}
+
+	public override void Despawned(NetworkRunner runner, bool hasState) => requests.Clear();
+
+	private void ApplyNetworkState() => ApplyState(NetworkState);
+
+	private void ApplyNetworkShot()
+	{
+		if (ShotCount == NetworkShots) return;
+
+		ShotCount = NetworkShots;
+		LastSuccessfulFireTime = Time.time;
+	}
+
+	public bool CanLoad(TankCrew crew) => crew != null && (UsesNetwork ? crew.CanAim : crew.CanLoad);
+
+	public bool RequestInsert() => Request(TankInputButton.Insert);
+	internal bool RequestLoad(int load) => Request(TankInputButton.Insert, load);
+	public bool RequestClose() => Request(TankInputButton.Close);
+	public bool RequestOpenEmpty() => Request(TankInputButton.OpenEmpty);
+	public bool RequestOpen() => Request(TankInputButton.Open);
+	public bool RequestFire() => Request(TankInputButton.Fire);
+
+	private bool Request(TankInputButton action, int load = 0)
+	{
+		if (!UsesNetwork) return Execute(action);
+		if (!IsSpawned || !Runner.IsRunning || crewRegistry == null || !crewRegistry.CanAim(Runner.LocalPlayer))
+			return false;
+
+		RpcInvokeInfo info = RPC_Request(action, load);
+		return info.LocalInvokeResult == RpcLocalInvokeResult.Invoked
+			|| info.SendMessageResult == RpcSendMessageResult.Sent;
+	}
+
+	[Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
+	private RpcInvokeInfo RPC_Request(TankInputButton action, int load, RpcInfo info = default)
+	{
+		requests.Enqueue((info.Source, action, load));
+		return default;
+	}
+
+	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+	private void RPC_LoadResolved([RpcTarget] PlayerRef player, int load, NetworkBool accepted)
+	{
+		LoadResolved?.Invoke(load, accepted);
+	}
+
+	// TankAim has applied the tick's authoritative turret and gun rotations by this point.
+	void IAfterTick.AfterTick()
+	{
+		if (!HasStateAuthority) return;
+		if (State == ChamberState.Recovering && RecoveryTimer.Expired(Runner))
+		{
+			RecoveryTimer = TickTimer.None;
+			ChangeState(ChamberState.EmptyClosed);
+		}
+
+		while (requests.TryDequeue(out var request))
+		{
+			bool gunner = crewRegistry != null && crewRegistry.CanAim(request.player);
+			ChamberState previous = State;
+			bool accepted = gunner && Execute(request.action);
+			if (!gunner)
+				Debug.Log($"[WEAPON HOST] Tick={Runner.Tick}, Player={request.player}, Action={request.action}, Rejected: Gunner required", this);
+			else if (accepted && request.action == TankInputButton.Fire)
+				Debug.Log($"[WEAPON HOST] Tick={Runner.Tick}, Player={request.player}, Action=Fire, ShotId={ShotCount}, {previous} -> {State}", this);
+			else
+				Debug.Log($"[WEAPON HOST] Tick={Runner.Tick}, Player={request.player}, Action={request.action}, {previous} -> {State}, {LastWeaponResult}", this);
+
+			if (request.action != TankInputButton.Insert || request.load == 0) continue;
+			if (request.player == Runner.LocalPlayer) LoadResolved?.Invoke(request.load, accepted);
+			else if (Runner.IsPlayerCommitted(request.player)) RPC_LoadResolved(request.player, request.load, accepted);
+		}
+	}
+
+	private bool Execute(TankInputButton action)
+	{
+		switch (action)
+		{
+			case TankInputButton.Insert: return Insert();
+			case TankInputButton.Close: return Close();
+			case TankInputButton.OpenEmpty: return OpenEmpty();
+			case TankInputButton.Open: return Open();
+			case TankInputButton.Fire: return Fire();
+			default: return Reject(action.ToString(), "Unknown action");
+		}
+	}
 
     // No chamber transitions or fire approval are performed by this query.
     public bool TryGetShotConditions(out TankShotConditions conditions, out string reason)
@@ -99,17 +213,24 @@ public sealed class TankGun : MonoBehaviour
     // that elapsed before the shot, and rejection never restarts the timer.
     public void TickRecovery()
     {
-        if (State == ChamberState.Recovering && Time.time >= recoveryEndsAt)
+        if (!UsesNetwork && State == ChamberState.Recovering && Time.time >= recoveryEndsAt)
             ChangeState(ChamberState.EmptyClosed);
     }
 
     private void ChangeState(ChamberState next)
     {
         ChamberState previous = State;
-        State = next;
+        if (UsesNetwork) NetworkState = next;
         Debug.Log($"Tank chamber: {previous} -> {next}", this);
-		StateChanged?.Invoke(next);
+        ApplyState(next);
     }
+
+	private void ApplyState(ChamberState next)
+	{
+		if (State == next) return;
+		State = next;
+		StateChanged?.Invoke(next);
+	}
 
     private bool Reject(string request, string reason)
     {
@@ -128,7 +249,7 @@ public sealed class TankGun : MonoBehaviour
         return true;
     }
 
-    public bool RequestInsert()
+    private bool Insert()
     {
         TickRecovery();
         if (!isActiveAndEnabled) return Reject("Insert", "Weapon component inactive");
@@ -136,7 +257,7 @@ public sealed class TankGun : MonoBehaviour
         return CompleteOperation("Insert", ChamberState.LoadedOpen);
     }
 
-    public bool RequestClose()
+    private bool Close()
     {
         TickRecovery();
         if (!isActiveAndEnabled) return Reject("Close", "Weapon component inactive");
@@ -145,7 +266,7 @@ public sealed class TankGun : MonoBehaviour
         return Reject("Close", "Requires open chamber; current " + State);
     }
 
-    public bool RequestOpenEmpty()
+    private bool OpenEmpty()
     {
         TickRecovery();
         if (!isActiveAndEnabled) return Reject("Open empty", "Weapon component inactive");
@@ -153,16 +274,16 @@ public sealed class TankGun : MonoBehaviour
         return CompleteOperation("Open empty", ChamberState.EmptyOpen);
     }
 
-	public bool RequestOpen()
+	private bool Open()
 	{
 		TickRecovery();
 		if (!isActiveAndEnabled) return Reject("Open", "Weapon component inactive");
 		if (State == ChamberState.Ready) return CompleteOperation("Open", ChamberState.LoadedOpen);
-		return RequestOpenEmpty();
+		return OpenEmpty();
 	}
 
     // All requests are validated and consumed here, including rejected requests.
-    public bool RequestFire()
+    private bool Fire()
     {
         TickRecovery();
         LastWeaponRequest = "Fire";
@@ -189,15 +310,6 @@ public sealed class TankGun : MonoBehaviour
                 ownerColliders, conditions, damage, out reason))
                 throw new InvalidOperationException(reason);
             projectile.SetLaunchPrediction(predicted);
-            recoveryEndsAt = Time.time + recovery;
-            ChangeState(ChamberState.Recovering);
-            ShotCount++;
-            LastSuccessfulFireTime = Time.time;
-            LastFireResult = "Fired #" + ShotCount;
-            LastWeaponResult = LastFireResult + "; Recovering";
-            LastProjectile = projectile;
-            Debug.Log($"Tank fire: {LastFireResult}; speed={speed:F1} m/s; damage={damage:F1}", this);
-            return true;
         }
         catch (Exception exception)
         {
@@ -212,6 +324,18 @@ public sealed class TankGun : MonoBehaviour
             Debug.Log("Tank fire: " + LastFireResult, this);
             return false;
         }
+
+        if (UsesNetwork) RecoveryTimer = TickTimer.CreateFromSeconds(Runner, recovery);
+        else recoveryEndsAt = Time.time + recovery;
+        ShotCount++;
+        if (UsesNetwork) NetworkShots = ShotCount;
+        LastSuccessfulFireTime = Time.time;
+        LastFireResult = "Fired #" + ShotCount;
+        LastWeaponResult = LastFireResult + "; Recovering";
+        LastProjectile = projectile;
+        ChangeState(ChamberState.Recovering);
+        Debug.Log($"Tank fire: {LastFireResult}; speed={speed:F1} m/s; damage={damage:F1}", this);
+        return true;
     }
 
     public void RecordProjectileEnd(int id, string reason, string targetName, Vector3 point)

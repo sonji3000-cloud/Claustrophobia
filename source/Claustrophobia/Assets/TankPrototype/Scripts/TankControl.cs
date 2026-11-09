@@ -300,25 +300,28 @@ public sealed class TankControl : MonoBehaviour
 
 	public bool RequestInsert()
 	{
-		return CanInput && crew != null && crew.CanLoad
-			&& gun != null && gun.RequestInsert();
+		return CanInput && gun != null && gun.CanLoad(crew) && gun.RequestInsert();
 	}
 
 	public bool RequestClose()
 	{
-		return CanInput && crew != null && crew.CanLoad
-			&& gun != null && gun.RequestClose();
+		return CanInput && gun != null && gun.CanLoad(crew) && gun.RequestClose();
 	}
 
 	public bool RequestOpenEmpty()
 	{
-		return CanInput && crew != null && crew.CanLoad
-			&& gun != null && gun.RequestOpenEmpty();
+		return CanInput && gun != null && gun.CanLoad(crew) && gun.RequestOpenEmpty();
 	}
 
 	public CrewDevice AimDevice => aimDevice;
 
 	public string GetFireBlock(CrewInteract user)
+	{
+		string reason = GetFireInputBlock(user);
+		return reason.Length != 0 ? reason : gun.FireBlockReason;
+	}
+
+	private string GetFireInputBlock(CrewInteract user)
 	{
 		if (!CanInput) return "Controls unavailable";
 		if (user == null || user.Crew == null || !user.Crew.CanFire) return "Gunner role required";
@@ -326,12 +329,12 @@ public sealed class TankControl : MonoBehaviour
 		if (user.Carry != null && user.Carry.Held != null) return "Return the carried round first";
 		if (gun == null) return "Gun unavailable";
 
-		return gun.FireBlockReason;
+		return "";
 	}
 
 	public bool RequestFire(CrewInteract user)
 	{
-		if (GetFireBlock(user).Length != 0) return false;
+		if (GetFireInputBlock(user).Length != 0) return false;
 
 		return gun.RequestFire();
 	}
