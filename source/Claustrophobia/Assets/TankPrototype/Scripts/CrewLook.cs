@@ -26,6 +26,7 @@ public sealed class CrewLook : MonoBehaviour
 	private bool savedVisible;
 
 	public bool HasCursor => ownsCursor;
+	public Transform Pivot => pitchPivot;
 
 	private void Awake()
 	{

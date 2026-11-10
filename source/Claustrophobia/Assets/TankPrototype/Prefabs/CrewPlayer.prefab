@@ -108,6 +108,7 @@ MonoBehaviour:
   crew: {fileID: 7824237871169727887}
   seats: {fileID: 5891972552078842518}
   debugView: {fileID: 4233343567803884395}
+  carry: {fileID: 0}
   devices: []
   reach: 2
   radius: 0.05
@@ -380,6 +381,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6128687973513048476}
   - component: {fileID: 5169828519357874465}
+  - component: {fileID: 158485208532706186}
   m_Layer: 0
   m_Name: Soldier_Rig
   m_TagString: Untagged
@@ -425,6 +427,26 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &158485208532706186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6464850558434645956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b26719c7f61aa04fb463924b3e037b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CrewHeadIK
+  anim: {fileID: 5169828519357874465}
+  look: {fileID: 7882333621128703582}
+  weight: 1
+  maxYaw: 75
+  minPitch: -40
+  maxPitch: 55
+  turnSpeed: 360
+  distance: 5
 --- !u!1 &8372143736618736022
 GameObject:
   m_ObjectHideFlags: 0
