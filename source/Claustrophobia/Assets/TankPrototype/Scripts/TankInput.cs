@@ -189,17 +189,20 @@ public sealed class TankInput : MonoBehaviour
 
 	private void ReadSeat(Keyboard keyboard)
 	{
-		if (crewRegistry != null)
+		if (crewRegistry != null && keyboard.f10Key.wasPressedThisFrame)
 		{
-			if (keyboard.f10Key.wasPressedThisFrame) crewRegistry.RequestSwap();
+			crewRegistry.RequestSwap();
 			return;
 		}
 
-		if (seats == null || !seats.isActiveAndEnabled) return;
+		TankCrew.Role role;
+		if (keyboard.digit1Key.wasPressedThisFrame) role = TankCrew.Role.Driver;
+		else if (keyboard.digit2Key.wasPressedThisFrame) role = TankCrew.Role.Gunner;
+		else if (keyboard.digit3Key.wasPressedThisFrame) role = TankCrew.Role.Commander;
+		else return;
 
-		if (keyboard.digit1Key.wasPressedThisFrame) seats.RequestSeat(TankCrew.Role.Driver);
-		else if (keyboard.digit2Key.wasPressedThisFrame) seats.RequestSeat(TankCrew.Role.Gunner);
-		else if (keyboard.digit3Key.wasPressedThisFrame) seats.RequestSeat(TankCrew.Role.Commander);
+		if (crewRegistry != null) crewRegistry.RequestSeat(role);
+		else if (seats != null && seats.isActiveAndEnabled) seats.RequestSeat(role);
 	}
 
 	private void ReadUse(Keyboard keyboard)

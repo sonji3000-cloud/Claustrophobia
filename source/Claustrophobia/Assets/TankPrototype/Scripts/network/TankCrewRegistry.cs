@@ -18,6 +18,7 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 	private CrewSeats seats;
 	private bool spawned;
 	private bool swapPending;
+	private TankCrew.Role seatPending;
 
 	public TankCrew.Role GetRole(PlayerRef player)
 	{
@@ -49,6 +50,7 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 	{
 		spawned = false;
 		swapPending = false;
+		seatPending = TankCrew.Role.None;
 		UnbindSeats(seats);
 	}
 
@@ -86,13 +88,8 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 		if (!HasStateAuthority) return;
 
 		TankCrew.Role role = GetRole(player);
-		switch (role)
-		{
-			case TankCrew.Role.Driver: DriverPlayer = PlayerRef.None; break;
-			case TankCrew.Role.Gunner: GunnerPlayer = PlayerRef.None; break;
-			case TankCrew.Role.Commander: CommanderPlayer = PlayerRef.None; break;
-			default: return;
-		}
+		if (role == TankCrew.Role.None) return;
+		SetPlayer(role, PlayerRef.None);
 
 		Debug.Log($"[CREW LEFT] Player={player}, Released={role}", this);
 	}
@@ -102,11 +99,33 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 		if (!spawned || !HasStateAuthority || DriverPlayer.IsNone || GunnerPlayer.IsNone) return false;
 
 		swapPending = true;
+		seatPending = TankCrew.Role.None;
+		return true;
+	}
+
+	public bool RequestSeat(TankCrew.Role role)
+	{
+		if (!spawned || !HasStateAuthority || role == TankCrew.Role.None
+			|| (uint)role > (uint)TankCrew.Role.Commander) return false;
+
+		TankCrew.Role current = GetRole(Runner.LocalPlayer);
+		if (current == TankCrew.Role.None || current == role) return false;
+
+		seatPending = role;
+		swapPending = false;
 		return true;
 	}
 
 	public override void FixedUpdateNetwork()
 	{
+		if (seatPending != TankCrew.Role.None)
+		{
+			TankCrew.Role target = seatPending;
+			seatPending = TankCrew.Role.None;
+			if (HasStateAuthority) MoveHost(target);
+			return;
+		}
+
 		if (!swapPending) return;
 
 		swapPending = false;
@@ -116,6 +135,35 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 		DriverPlayer = GunnerPlayer;
 		GunnerPlayer = driver;
 		Debug.Log($"[CREW SWAP] Driver={DriverPlayer}, Gunner={GunnerPlayer}", this);
+	}
+
+	private void MoveHost(TankCrew.Role target)
+	{
+		PlayerRef host = Runner.LocalPlayer;
+		TankCrew.Role current = GetRole(host);
+		if (current == TankCrew.Role.None || current == target) return;
+
+		SetPlayer(current, GetPlayer(target));
+		SetPlayer(target, host);
+		Debug.Log($"[CREW SEAT] Host={host}, {current} -> {target}, Driver={DriverPlayer}, Gunner={GunnerPlayer}, Commander={CommanderPlayer}", this);
+	}
+
+	private PlayerRef GetPlayer(TankCrew.Role role) => role switch
+	{
+		TankCrew.Role.Driver => DriverPlayer,
+		TankCrew.Role.Gunner => GunnerPlayer,
+		TankCrew.Role.Commander => CommanderPlayer,
+		_ => PlayerRef.None
+	};
+
+	private void SetPlayer(TankCrew.Role role, PlayerRef player)
+	{
+		switch (role)
+		{
+			case TankCrew.Role.Driver: DriverPlayer = player; break;
+			case TankCrew.Role.Gunner: GunnerPlayer = player; break;
+			case TankCrew.Role.Commander: CommanderPlayer = player; break;
+		}
 	}
 
 	internal bool BindSeats(CrewSeats next)
