@@ -14,6 +14,7 @@ public sealed class TankMotor : NetworkBehaviour
     [Min(0f)] public float TurnDeceleration = 180f;
 
     private Rigidbody body;
+    private NetworkObject networkObject;
     private TankCrewRegistry crewRegistry;
     private PlayerRef lastDriver;
     private float requestedLeft;
@@ -31,6 +32,7 @@ public sealed class TankMotor : NetworkBehaviour
     private void Awake()
     {
         body = GetComponent<Rigidbody>();
+        networkObject = GetComponent<NetworkObject>();
         crewRegistry = GetComponent<TankCrewRegistry>();
     }
 
@@ -42,6 +44,8 @@ public sealed class TankMotor : NetworkBehaviour
 
     private void FixedUpdate()
     {
+		if (networkObject != null && (!networkObject.IsValid || !HasStateAuthority)) return;
+
         if (UsesCrewRegistry)
         {
             if (Object == null || !Object.IsValid || !HasStateAuthority) return;
@@ -70,6 +74,19 @@ public sealed class TankMotor : NetworkBehaviour
         body.linearVelocity = appliedVelocity;
         body.angularVelocity = new Vector3(0f, nextTurn * Mathf.Deg2Rad, 0f);
     }
+
+	public void Stop()
+	{
+		if (networkObject != null && (!networkObject.IsValid || !HasStateAuthority)) return;
+
+		SetLeverInputs(0f, 0f);
+		LeftInput = RightInput = ForwardCommand = TurnCommand = 0f;
+		TargetForwardSpeed = TargetTurnSpeed = 0f;
+		if (body == null || body.isKinematic) return;
+
+		body.linearVelocity = new Vector3(0f, body.linearVelocity.y, 0f);
+		body.angularVelocity = Vector3.zero;
+	}
 
     private static float Approach(float current, float target,
         float acceleration, float deceleration, float dt)

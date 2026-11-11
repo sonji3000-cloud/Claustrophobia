@@ -1025,6 +1025,67 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1001 &427119862
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1063485573440266471, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: SortKey
+      value: 390979470
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 62.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -33.29
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063358222327826323, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4961189211342297997, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
+      propertyPath: m_Name
+      value: EnemyTank-Sherman
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
 --- !u!1 &540616795
 GameObject:
   m_ObjectHideFlags: 0
@@ -2622,7 +2683,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d2bcef173b019c245adc269d8fc07985, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankCrewRegistry
 --- !u!1001 &1308171173
 PrefabInstance:
@@ -3260,3 +3321,4 @@ SceneRoots:
   - {fileID: 1009429313}
   - {fileID: 998917132}
   - {fileID: 225772691}
+  - {fileID: 427119862}

@@ -39,6 +39,9 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     public string LastHitSummary { get; private set; } = "No impact";
     private float recoveryEndsAt;
     private TankCrewRegistry crewRegistry;
+	private TankAI ai;
+	private TankInputButton aiAction;
+	private bool hasAIRequest;
     private readonly List<Collider> ownerColliders = new();
     private readonly Queue<(PlayerRef player, TankInputButton action, int load)> requests = new(4);
 
@@ -63,6 +66,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 	{
 		UsesNetwork = TryGetComponent<NetworkObject>(out _);
 		crewRegistry = GetComponent<TankCrewRegistry>();
+		ai = GetComponent<TankAI>();
 	}
 
 	public override void Spawned()
@@ -72,7 +76,11 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 		ApplyNetworkState();
 	}
 
-	public override void Despawned(NetworkRunner runner, bool hasState) => requests.Clear();
+	public override void Despawned(NetworkRunner runner, bool hasState)
+	{
+		requests.Clear();
+		ClearAIRequest();
+	}
 
 	private void ApplyNetworkState() => ApplyState(NetworkState);
 
@@ -92,6 +100,29 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 	public bool RequestOpenEmpty() => Request(TankInputButton.OpenEmpty);
 	public bool RequestOpen() => Request(TankInputButton.Open);
 	public bool RequestFire() => Request(TankInputButton.Fire);
+
+	// Approval here means queued; State and ShotCount report the executed result after the tick.
+	internal bool RequestAI(TankInputButton action)
+	{
+		if (!IsSpawned || !HasStateAuthority || !Runner.IsServer || crewRegistry != null
+			|| ai == null || !ai.CanAct || hasAIRequest) return false;
+
+		switch (action)
+		{
+			case TankInputButton.Insert:
+			case TankInputButton.Close:
+			case TankInputButton.OpenEmpty:
+			case TankInputButton.Open:
+			case TankInputButton.Fire:
+				aiAction = action;
+				hasAIRequest = true;
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	internal void ClearAIRequest() => hasAIRequest = false;
 
 	private bool Request(TankInputButton action, int load = 0)
 	{
@@ -125,6 +156,13 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 		{
 			RecoveryTimer = TickTimer.None;
 			ChangeState(ChamberState.EmptyClosed);
+		}
+
+		if (hasAIRequest)
+		{
+			TankInputButton action = aiAction;
+			hasAIRequest = false;
+			if (ai != null && ai.CanAct && crewRegistry == null) Execute(action);
 		}
 
 		while (requests.TryDequeue(out var request))

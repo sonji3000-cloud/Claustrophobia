@@ -104,6 +104,19 @@ public sealed class TankAim : NetworkBehaviour
 		ApplyPitch(StepPitch(CurrentPitch, GunInput, dt));
 	}
 
+	internal void ApplyHostInput(float turret, float gun)
+	{
+		if (Object == null || !Object.IsValid || !HasStateAuthority || !Runner.IsServer
+			|| !isActiveAndEnabled || crewRegistry != null) return;
+
+		TurretInput = Mathf.Clamp(turret, -1f, 1f);
+		GunInput = Mathf.Clamp(gun, -1f, 1f);
+		TurretYaw = StepYaw(TurretYaw, TurretInput, Runner.DeltaTime);
+		GunPitch = StepPitch(GunPitch, GunInput, Runner.DeltaTime);
+		ApplyYaw(TurretYaw);
+		ApplyPitch(GunPitch);
+	}
+
 	private float StepYaw(float yaw, float input, float dt)
 	{
 		return Mathf.Repeat(yaw + input * YawSpeed * dt, 360f);
