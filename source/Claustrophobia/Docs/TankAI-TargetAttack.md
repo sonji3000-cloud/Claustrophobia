@@ -1,5 +1,7 @@
 # 지정 표적 조준·공격
 
+이동부터 HP·자기 파괴 중단까지 이어서 확인하려면 [HP·파괴 중단·통합 확인](TankAI-HPIntegration.md)의 `TankAIIntegrationTest`를 사용한다.
+
 `TankAI.Attack(Transform)`으로 지정한 표적을 제자리에서 조준하고 반복 공격한다. 판단과 명령 실행은 기존 `IsHost` 검사에 따라 호스트에서만 수행한다. 표적 자동 탐색, 추격, 이동 표적의 선행 조준은 이번 작업에 포함하지 않는다.
 
 ## 바로 테스트하기

@@ -158,6 +158,12 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 	void IAfterTick.AfterTick()
 	{
 		if (!HasStateAuthority) return;
+		if (ai != null && !ai.CanAct)
+		{
+			ClearAIRequest();
+			requests.Clear();
+			return;
+		}
 		if (State == ChamberState.Recovering && RecoveryTimer.Expired(Runner))
 		{
 			RecoveryTimer = TickTimer.None;
@@ -237,6 +243,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     private string GetBlockReason()
     {
         if (!isActiveAndEnabled) return "Fire component inactive";
+		if (ai != null && !ai.CanAct) return "AI inactive or destroyed";
         if (State == ChamberState.Recovering) return "Recovering after firing";
         if (State == ChamberState.EmptyOpen || State == ChamberState.EmptyClosed) return "Not loaded - open chamber and insert a round";
         if (State == ChamberState.LoadedOpen) return "Chamber open - close it before firing";

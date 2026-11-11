@@ -65,6 +65,11 @@ public sealed class TankAI : NetworkBehaviour
 		if (ballistics == null) ballistics = GetComponent<TankBallistics>();
 	}
 
+	private void OnEnable()
+	{
+		if (health != null) health.Died += StopActions;
+	}
+
 	public override void Spawned()
 	{
 		TickCount = 0;
@@ -358,6 +363,7 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void OnDisable()
 	{
+		if (health != null) health.Died -= StopActions;
 		if (IsHost) StopActions();
 	}
 
