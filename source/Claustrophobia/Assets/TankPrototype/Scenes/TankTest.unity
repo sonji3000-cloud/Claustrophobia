@@ -708,7 +708,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966527
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1150,7 +1150,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966527
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1331,7 +1331,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966527
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1988,7 +1988,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966527
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -2343,6 +2343,10 @@ PrefabInstance:
       propertyPath: m_TargetTexture
       value: 
       objectReference: {fileID: 8400000, guid: 316dbc6fc4ff9e44fa191d9f9008f0b0, type: 2}
+    - target: {fileID: 1769288639112650855, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294966527
+      objectReference: {fileID: 0}
     - target: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -2357,7 +2361,15 @@ PrefabInstance:
       objectReference: {fileID: 8400000, guid: cdf7f875c918c45418fdc03e4eb92f4b, type: 2}
     - target: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_CullingMask.m_Bits
-      value: 4294967039
+      value: 4294966527
+      objectReference: {fileID: 0}
+    - target: {fileID: 3834151571669551917, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294966527
+      objectReference: {fileID: 0}
+    - target: {fileID: 4419708504457498056, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294966527
       objectReference: {fileID: 0}
     - target: {fileID: 4479740928687001152, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
       propertyPath: m_LocalPosition.y
