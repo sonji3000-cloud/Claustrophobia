@@ -28,6 +28,7 @@ public sealed class TankMotor : NetworkBehaviour
     public float TargetForwardSpeed { get; private set; }
     public float TargetTurnSpeed { get; private set; }
     public bool UsesCrewRegistry => crewRegistry != null;
+    public int PhysicsTickCount { get; private set; }
 
     private void Awake()
     {
@@ -51,6 +52,9 @@ public sealed class TankMotor : NetworkBehaviour
             if (Object == null || !Object.IsValid || !HasStateAuthority) return;
             if (lastDriver != crewRegistry.DriverPlayer) SetLeverInputs(0f, 0f);
         }
+
+        PhysicsTickCount++;
+        if (!body.isKinematic && (requestedLeft != 0f || requestedRight != 0f)) body.WakeUp();
 
         LeftInput = requestedLeft;
         RightInput = requestedRight;

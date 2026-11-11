@@ -24,6 +24,7 @@ public sealed class TankProjectile : NetworkBehaviour
     private Rigidbody body;
     private SphereCollider sphere;
     private TankGun source;
+    internal TankGun SourceGun => source;
     private Rigidbody owner;
     private float bornAt;
 	private readonly System.Collections.Generic.List<Rigidbody> checkBodies = new System.Collections.Generic.List<Rigidbody>(1);

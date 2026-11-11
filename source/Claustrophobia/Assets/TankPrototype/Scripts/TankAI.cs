@@ -47,6 +47,22 @@ public sealed class TankAI : NetworkBehaviour
 	public MoveState MoveStatus { get; private set; }
 	public Vector3 Destination { get; private set; }
 	public float StopRadius => stopRadius;
+	public string MoveBlockReason
+	{
+		get
+		{
+			if (!CanAct) return "AI is not an active host or is destroyed";
+			if (body == null) return "Missing Rigidbody";
+			if (body.isKinematic) return "Rigidbody is kinematic";
+			if (!IsFinite(motor.MaxMoveSpeed) || motor.MaxMoveSpeed <= 0f
+				|| !IsFinite(motor.MaxTurnSpeed) || motor.MaxTurnSpeed <= 0f) return "Invalid motor speed";
+			if (!IsFinite(motor.MoveAcceleration) || motor.MoveAcceleration <= 0f
+				|| !IsFinite(motor.TurnAcceleration) || motor.TurnAcceleration <= 0f) return "Invalid motor acceleration";
+			if (!IsFinite(motor.MoveDeceleration) || motor.MoveDeceleration <= 0f
+				|| !IsFinite(motor.TurnDeceleration) || motor.TurnDeceleration <= 0f) return "Invalid motor deceleration";
+			return "";
+		}
+	}
 	public Transform Target => attackTarget;
 	public TankHealth TargetHealth => targetHealth;
 	public AttackState AttackStatus { get; private set; }
@@ -92,6 +108,7 @@ public sealed class TankAI : NetworkBehaviour
 			StopActions();
 			return;
 		}
+		EnsureHostBody();
 
 		if (MoveStatus == MoveState.Moving) UpdateMove();
 
@@ -114,7 +131,9 @@ public sealed class TankAI : NetworkBehaviour
 	// Invalid requests preserve the previous destination and command.
 	public bool MoveTo(Vector3 point)
 	{
-		if (!CanAct || !CanMove() || !IsFinite(point.x) || !IsFinite(point.y) || !IsFinite(point.z)) return false;
+		if (!CanAct || !IsFinite(point.x) || !IsFinite(point.y) || !IsFinite(point.z)) return false;
+		EnsureHostBody();
+		if (!CanMove()) return false;
 		Vector3 offset = point - body.position;
 		offset.y = 0f;
 		if (!IsFinite(offset.sqrMagnitude)) return false;
@@ -136,13 +155,12 @@ public sealed class TankAI : NetworkBehaviour
 
 	private bool CanMove()
 	{
-		return body != null && !body.isKinematic
-			&& IsFinite(motor.MaxMoveSpeed) && motor.MaxMoveSpeed > 0f
-			&& IsFinite(motor.MaxTurnSpeed) && motor.MaxTurnSpeed > 0f
-			&& IsFinite(motor.MoveAcceleration) && motor.MoveAcceleration > 0f
-			&& IsFinite(motor.TurnAcceleration) && motor.TurnAcceleration > 0f
-			&& IsFinite(motor.MoveDeceleration) && motor.MoveDeceleration > 0f
-			&& IsFinite(motor.TurnDeceleration) && motor.TurnDeceleration > 0f;
+		return MoveBlockReason == "";
+	}
+
+	private void EnsureHostBody()
+	{
+		if (IsHost && body != null && body.isKinematic) body.isKinematic = false;
 	}
 
 	private void UpdateMove()
