@@ -117,6 +117,25 @@ public sealed class TankAim : NetworkBehaviour
 		ApplyPitch(GunPitch);
 	}
 
+	public bool TryGetAim(Vector3 direction, out Vector2 angles)
+	{
+		angles = Vector2.zero;
+		if (turretPivot == null || gunPivot == null || !gunPivot.IsChildOf(turretPivot)
+			|| float.IsNaN(direction.sqrMagnitude) || float.IsInfinity(direction.sqrMagnitude)
+			|| direction.sqrMagnitude < 0.000001f) return false;
+
+		Quaternion baseRotation = turretPivot.parent != null ? turretPivot.parent.rotation * turretBase : turretBase;
+		Vector3 local = Quaternion.Inverse(baseRotation) * direction;
+		float yaw = Mathf.Atan2(local.x, local.z) * Mathf.Rad2Deg;
+		Quaternion rotation = baseRotation * Quaternion.AngleAxis(yaw, Vector3.up);
+		Quaternion yawChange = rotation * Quaternion.Inverse(turretPivot.rotation);
+		Quaternion pitchBase = gunPivot.parent != null ? gunPivot.parent.rotation * gunBase : gunBase;
+		local = Quaternion.Inverse(yawChange * pitchBase) * direction;
+		float pitch = Mathf.Atan2(local.y, local.z) * Mathf.Rad2Deg;
+		angles = new Vector2(yaw, pitch);
+		return !float.IsNaN(yaw) && !float.IsNaN(pitch) && pitch >= MinPitch && pitch <= MaxPitch;
+	}
+
 	private float StepYaw(float yaw, float input, float dt)
 	{
 		return Mathf.Repeat(yaw + input * YawSpeed * dt, 360f);

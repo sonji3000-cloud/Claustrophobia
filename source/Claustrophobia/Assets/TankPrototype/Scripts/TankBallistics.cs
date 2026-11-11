@@ -74,6 +74,7 @@ public struct TankImpactComparison
 [RequireComponent(typeof(TankGun))]
 public sealed class TankBallistics : MonoBehaviour
 {
+    [SerializeField] private bool autoRefresh = true;
     public bool PredictionEnabled = true;
     public bool ShowMarker = true;
     public bool ShowDiagnostics = true;
@@ -107,6 +108,7 @@ public sealed class TankBallistics : MonoBehaviour
     private void OnDestroy() { HideMarker(); }
     private void LateUpdate()
     {
+        if (!autoRefresh) return;
         if (!PredictionEnabled) { Current = new TankPrediction { State = TankPredictionState.Disabled, Reason = "Prediction disabled" }; HideMarker(); return; }
         if (Time.time < nextRefresh) return;
         // Do not replay missed refreshes after a long frame.

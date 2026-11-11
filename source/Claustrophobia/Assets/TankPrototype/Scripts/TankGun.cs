@@ -42,6 +42,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 	private TankAI ai;
 	private TankInputButton aiAction;
 	private bool hasAIRequest;
+	private bool aiTargetRequest;
     private readonly List<Collider> ownerColliders = new();
     private readonly Queue<(PlayerRef player, TankInputButton action, int load)> requests = new(4);
 
@@ -102,10 +103,10 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 	public bool RequestFire() => Request(TankInputButton.Fire);
 
 	// Approval here means queued; State and ShotCount report the executed result after the tick.
-	internal bool RequestAI(TankInputButton action)
+	internal bool RequestAI(TankInputButton action, bool targetRequest = false)
 	{
 		if (!IsSpawned || !HasStateAuthority || !Runner.IsServer || crewRegistry != null
-			|| ai == null || !ai.CanAct || hasAIRequest) return false;
+			|| ai == null || !ai.CanAct || hasAIRequest || targetRequest && !ai.HasLiveTarget) return false;
 
 		switch (action)
 		{
@@ -115,6 +116,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 			case TankInputButton.Open:
 			case TankInputButton.Fire:
 				aiAction = action;
+				aiTargetRequest = targetRequest;
 				hasAIRequest = true;
 				return true;
 			default:
@@ -122,7 +124,11 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 		}
 	}
 
-	internal void ClearAIRequest() => hasAIRequest = false;
+	internal void ClearAIRequest()
+	{
+		hasAIRequest = false;
+		aiTargetRequest = false;
+	}
 
 	private bool Request(TankInputButton action, int load = 0)
 	{
@@ -161,8 +167,9 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 		if (hasAIRequest)
 		{
 			TankInputButton action = aiAction;
-			hasAIRequest = false;
-			if (ai != null && ai.CanAct && crewRegistry == null) Execute(action);
+			bool targetRequest = aiTargetRequest;
+			ClearAIRequest();
+			if (ai != null && ai.CanAct && crewRegistry == null && (!targetRequest || ai.HasLiveTarget)) Execute(action);
 		}
 
 		while (requests.TryDequeue(out var request))
