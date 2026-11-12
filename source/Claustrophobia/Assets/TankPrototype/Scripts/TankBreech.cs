@@ -75,11 +75,14 @@ public sealed class TankBreech : MonoBehaviour
 		if (!CanInsert(user) || user.Selected != device) return false;
 		if (gun.UsesNetwork)
 		{
+			if (!user.Carry.BeginLoad()) return false;
+
 			pendingRound = user.Carry.Held;
 			if (++loadRequest == 0) loadRequest++;
 			if (!gun.RequestLoad(loadRequest))
 			{
 				pendingRound = null;
+				user.Carry.EndLoad();
 				return false;
 			}
 
@@ -103,6 +106,7 @@ public sealed class TankBreech : MonoBehaviour
 		CrewCarry carry = round.Holder;
 		if (accepted && gun != null && carry != null && carry.Held == round)
 			CommitLoad(carry);
+		else if (carry != null) carry.EndLoad();
 	}
 
 	private void CommitLoad(CrewCarry carry)
@@ -115,6 +119,7 @@ public sealed class TankBreech : MonoBehaviour
 	public string GetPrompt(CrewInteract user)
 	{
 		if (gun == null || !gun.isActiveAndEnabled) return "Chamber unavailable";
+		if (pendingRound != null) return "Loading round | Waiting for host";
 		if (CanInsert(user)) return "OPEN | EMPTY | Space - Insert round | Esc - Return to rack";
 		bool holding = user != null && user.Carry != null && user.Carry.Held != null;
 		switch (gun.State)
@@ -139,7 +144,7 @@ public sealed class TankBreech : MonoBehaviour
 		if (loaded != null) loaded.gameObject.SetActive(open && gun.HasLiveRound);
 		if (loaded == null || gun.HasLiveRound) return;
 
-		loaded.gameObject.SetActive(false);
+		loaded.Consume();
 		loaded = null;
 		loadedGun = null;
 	}
@@ -166,6 +171,7 @@ public sealed class TankBreech : MonoBehaviour
 			subscribedGun.LoadResolved -= OnLoadResolved;
 		}
 		subscribedGun = null;
+		if (pendingRound != null && pendingRound.Holder != null) pendingRound.Holder.EndLoad();
 		pendingRound = null;
 	}
 }

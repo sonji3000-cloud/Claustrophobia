@@ -245,6 +245,14 @@ public sealed class CrewInteract : MonoBehaviour
 		if (device.Breech != null) return device.Breech.TryUse(this);
 		if (carry != null && carry.Held != null) return false;
 
+		if (device.AmmoRack != null)
+		{
+			if (!device.AmmoRack.TryTake(this)) return false;
+
+			ClearSelection();
+			return true;
+		}
+
 		if (device.Round != null)
 		{
 			if (carry == null || !carry.TryTake(device.Round)) return false;

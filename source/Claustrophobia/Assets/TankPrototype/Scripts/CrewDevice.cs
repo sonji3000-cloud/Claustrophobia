@@ -16,12 +16,14 @@ public sealed class CrewDevice : MonoBehaviour
 	[SerializeField] private Renderer[] outlines = Array.Empty<Renderer>();
 	[SerializeField] private TankRound round;
 	[SerializeField] private TankBreech breech;
+	[SerializeField] private TankAmmoRack ammoRack;
 
 	public string Label => label;
 	public float Reach => reach;
 	public Collider[] Parts => parts;
 	public TankRound Round => round;
 	public TankBreech Breech => breech;
+	public TankAmmoRack AmmoRack => ammoRack;
 	public CrewInteract User { get; private set; }
 	public event Action<CrewInteract, bool> UseChanged;
 

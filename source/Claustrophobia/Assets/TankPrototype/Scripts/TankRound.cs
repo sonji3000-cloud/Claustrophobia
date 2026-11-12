@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>A scene round that can be carried and returned to its rack.</summary>
+/// <summary>A carried round, either authored in the scene or issued by an ammo rack.</summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(CrewDevice))]
 public sealed class TankRound : MonoBehaviour
@@ -11,10 +11,13 @@ public sealed class TankRound : MonoBehaviour
 	private Quaternion homeRot;
 	private Vector3 homeScale;
 	private bool[] colliderStates;
+	private bool issued;
 
 	public CrewDevice Device => device;
 	public CrewCarry Holder { get; private set; }
 	public bool IsLoaded { get; private set; }
+
+	internal void MarkIssued() => issued = true;
 
 	private void Awake()
 	{
@@ -51,6 +54,12 @@ public sealed class TankRound : MonoBehaviour
 		if (Holder != holder) return;
 
 		Holder = null;
+		if (issued)
+		{
+			Consume();
+			return;
+		}
+
 		transform.SetParent(home, false);
 		transform.SetLocalPositionAndRotation(homePos, homeRot);
 		transform.localScale = homeScale;
@@ -67,6 +76,12 @@ public sealed class TankRound : MonoBehaviour
 		IsLoaded = true;
 		transform.SetParent(loadPoint, true);
 		transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+	}
+
+	internal void Consume()
+	{
+		gameObject.SetActive(false);
+		if (issued) Destroy(gameObject);
 	}
 
 	private void OnDisable()

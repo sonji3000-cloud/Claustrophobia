@@ -63,6 +63,23 @@ TigerTank의 기본값은 Yaw 초당 60°, Pitch 초당 30°, 상하 범위 −1
 
 열린 약실에서 발사를 요청하면 Host가 거부 사유를 기록한다. 정상 발사는 포탄 생성과 초기화가 성공한 뒤에 `ShotCount`를 올리고 `Ready → Recovering`으로 전이한다. 기본 복구 시간은 1.5초다. [약실 전이와 발사](../Assets/TankPrototype/Scripts/TankGun.cs)
 
+### 내부 탄약 상자
+
+`TankInterior`의 `GunnerAmmoRack`, `CommanderAmmoRack`은 `ammo-crate-pak_T` 모델을 사용하는 보급 상자다. 빈손으로 상자를 바라보고 `Space`를 누르면 한 발을 무제한 공급하며, 기존 `RoundHold` 위치에 붙인다. 기존 12개 포탄은 배치를 보존한 채 씬에서 비활성화하고 선택 목록에서 제외했다. 상자는 기존 장치와 같은 `InteriorDevice` 레이어를 사용한다.
+
+`TankAmmoRack`이 `TankRound` 프리팹을 지급하고 `CrewCarry`가 한 발만 운반한다. `Esc`, 좌석 변경 또는 운반 종료 시 지급한 포탄을 제거한다. 네트워크 장전 응답을 기다리는 동안에는 포탄을 유지하고, 반납 요청은 응답 이후 처리한다. 승인되면 약실로 옮기고, 거부되면 계속 들고 있거나 대기하던 반납을 처리한다. 약실을 닫을 때는 포탄을 숨기기만 하며, 다시 열면 같은 포탄을 표시한다. 발사로 소모된 포탄은 제거하므로 반복 사용해도 비활성 포탄이 누적되지 않는다.
+
+손에 든 포탄과 상자 사용은 기존 로컬 운반 구조를 사용한다. 약실 상태와 발사체는 기존 Host 승인 및 복제 경로를 사용한다. 다른 플레이어의 손에 든 포탄 표시와 공유 잔탄 수량은 별도 구현 대상이다.
+
+검증: Unity Editor Play Mode에서 실제 포수 좌석의 시선 선택을 사용해 포탄 지급·장전·폐쇄·재개방·발사를 20회 반복했다. 중복 지급 거부, `Esc`에 해당하는 반납 API, 장전 응답 대기 중 반납 보류, 좌석 변경 시 반납, 운전수 사용 제한, 발사·반납 후 지급 포탄 오브젝트 제거를 확인했다. 이 검사는 오프라인 무장으로 수행했으며, 이번 변경 후 Host/Guest 간 통신 재검증과 VR 컨트롤러 검증은 수행하지 않았다. 검증 기록은 프로젝트 내부 `Builds/AmmoRack/verify-result.txt`에 있다.
+
+직접 확인하는 순서:
+
+1. `TankTest`를 실행하고 포수 좌석으로 들어간다. Host로 혼자 확인할 때는 기존 `F10` 좌석 교체를 사용하고, 외부 화면이라면 `F9`로 내부에 들어간다.
+2. 내부의 `GunnerAmmoRack` 상자를 바라보고 선택 표시가 나오면 `Space`를 누른다. 손에 한 발이 붙고, 다시 상자를 눌러도 추가 지급되지 않아야 한다.
+3. 포탄을 든 채 약실을 바라보고 `Space`를 누른다. 닫혀 있으면 먼저 열고, 다시 눌러 장전한 뒤 한 번 더 눌러 닫는다. 기존 포수 조이스틱을 `Space`로 사용하고 `Enter`로 발사한 뒤, 조작을 종료하고 상자에서 다음 탄을 받는 과정을 반복한다.
+4. 포탄을 든 상태에서 `Esc`를 누르면 반납되어야 한다. 좌석을 바꿔도 손에 남지 않아야 하며, 약실을 닫았다 다시 열면 장전한 탄은 그대로 보여야 한다.
+
 ## 4. 포탄 스폰, 비행, 제거
 
 포탄 프리팹의 루트에 `NetworkObject`, `NetworkTransform`, `TankProjectile`, Rigidbody, SphereCollider가 있다. `FusionPrefab` 라벨을 통해 Fusion 스폰 프리팹으로 등록되고, `NetworkTransform`의 Forecast는 꺼져 있다. 전차 쪽에서는 `TankTest` 씬에 배치된 TigerTank의 `NetworkObject`가 `TankAim`, `TankGun`, `TankCrewRegistry`를 포함한다. 내부 좌석과 포미는 `TankSceneLink`가 각 인스턴스에서 로드한 `TankInterior`에 연결한다. [포탄 프리팹](../Assets/TankPrototype/Prefabs/TankProjectile.prefab) · [Fusion 라벨](../Assets/TankPrototype/Prefabs/TankProjectile.prefab.meta) · [전차 씬 등록](../Assets/TankPrototype/Scenes/TankTest.unity) · [씬 연결 코드](../Assets/TankPrototype/Scripts/TankSceneLink.cs)
