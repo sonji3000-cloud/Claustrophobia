@@ -80,6 +80,18 @@ TigerTank의 기본값은 Yaw 초당 60°, Pitch 초당 30°, 상하 범위 −1
 3. 포탄을 든 채 약실을 바라보고 `Space`를 누른다. 닫혀 있으면 먼저 열고, 다시 눌러 장전한 뒤 한 번 더 눌러 닫는다. 기존 포수 조이스틱을 `Space`로 사용하고 `Enter`로 발사한 뒤, 조작을 종료하고 상자에서 다음 탄을 받는 과정을 반복한다.
 4. 포탄을 든 상태에서 `Esc`를 누르면 반납되어야 한다. 좌석을 바꿔도 손에 남지 않아야 하며, 약실을 닫았다 다시 열면 장전한 탄은 그대로 보여야 한다.
 
+### 운전수 상태판 (2026-11-13)
+
+`TankInterior`의 `DriverMap` 앞에 보기 전용 `DriverStatusPanel`을 배치했다. 기존 파란 판넬에는 전용 무광 짙은 회색 재질을 적용했다. 화면은 HP 막대·퍼센트와 좌우 연속 레버 표시로 구성하며, 설명 글자나 기어 단계는 없다. HP는 50% 초과 초록, 25% 초과~50% 이하 주황, 25% 이하 빨강이다. 성공한 피격 때 가장자리를 0.22초 붉게 강조한다. `DriverMap`은 장치 선택 목록에서 제외했다.
+
+실제 피해 흐름은 `TankProjectile`의 충돌 → 플레이어 `TigerTank`의 `TankHealth.ApplyDamage()` → `TankStatus` → 상태판이다. Host만 실제 HP를 변경하고, `TankStatus`가 HP·최대 HP·누적 피격 횟수·모터 적용 좌우 입력을 Fusion 상태로 복제한다. Guest의 상태판은 복제된 값을 읽는다. 운전수 본인의 레버 표시는 실제 손잡이와 같은 로컬 입력값으로 즉시 반응한다. 이 작업이 적 전차의 기존 `TankHealth.CurrentHP`까지 복제하는 것은 아니다.
+
+고정 UI는 프리팹으로 저장했다. 일반 Transform 루트 아래에 Canvas를 두어 씬 재로드 후에도 위치가 유지되며, UI는 내부 전용 레이어를 사용한다. `TankSceneLink`가 플레이어 전차와 상태판을 연결하고 해제한다. 최초 연결·재연결에는 과거 피격 효과를 재생하지 않는다.
+
+직접 확인: `TankTest`의 운전수로 `F9` 내부 화면에 들어가 오른쪽 상태판을 본다. 운전 장치를 `Space`로 사용하고 왼쪽 `W/S`, 오른쪽 `I/K`로 조절한다. `Q/U`는 각 레버를 중앙으로 돌리며, 운전 장치에서 나오면 두 손잡이가 중앙으로 복귀한다.
+
+검증: 네이티브 Unity Play Mode의 오프라인 환경에서 실제 `TigerTank` 프리팹에 실제 `TankGun`으로 포탄을 발사했다. 물리 충돌로 HP 100→75 감소 후 상태판 75%와 피격 강조가 반영됐다. 이후 50/25/0% 색상 경계, 좌우 연속 입력, 운전 종료, 재연결, 씬 재로드 위치와 실제 운전석 카메라 표시를 확인했다. 동일 값의 상태판 갱신 1000회는 해당 갱신 함수에서 관리 메모리 할당 0바이트였다. 기록·이미지·임시 작성 도구는 `Builds/DriverStatus/`에 보관한다. 실제 Host/Guest 통신·늦은 접속 및 Quest 가독성은 별도 확인 대상이다.
+
 ## 4. 포탄 스폰, 비행, 제거
 
 포탄 프리팹의 루트에 `NetworkObject`, `NetworkTransform`, `TankProjectile`, Rigidbody, SphereCollider가 있다. `FusionPrefab` 라벨을 통해 Fusion 스폰 프리팹으로 등록되고, `NetworkTransform`의 Forecast는 꺼져 있다. 전차 쪽에서는 `TankTest` 씬에 배치된 TigerTank의 `NetworkObject`가 `TankAim`, `TankGun`, `TankCrewRegistry`를 포함한다. 내부 좌석과 포미는 `TankSceneLink`가 각 인스턴스에서 로드한 `TankInterior`에 연결한다. [포탄 프리팹](../Assets/TankPrototype/Prefabs/TankProjectile.prefab) · [Fusion 라벨](../Assets/TankPrototype/Prefabs/TankProjectile.prefab.meta) · [전차 씬 등록](../Assets/TankPrototype/Scenes/TankTest.unity) · [씬 연결 코드](../Assets/TankPrototype/Scripts/TankSceneLink.cs)
