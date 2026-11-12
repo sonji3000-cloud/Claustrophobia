@@ -2564,6 +2564,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38244224542a74448aef15e233c651b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankAim
+--- !u!114 &1304813835 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6942209695766268889, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
+  m_PrefabInstance: {fileID: 1304813830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599344619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1a16a3f29fbd9045b600eb70d667d97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankStatus
 --- !u!114 &1304813838 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6645272728011381682, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
@@ -2597,6 +2608,7 @@ MonoBehaviour:
   - {fileID: 1304813838}
   - {fileID: 1304813834}
   - {fileID: 1304813867}
+  - {fileID: 1304813835}
   - {fileID: 1304813868}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1304813847
@@ -3265,6 +3277,7 @@ MonoBehaviour:
   tankHud: {fileID: 1304813831}
   gun: {fileID: 1304813867}
   aim: {fileID: 1304813834}
+  status: {fileID: 1304813835}
   driverFeed: {fileID: 1698757515}
   gunnerFeed: {fileID: 1304813833}
   bindJoystickAim: 1
@@ -3332,7 +3345,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
   SortKey: 3868778714
   SendPriority: 1
@@ -3352,7 +3365,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6436d5c8306a4397994c9a1790153a47, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankAINetworkTest
   session: {fileID: 998917133}
   enemyPrefab: {fileID: 1063485573440266471, guid: 3767a14a7db2a5640bd1ad74962160e1, type: 3}
@@ -3366,6 +3379,8 @@ MonoBehaviour:
   targetSpawnPoint: {fileID: 2150100061}
   previewCamera: {fileID: 2150100072}
   cornerPause: 0.1
+  patrolArrivalRadius: 1
+  fastTestMovement: 1
   _EnemyObject: {fileID: 0}
   _TargetObject: {fileID: 0}
   _State: 0
@@ -3373,8 +3388,6 @@ MonoBehaviour:
   _Laps: 0
   _MoveStatus: 0
   _AttackStatus: 0
-  patrolArrivalRadius: 1
-  fastTestMovement: 1
 --- !u!1 &2150100010
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,6 +16,7 @@ public sealed class TankInterior : MonoBehaviour
 	[SerializeField] private TankLever[] levers = System.Array.Empty<TankLever>();
 	[SerializeField] private TankJoystick joystick;
 	[SerializeField] private CrewInteractHud interactionHud;
+	[SerializeField] private TankStatusPanel statusPanel;
 
 	private bool prepared;
 
@@ -31,13 +32,14 @@ public sealed class TankInterior : MonoBehaviour
 	public TankLever[] Levers => levers;
 	public TankJoystick Joystick => joystick;
 	public CrewInteractHud Hud => interactionHud;
+	public TankStatusPanel StatusPanel => statusPanel;
 	public bool IsPrepared => prepared && seats != null && seats.IsInitialized;
 
 	public bool ValidateRefs(out string reason)
 	{
 		if (crew == null || seats == null || interaction == null || mode == null
 			|| driveDevice == null || aimDevice == null || sight == null || driverScreen == null
-			|| breech == null || joystick == null || interactionHud == null)
+			|| breech == null || joystick == null || interactionHud == null || statusPanel == null)
 		{
 			reason = "TankInterior requires all local component references.";
 			return false;
@@ -55,7 +57,7 @@ public sealed class TankInterior : MonoBehaviour
 		}
 		if (!seats.ValidateRefs(out reason)) return false;
 		if (crew.gameObject.scene != gameObject.scene || mode.gameObject.scene != gameObject.scene
-			|| interactionHud.gameObject.scene != gameObject.scene)
+			|| interactionHud.gameObject.scene != gameObject.scene || statusPanel.gameObject.scene != gameObject.scene)
 		{
 			reason = "The player, mode and HUD must belong to the interior scene.";
 			return false;

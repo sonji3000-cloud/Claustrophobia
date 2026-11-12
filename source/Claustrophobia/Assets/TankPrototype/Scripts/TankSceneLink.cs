@@ -19,6 +19,7 @@ public sealed class TankSceneLink : MonoBehaviour
 	[SerializeField] private TankKeyboardDebug tankHud;
 	[SerializeField] private TankGun gun;
 	[SerializeField] private TankAim aim;
+	[SerializeField] private TankStatus status;
 	[SerializeField] private Camera driverFeed;
 	[SerializeField] private Camera gunnerFeed;
 	[Tooltip("Disable only to defer the existing joystick aim omission. Control still binds.")]
@@ -67,6 +68,7 @@ public sealed class TankSceneLink : MonoBehaviour
 		if (control == null) return;
 		tankObject = control.GetComponent<NetworkObject>();
 		crewRegistry = control.GetComponent<TankCrewRegistry>();
+		if (status == null) status = control.GetComponent<TankStatus>();
 		worldScene = control.gameObject.scene;
 		worldPath = worldScene.path;
 	}
@@ -104,14 +106,14 @@ public sealed class TankSceneLink : MonoBehaviour
 	private bool ValidateWorld(out string reason)
 	{
 		if (session == null || control == null || input == null || cameras == null
-			|| tankHud == null || gun == null || aim == null || driverFeed == null || gunnerFeed == null)
+			|| tankHud == null || gun == null || aim == null || status == null || driverFeed == null || gunnerFeed == null)
 		{
 			reason = "TankSceneLink requires all explicit external endpoints.";
 			return false;
 		}
 		if (input.gameObject != control.gameObject || cameras.gameObject != control.gameObject
 			|| tankHud.gameObject != control.gameObject || gun.gameObject != control.gameObject
-			|| aim.gameObject != control.gameObject || session.tankControl != control)
+			|| aim.gameObject != control.gameObject || status.gameObject != control.gameObject || session.tankControl != control)
 		{
 			reason = "TankSceneLink endpoints must belong to the designated tank.";
 			return false;
@@ -225,6 +227,7 @@ public sealed class TankSceneLink : MonoBehaviour
 		if (request != version || !next.DriverScreen.Bind(driverFeed)) return false;
 		if (request != version || !next.Sight.Bind(gunnerFeed)) return false;
 		if (request != version || !next.Breech.Bind(gun)) return false;
+		if (request != version || !next.StatusPanel.Bind(status, control)) return false;
 
 		for (int i = 0; i < next.Levers.Length; i++)
 			if (request != version || !next.Levers[i].Bind(control)) return false;
@@ -264,6 +267,7 @@ public sealed class TankSceneLink : MonoBehaviour
 			if (previous.DriverScreen != null) previous.DriverScreen.Unbind();
 			if (previous.Sight != null) previous.Sight.Unbind();
 			if (previous.Breech != null) previous.Breech.Unbind();
+			if (previous.StatusPanel != null) previous.StatusPanel.Unbind();
 			foreach (TankLever lever in previous.Levers)
 				if (lever != null) lever.Unbind();
 			if (previous.Joystick != null)
