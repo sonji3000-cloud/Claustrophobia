@@ -27,6 +27,8 @@ public sealed class TankMotor : NetworkBehaviour
     public float TurnCommand { get; private set; }
     public float TargetForwardSpeed { get; private set; }
     public float TargetTurnSpeed { get; private set; }
+    public float AppliedForwardSpeed { get; private set; }
+    public float AppliedTurnSpeed { get; private set; }
     public bool UsesCrewRegistry => crewRegistry != null;
     public int PhysicsTickCount { get; private set; }
 
@@ -68,9 +70,11 @@ public sealed class TankMotor : NetworkBehaviour
         float currentForward = Vector3.Dot(velocity, forward);
         float currentTurn = body.angularVelocity.y * Mathf.Rad2Deg;
         float nextForward = Approach(currentForward, TargetForwardSpeed,
-            MoveAcceleration, MoveDeceleration, Time.fixedDeltaTime);
+            MoveAcceleration, MoveDeceleration, Time.fixedDeltaTime, 0.05f);
         float nextTurn = Approach(currentTurn, TargetTurnSpeed,
-            TurnAcceleration, TurnDeceleration, Time.fixedDeltaTime);
+            TurnAcceleration, TurnDeceleration, Time.fixedDeltaTime, 0.5f);
+        AppliedForwardSpeed = nextForward;
+        AppliedTurnSpeed = nextTurn;
 
         // The flat-ground model removes lateral motion and preserves gravity's Y velocity.
         Vector3 appliedVelocity = forward * nextForward;
@@ -86,6 +90,7 @@ public sealed class TankMotor : NetworkBehaviour
 		SetLeverInputs(0f, 0f);
 		LeftInput = RightInput = ForwardCommand = TurnCommand = 0f;
 		TargetForwardSpeed = TargetTurnSpeed = 0f;
+		AppliedForwardSpeed = AppliedTurnSpeed = 0f;
 		if (body == null || body.isKinematic) return;
 
 		body.linearVelocity = new Vector3(0f, body.linearVelocity.y, 0f);
@@ -93,13 +98,19 @@ public sealed class TankMotor : NetworkBehaviour
 	}
 
     private static float Approach(float current, float target,
-        float acceleration, float deceleration, float dt)
+        float acceleration, float deceleration, float dt, float restSpeed)
     {
         if (target == 0f)
             return Mathf.MoveTowards(current, 0f, deceleration * dt);
-        // Reverse only after reaching zero; no leftover step is used to cross zero.
+        // Contacts can reintroduce a tiny opposite velocity after every braking step.
+        // Treat that residual as rest so it cannot keep the motor braking forever.
+        // Larger reversals still decelerate before driving in the new direction.
         if ((current > 0f && target < 0f) || (current < 0f && target > 0f))
-            return Mathf.MoveTowards(current, 0f, deceleration * dt);
+        {
+            if (Mathf.Abs(current) > restSpeed)
+                return Mathf.MoveTowards(current, 0f, deceleration * dt);
+            current = 0f;
+        }
         float rate = Mathf.Abs(target) < Mathf.Abs(current) ? deceleration : acceleration;
         return Mathf.MoveTowards(current, target, rate * dt);
     }

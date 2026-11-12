@@ -47,6 +47,8 @@ public sealed class TankAI : NetworkBehaviour
 	public MoveState MoveStatus { get; private set; }
 	public Vector3 Destination { get; private set; }
 	public float StopRadius => stopRadius;
+	public float LeftDriveInput => leftLever;
+	public float RightDriveInput => rightLever;
 	public string MoveBlockReason
 	{
 		get

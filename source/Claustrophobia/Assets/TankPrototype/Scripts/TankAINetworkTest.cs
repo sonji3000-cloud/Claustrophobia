@@ -39,6 +39,9 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 	private TickTimer motionCheck;
 	private bool motionCheckPending;
 	private Vector3 motionStart;
+	private Vector3 motionForwardStart;
+	private int motionAITicks, motionMotorTicks;
+	private string motionWarning = "";
 	private NetworkObject previewEnemy;
 	private NetworkObject ownedEnemy;
 	private NetworkObject ownedTarget;
@@ -245,6 +248,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 			// Judge this route point by the actual body position, then stop explicitly.
 			// Do not wait indefinitely for the AI's stricter velocity/rotation arrival test.
 			ai.StopMove();
+			motionWarning = "";
 			if (routeIndex == 0 && lapStarted) Laps++;
 			waiting = true;
 			pause = TickTimer.CreateFromSeconds(Runner, cornerPause);
@@ -264,14 +268,24 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 		}
 		if (motionCheckPending && motionCheck.Expired(Runner))
 		{
-			motionCheckPending = false;
 			Vector3 moved = body.position - motionStart;
 			moved.y = 0f;
-			if (moved.sqrMagnitude < 0.01f)
+			float turned = Vector3.Angle(motionForwardStart, body.rotation * Vector3.forward);
+			string warning = "";
+			// A tank intentionally turns in place before driving. Rotation is progress too.
+			if (moved.sqrMagnitude < 0.01f && turned < 5f)
 			{
-				message = "목표 " + (routeIndex + 1) + " 이동 정체. 속도·물리 틱을 확인하세요.";
-				Debug.LogWarning("[AI PATROL] " + MotionReport(), this);
+				// The destination can be issued just before the first AI/motor update of this window.
+				if (ai.TickCount - motionAITicks <= 1) warning = "AI 판단 갱신이 멈췄습니다.";
+				else if (motor.PhysicsTickCount - motionMotorTicks <= 1) warning = "차체 구동 갱신이 멈췄습니다.";
+				else if (Mathf.Abs(motor.TargetForwardSpeed) < 0.01f && Mathf.Abs(motor.TargetTurnSpeed) < 0.1f)
+					warning = "이동 중인데 구동 입력이 없습니다.";
+				else warning = "구동 명령이 있지만 차체가 멈춰 있습니다.";
 			}
+			if (warning != "" && warning != motionWarning)
+				Debug.LogWarning("[AI PATROL STALLED] " + warning + " " + MotionReport(), this);
+			motionWarning = warning;
+			BeginMotionCheck();
 		}
 	}
 
@@ -289,11 +303,28 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 		routeIndex = Corner = index;
 		waiting = false;
 		pause = TickTimer.None;
-		motionStart = body.position;
-		motionCheck = TickTimer.CreateFromSeconds(Runner, 3f);
-		motionCheckPending = true;
+		motionWarning = "";
+		BeginMotionCheck();
 		Debug.Log("[AI PATROL] " + MotionReport(), this);
 		return true;
+	}
+
+	private void BeginMotionCheck()
+	{
+		motionStart = body.position;
+		motionForwardStart = body.rotation * Vector3.forward;
+		motionAITicks = ai.TickCount;
+		motionMotorTicks = motor.PhysicsTickCount;
+		motionCheck = TickTimer.CreateFromSeconds(Runner, 3f);
+		motionCheckPending = true;
+	}
+
+	private float HeadingError()
+	{
+		if (body == null || !HasRoute()) return 0f;
+		Vector3 delta = waypoints[routeIndex].position - body.position;
+		delta.y = 0f;
+		return Vector3.SignedAngle(body.rotation * Vector3.forward, delta, Vector3.up);
 	}
 
 	private string MotionReport()
@@ -301,7 +332,13 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 		return "point=" + (routeIndex + 1) + " goal=" + waypoints[routeIndex].position.ToString("F1")
 			+ " body=" + body.position.ToString("F2") + " velocity=" + body.linearVelocity.ToString("F2")
 			+ " yawSpeed=" + (body.angularVelocity.y * Mathf.Rad2Deg).ToString("F1")
-			+ " physicsTicks=" + motor.PhysicsTickCount + " kinematic=" + body.isKinematic;
+			+ " headingError=" + HeadingError().ToString("F1")
+			+ " aiInputs=" + ai.LeftDriveInput.ToString("F2") + "," + ai.RightDriveInput.ToString("F2")
+			+ " motorInputs=" + motor.LeftInput.ToString("F2") + "," + motor.RightInput.ToString("F2")
+			+ " targetSpeeds=" + motor.TargetForwardSpeed.ToString("F2") + "," + motor.TargetTurnSpeed.ToString("F1")
+			+ " appliedSpeeds=" + motor.AppliedForwardSpeed.ToString("F2") + "," + motor.AppliedTurnSpeed.ToString("F1")
+			+ " aiTicks=" + ai.TickCount + " physicsTicks=" + motor.PhysicsTickCount
+			+ " kinematic=" + body.isKinematic + " constraints=" + body.constraints;
 	}
 
 	private void StartAttack()
@@ -314,6 +351,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 		}
 		waiting = false;
 		pause = TickTimer.None;
+		motionWarning = "";
 		State = TestState.Attacking;
 		message = "고정 시험 표적을 공격합니다.";
 	}
@@ -324,6 +362,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 		pause = TickTimer.None;
 		motionCheck = TickTimer.None;
 		motionCheckPending = false;
+		motionWarning = "";
 		if (ai != null) ai.StopActions();
 		MoveStatus = ai != null ? ai.MoveStatus : TankAI.MoveState.Idle;
 		AttackStatus = ai != null ? ai.AttackStatus : TankAI.AttackState.Idle;
@@ -426,13 +465,13 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 			labelStyle = new GUIStyle(GUI.skin.label) { font = font, fontSize = 14, wordWrap = true };
 			buttonStyle = new GUIStyle(GUI.skin.button) { font = font, fontSize = 14 };
 		}
-		float scale = Mathf.Min(1f, Mathf.Min(Screen.width / 900f, Screen.height / 420f));
+		float scale = Mathf.Min(1f, Mathf.Min(Screen.width / 900f, Screen.height / 470f));
 		if (scale <= 0f) return;
 		Matrix4x4 previous = GUI.matrix;
 		GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
 		float x = Mathf.Max(8f, Screen.width / scale - 356f);
-		GUI.Box(new Rect(x, 12f, 344f, expanded ? 374f : 30f), GUIContent.none);
-		GUILayout.BeginArea(new Rect(x + 8f, 14f, 328f, expanded ? 370f : 28f));
+		GUI.Box(new Rect(x, 12f, 344f, expanded ? 430f : 30f), GUIContent.none);
+		GUILayout.BeginArea(new Rect(x + 8f, 14f, 328f, expanded ? 426f : 28f));
 		if (GUILayout.Button(expanded ? "적 AI 네트워크 시험  ▴" : "적 AI 네트워크 시험  ▾", buttonStyle))
 		{
 			expanded = !expanded;
@@ -467,16 +506,20 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 					{
 						if (State == TestState.Patrolling)
 							GUILayout.Label("목표 " + (routeIndex + 1) + " · 남은 " + DistanceTo(routeIndex).ToString("F1")
-								+ "m · " + (waiting ? "코너 대기" : "이동"), labelStyle);
+								+ "m · " + (waiting ? "코너 대기" : Mathf.Abs(HeadingError()) >= 45f ? "방향 전환" : "이동"), labelStyle);
 						GUILayout.Label("속도 " + new Vector2(body.linearVelocity.x, body.linearVelocity.z).magnitude.ToString("F2")
-							+ "m/s · 물리 틱 " + motor.PhysicsTickCount + (body.isKinematic ? " · Kinematic" : ""), labelStyle);
+							+ "m/s / 명령 " + motor.TargetForwardSpeed.ToString("F2") + "m/s", labelStyle);
+						GUILayout.Label("회전 " + (body.angularVelocity.y * Mathf.Rad2Deg).ToString("F1")
+							+ "°/s / 명령 " + motor.TargetTurnSpeed.ToString("F1") + "°/s", labelStyle);
+						GUILayout.Label("갱신: AI " + ai.TickCount + "회 / 구동 " + motor.PhysicsTickCount
+							+ "회" + (body.isKinematic ? " · Kinematic" : ""), labelStyle);
 						GUILayout.Label("호스트 HP: 적 " + health.CurrentHP.ToString("F0")
 							+ " / 표적 " + (targetHealth != null ? targetHealth.CurrentHP.ToString("F0") : "없음"), labelStyle);
 					}
 				}
 			}
 			string detail = IsHost && ai != null && ai.AttackStatus == TankAI.AttackState.Blocked
-				? ai.AttackBlockReason : message;
+				? ai.AttackBlockReason : motionWarning != "" ? motionWarning : message;
 			GUILayout.Label(!IsReady && session != null && !string.IsNullOrEmpty(session.LastError)
 				? session.LastError : IsHost ? detail : "호스트의 적을 관찰합니다. HP 공유는 별도 연결.", labelStyle);
 			GUI.enabled = savedEnabled && previewCamera != null;
