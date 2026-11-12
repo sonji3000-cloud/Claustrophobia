@@ -2888,7 +2888,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cc96d1b456c43cabe46665c2cc13ea2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankInput
   leverChangeRate: 1
   control: {fileID: 9002001002}
@@ -2905,7 +2905,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6b98401c85b4c5e9ae34127ea8d176f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankControl
   motor: {fileID: 6645272728011381682}
   aim: {fileID: 5937393932700067239}
@@ -2915,6 +2915,7 @@ MonoBehaviour:
   driveDevice: {fileID: 0}
   aimDevice: {fileID: 0}
   sight: {fileID: 0}
+  waitForBind: 0
 --- !u!114 &9003001002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2925,7 +2926,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ecab4dd6225947f6ab0e42460bc55baa, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankCrew
   role: 1
 --- !u!114 &7685796844441804652
@@ -2949,6 +2950,7 @@ MonoBehaviour:
   ballistics: {fileID: 4895437089772899164}
   crew: {fileID: 0}
   cameraOffset: {x: 12, y: 15, z: -17}
+  waitForBind: 0
 --- !u!114 &5937393932700067239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2967,6 +2969,9 @@ MonoBehaviour:
   PitchSpeed: 30
   MinPitch: -10
   MaxPitch: 30
+  logYaw: 0
+  _TurretYaw: 0
+  _GunPitch: 0
 --- !u!114 &6616087051832642295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2986,6 +2991,7 @@ MonoBehaviour:
   ProjectileSpeed: 20
   ShotDamage: 25
   RecoveryDuration: 1.5
+  openAfterRecovery: 1
 --- !u!114 &4895437089772899164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2998,6 +3004,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 115705b1dfda3a446b58995688bc7b31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankBallistics
+  autoRefresh: 1
   PredictionEnabled: 1
   ShowMarker: 1
   ShowDiagnostics: 1

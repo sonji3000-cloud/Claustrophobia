@@ -21,6 +21,7 @@ public sealed class TankControl : MonoBehaviour
 	[Tooltip("Wait for explicit binding before accepting input. Legacy scenes leave this off.")]
 	[SerializeField] private bool waitForBind;
 
+	private TankBreech breech;
 	private bool bound;
 	private bool attached;
 	private bool disconnected;
@@ -29,7 +30,7 @@ public sealed class TankControl : MonoBehaviour
 	private CrewInteract driver;
 	private TankCrew.Role lastRole;
 
-    // ÀÔ·ÂÀ» Àü¼ÛÇÏ±â À§ÇÑ ±¸Á¶Ã¼
+    // ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼
     private TankCrewNetworkInput pendingInput;
 
     public float LeftLever { get; private set; }
@@ -40,9 +41,10 @@ public sealed class TankControl : MonoBehaviour
 	public bool CanInput => isActiveAndEnabled && inputEnabled && !disconnected && (!waitForBind || bound);
 
 	/// <summary>Invalid targets leave the previous binding unchanged. Does not open the input gate.</summary>
-	public bool Bind(TankCrew nextCrew, CrewDevice drive, CrewDevice nextAim, GunnerSight nextSight)
+	public bool Bind(TankCrew nextCrew, CrewDevice drive, CrewDevice nextAim, GunnerSight nextSight, TankBreech nextBreech = null)
 	{
 		if (nextCrew == null || drive == null || nextAim == null || nextSight == null || drive == nextAim) return false;
+		breech = nextBreech;
 		if (crew == nextCrew && driveDevice == drive && aimDevice == nextAim && sight == nextSight && !disconnected)
 		{
 			bound = true;
@@ -77,6 +79,7 @@ public sealed class TankControl : MonoBehaviour
 		driveDevice = null;
 		aimDevice = null;
 		sight = null;
+		breech = null;
 	}
 
 	public void SetInputEnabled(bool enabled)
@@ -328,6 +331,8 @@ public sealed class TankControl : MonoBehaviour
 		if (!CanAim(user) || !user.CanSelect) return "Use gunner joystick";
 		if (user.Carry != null && user.Carry.Held != null) return "Return the carried round first";
 		if (gun == null) return "Gun unavailable";
+		if (gun.State == TankGun.ChamberState.Ready && breech != null && breech.IsMoving)
+			return "Wait for the breech to close";
 
 		return "";
 	}

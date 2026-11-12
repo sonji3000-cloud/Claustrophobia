@@ -155,7 +155,9 @@ public sealed class TankKeyboardDebug : MonoBehaviour
             GUILayout.Label("Latest impact:", valueStyle);
             GUILayout.Label(gun.LastHitSummary, valueStyle);
             GUILayout.Label("R insert -> T close -> Enter fire", valueStyle);
-            GUILayout.Label("After recovery: chamber stays closed; open manually", valueStyle);
+            GUILayout.Label(gun.OpensAfterRecovery
+                ? "After recovery: chamber opens automatically"
+                : "After recovery: chamber stays closed; open manually", valueStyle);
             GUILayout.EndArea();
         }
         GUI.matrix = original;

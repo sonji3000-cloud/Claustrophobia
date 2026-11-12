@@ -219,7 +219,7 @@ public sealed class TankSceneLink : MonoBehaviour
 	private bool Connect(TankInterior next, uint request)
 	{
 		if (crewRegistry != null && !crewRegistry.BindSeats(next.Seats)) return false;
-		if (request != version || !control.Bind(next.Crew, next.DriveDevice, next.AimDevice, next.Sight)) return false;
+		if (request != version || !control.Bind(next.Crew, next.DriveDevice, next.AimDevice, next.Sight, next.Breech)) return false;
 		if (request != version || !input.Bind(next.Seats, next.Interaction, next.Mode)) return false;
 		if (request != version || !next.Mode.Bind(input, cameras, tankHud)) return false;
 		if (request != version || !next.DriverScreen.Bind(driverFeed)) return false;

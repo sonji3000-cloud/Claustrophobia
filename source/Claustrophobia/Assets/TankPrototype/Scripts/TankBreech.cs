@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>Loads a carried scene round through the gun's existing chamber state.</summary>
+/// <summary>Animates the breech and loads carried rounds through the gun's chamber state.</summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(CrewDevice))]
 public sealed class TankBreech : MonoBehaviour
@@ -11,6 +11,12 @@ public sealed class TankBreech : MonoBehaviour
 	[SerializeField] private Transform block;
 	[SerializeField] private Transform openPose;
 	[SerializeField] private Transform closedPose;
+	[SerializeField] private TankBreechModel model;
+
+	[SerializeField, Min(0f)] private float doorTime = .35f;
+	[SerializeField, Min(0f)] private float recoilDistance = .2f;
+
+	private const float RecoilPeak = 1f / 7f; // Peak at frame 5 of the 35-frame Tiger recoil clip.
 
 	private TankRound loaded;
 	private TankGun loadedGun;
@@ -18,7 +24,82 @@ public sealed class TankBreech : MonoBehaviour
 	private TankRound pendingRound;
 	private int loadRequest;
 
+	private TankGunRecoil recoil;
+	private Vector3 restPos;
+	private Vector3 rearDir;
+	private float travel;
+	private float door;
+
 	public TankGun Gun => gun;
+	internal bool IsMoving => model != null && model.IsMoving;
+
+	private void Awake()
+	{
+		restPos = transform.localPosition;
+		if (loadPoint == null) return;
+
+		Vector3 rear = -loadPoint.forward;
+		rearDir = transform.parent != null ? transform.parent.InverseTransformVector(rear) : rear;
+	}
+
+	private void LateUpdate()
+	{
+		if (subscribedGun == null || model != null) return;
+
+		bool hasRecoil = recoil != null && recoil.isActiveAndEnabled && recoil.Duration > 0f;
+		float phase = hasRecoil ? recoil.RecoilPhase : 1f;
+		UpdateRecoil(phase);
+
+		TankGun.ChamberState state = subscribedGun.State;
+		bool autoOpen = hasRecoil && subscribedGun.OpensAfterRecovery
+			&& state == TankGun.ChamberState.Recovering;
+		bool movingBack = phase < 1f;
+		SetDoor(!movingBack && (IsOpen(state) || autoOpen), movingBack && door > 0f);
+	}
+
+	private void UpdateRecoil(float phase)
+	{
+		float next = 0f;
+		if (phase < 1f)
+		{
+			float amount = phase < RecoilPeak
+				? phase / RecoilPeak
+				: (1f - phase) / (1f - RecoilPeak);
+			next = Mathf.SmoothStep(0f, recoilDistance, amount);
+		}
+
+		if (next == travel) return;
+		travel = next;
+		transform.localPosition = restPos + rearDir * travel;
+	}
+
+	private void SetDoor(bool open, bool snap = false)
+	{
+		if (block == null) return;
+
+		float target = open ? 1f : 0f;
+		if (!snap && door == target) return;
+
+		if (openPose == null || closedPose == null)
+		{
+			Transform pose = open ? openPose : closedPose;
+			if (pose != null) block.SetPositionAndRotation(pose.position, pose.rotation);
+			door = target;
+			return;
+		}
+
+		door = snap || doorTime <= 0f ? target
+			: Mathf.MoveTowards(door, target, Time.deltaTime / doorTime);
+		float t = Mathf.SmoothStep(0f, 1f, door);
+		block.SetPositionAndRotation(
+			Vector3.Lerp(closedPose.position, openPose.position, t),
+			Quaternion.Slerp(closedPose.rotation, openPose.rotation, t));
+	}
+
+	private static bool IsOpen(TankGun.ChamberState state)
+	{
+		return state == TankGun.ChamberState.EmptyOpen || state == TankGun.ChamberState.LoadedOpen;
+	}
 
 	/// <summary>A loaded round stays with its gun; this API does not transfer ammunition.</summary>
 	public bool Bind(TankGun next)
@@ -47,7 +128,7 @@ public sealed class TankBreech : MonoBehaviour
 	public bool CanInsert(CrewInteract user)
 	{
 		return isActiveAndEnabled && device != null && gun != null && gun.CanInsert
-			&& pendingRound == null
+			&& pendingRound == null && !IsMoving
 			&& loadPoint != null && loadPoint.gameObject.activeInHierarchy
 			&& user != null && user.CanSelect && user.Active == null && user.Crew != null
 			&& gun.CanLoad(user.Crew) && device.CanUse(user.Crew) && device.User == null
@@ -59,7 +140,7 @@ public sealed class TankBreech : MonoBehaviour
 	{
 		if (!isActiveAndEnabled || gun == null || !gun.isActiveAndEnabled || device == null
 			|| user == null || !user.CanSelect || user.Selected != device || user.Active != null
-			|| !gun.CanLoad(user.Crew) || !device.CanUse(user.Crew)) return false;
+			|| !gun.CanLoad(user.Crew) || !device.CanUse(user.Crew) || IsMoving) return false;
 
 		bool holding = user.Carry != null && user.Carry.Held != null;
 		if (holding && gun.State != TankGun.ChamberState.EmptyClosed) return TryInsert(user);
@@ -113,13 +194,15 @@ public sealed class TankBreech : MonoBehaviour
 	{
 		loaded = carry.CommitLoad(loadPoint);
 		loadedGun = gun;
-		if (gun.State == TankGun.ChamberState.Ready) loaded.gameObject.SetActive(false);
+		if (model != null || gun.State == TankGun.ChamberState.Ready) loaded.gameObject.SetActive(false);
 	}
 
 	public string GetPrompt(CrewInteract user)
 	{
 		if (gun == null || !gun.isActiveAndEnabled) return "Chamber unavailable";
 		if (pendingRound != null) return "Loading round | Waiting for host";
+		if (gun.State == TankGun.ChamberState.Recovering) return "FIRED | Recovering";
+		if (IsMoving) return "Chamber mechanism moving";
 		if (CanInsert(user)) return "OPEN | EMPTY | Space - Insert round | Esc - Return to rack";
 		bool holding = user != null && user.Carry != null && user.Carry.Held != null;
 		switch (gun.State)
@@ -130,7 +213,7 @@ public sealed class TankBreech : MonoBehaviour
 				? "OPEN | LOADED | Esc - Return extra round" : "OPEN | LOADED | Space - Close";
 			case TankGun.ChamberState.Ready: return holding
 				? "CLOSED | LOADED | Esc - Return extra round" : "CLOSED | LOADED | Space - Open";
-			default: return "CLOSED | FIRED | Recovering";
+			default: return "FIRED | Recovering";
 		}
 	}
 
@@ -138,10 +221,8 @@ public sealed class TankBreech : MonoBehaviour
 	{
 		if (gun == null) return;
 
-		bool open = state == TankGun.ChamberState.EmptyOpen || state == TankGun.ChamberState.LoadedOpen;
-		Transform pose = open ? openPose : closedPose;
-		if (block != null && pose != null) block.SetPositionAndRotation(pose.position, pose.rotation);
-		if (loaded != null) loaded.gameObject.SetActive(open && gun.HasLiveRound);
+		if (model != null) model.SetState(state);
+		else if (loaded != null) loaded.gameObject.SetActive(IsOpen(state) && gun.HasLiveRound);
 		if (loaded == null || gun.HasLiveRound) return;
 
 		loaded.Consume();
@@ -156,9 +237,16 @@ public sealed class TankBreech : MonoBehaviour
 		if (gun == null || subscribedGun == gun) return;
 
 		subscribedGun = gun;
+		recoil = gun.GetComponent<TankGunRecoil>();
 		subscribedGun.StateChanged += OnStateChanged;
 		subscribedGun.LoadResolved += OnLoadResolved;
-		OnStateChanged(gun.State);
+		if (model != null)
+			model.Bind(gun);
+		else
+		{
+			SetDoor(IsOpen(gun.State), true);
+			OnStateChanged(gun.State);
+		}
 	}
 
 	private void OnDisable() => Detach();
@@ -169,8 +257,11 @@ public sealed class TankBreech : MonoBehaviour
 		{
 			subscribedGun.StateChanged -= OnStateChanged;
 			subscribedGun.LoadResolved -= OnLoadResolved;
+			if (model != null) model.Bind(null);
 		}
 		subscribedGun = null;
+		recoil = null;
+		UpdateRecoil(1f);
 		if (pendingRound != null && pendingRound.Holder != null) pendingRound.Holder.EndLoad();
 		pendingRound = null;
 	}
