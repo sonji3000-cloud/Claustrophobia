@@ -16,8 +16,12 @@ public sealed class TankAttackDemoEditor : Editor
 		if (demo.HasPathTests)
 		{
 			EditorGUILayout.HelpBox("구역 버튼은 적을 새로 생성합니다. 재명령 버튼은 현재 적을 유지합니다.\n04는 경로 없음으로 실패, 05 정체 시험은 제한된 재탐색 후 실패가 정상입니다.\n대기 중 장애물을 끄면 이동을 재개할 수 있습니다.", MessageType.Info);
-			using (new EditorGUI.DisabledScope(!Application.isPlaying || ai == null))
+			using (new EditorGUI.DisabledScope(!demo.CanRunTests))
 			{
+				using (new EditorGUI.DisabledScope(demo.TargetHealth == null || demo.TargetHealth.Destroyed))
+				{
+					if (GUILayout.Button("01 이동 → 정지 → 공격 통합 시험")) demo.RunIntegrationTest();
+				}
 				if (GUILayout.Button("01 직선 이동")) demo.RunPathTest(0);
 				if (GUILayout.Button("02 ㄱ자 통로")) demo.RunPathTest(1);
 				if (GUILayout.Button("03 벽 우회")) demo.RunPathTest(2);
@@ -25,9 +29,14 @@ public sealed class TankAttackDemoEditor : Editor
 				if (GUILayout.Button("05 직선 통로 (정체 시험 준비)")) demo.RunPathTest(4);
 				if (demo.HasBlocker && GUILayout.Button("05 정체 유발 (장애물 포함)")) demo.RunStallTest();
 				if (demo.HasBlocker && GUILayout.Button(demo.BlockerEnabled ? "장애물 끄기" : "장애물 켜기")) demo.SetBlocker(!demo.BlockerEnabled);
-				if (GUILayout.Button("현재 목적지로 재명령")) demo.MoveToGoal();
-				if (GUILayout.Button("출발 지점으로 재명령")) demo.ReturnToStart();
+				using (new EditorGUI.DisabledScope(ai == null))
+				{
+					if (GUILayout.Button("현재 목적지로 재명령")) demo.MoveToGoal();
+					if (GUILayout.Button("출발 지점으로 재명령")) demo.ReturnToStart();
+				}
 			}
+			if (Application.isPlaying && demo.TargetHealth != null && demo.TargetHealth.Destroyed)
+				EditorGUILayout.HelpBox("표적이 파괴됐습니다. 통합 공격 시험을 다시 하려면 Play를 종료하고 다시 시작하세요.", MessageType.Info);
 		}
 		using (new EditorGUI.DisabledScope(!Application.isPlaying || ai == null))
 		{
