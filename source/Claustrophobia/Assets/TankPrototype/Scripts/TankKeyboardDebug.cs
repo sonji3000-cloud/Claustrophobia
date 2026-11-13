@@ -17,6 +17,7 @@ public sealed class TankKeyboardDebug : MonoBehaviour
     [SerializeField] private Vector3 cameraOffset = new Vector3(12f, 15f, -17f);
 
     private Rigidbody body;
+	private Quaternion lastRot;
     private GUIStyle valueStyle;
 	private bool crewAssigned;
 	[SerializeField] private bool waitForBind;
@@ -40,21 +41,29 @@ public sealed class TankKeyboardDebug : MonoBehaviour
     public float CurrentForwardSpeed { get; private set; }
     public float CurrentTurnSpeed { get; private set; }
 
-    private void Awake()
-    {
-        if (motor == null) motor = GetComponent<TankMotor>();
-        body = GetComponent<Rigidbody>();
+	private void Awake()
+	{
+		if (motor == null) motor = GetComponent<TankMotor>();
+		body = GetComponent<Rigidbody>();
+		lastRot = body.rotation;
 		if (crew == null && !crewAssigned && !waitForBind) crew = GetComponent<TankCrew>();
-        if (aim == null) aim = GetComponent<TankAim>();
-        if (gun == null) gun = GetComponent<TankGun>();
-        if (ballistics == null) ballistics = GetComponent<TankBallistics>();
-    }
+		if (aim == null) aim = GetComponent<TankAim>();
+		if (gun == null) gun = GetComponent<TankGun>();
+		if (ballistics == null) ballistics = GetComponent<TankBallistics>();
+	}
 
-    private void Update()
-    {
-        CurrentForwardSpeed = Vector3.Dot(body.linearVelocity, body.rotation * Vector3.forward);
-        CurrentTurnSpeed = body.angularVelocity.y * Mathf.Rad2Deg;
-    }
+	private void Update()
+	{
+		CurrentForwardSpeed = Vector3.Dot(body.linearVelocity, body.rotation * Vector3.forward);
+
+		Quaternion delta = body.rotation * Quaternion.Inverse(lastRot);
+		lastRot = body.rotation;
+		delta.ToAngleAxis(out float angle, out Vector3 axis);
+		if (angle > 180f) angle -= 360f;
+		CurrentTurnSpeed = Time.deltaTime > 0f && Mathf.Abs(angle) > 0.0001f
+			? Vector3.Dot(axis, body.rotation * Vector3.up) * angle / Time.deltaTime
+			: 0f;
+	}
 
     private void LateUpdate()
     {

@@ -27,6 +27,11 @@ public sealed class TankAI : NetworkBehaviour
 	[SerializeField, Min(0.01f)] private float stopSpeed = 0.05f;
 	[SerializeField, Min(0.1f)] private float stopTurnSpeed = 0.5f;
 
+	[SerializeField, Min(0.05f)] private float heightTolerance = 0.5f;
+	[SerializeField, Min(0.5f)] private float groundTimeout = 5f;
+	[SerializeField, Min(0.02f)] private float settleTime = 0.15f;
+	[SerializeField, Min(0.01f)] private float stopNormalSpeed = 0.2f;
+
 	[Header("Path movement")]
 	[SerializeField] private MoveMode moveMode;
 	[SerializeField, Min(0.05f)] private float cornerRadius = 0.25f;
@@ -59,6 +64,12 @@ public sealed class TankAI : NetworkBehaviour
 	private float turnSeconds;
 	private float turnLimit;
 	private float retryLeft;
+	private float airSeconds;
+	private float stopSeconds;
+	private bool stopping;
+	private float stopRange;
+	private Vector3 stopPos;
+	private Vector3 stopForward;
 
 	public bool IsHost => Object != null && Object.IsValid
 		&& Runner != null && Runner.IsRunning && Runner.IsServer && HasStateAuthority;
@@ -184,6 +195,7 @@ public sealed class TankAI : NetworkBehaviour
 		ClearAttack();
 		ClearPath();
 		RetryCount = 0;
+		airSeconds = 0f;
 		Destination = point;
 		if (moveMode == MoveMode.NavMesh)
 		{
@@ -231,6 +243,8 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void ClearPath()
 	{
+		stopping = false;
+		stopSeconds = 0f;
 		if (path != null) path.Clear();
 		alignPath = false;
 		IsRetrying = false;
@@ -270,6 +284,24 @@ public sealed class TankAI : NetworkBehaviour
 			return;
 		}
 
+		// Keep the command while airborne, but never consume corners or arrive there.
+		if (motor.Ground == null || !motor.Ground.isActiveAndEnabled)
+		{
+			FailMove("Ground probe is unavailable");
+			return;
+		}
+		if (!motor.Ground.IsGrounded)
+		{
+			leftLever = rightLever = 0f;
+			ResetProgress();
+			stopping = false;
+			stopSeconds = 0f;
+			airSeconds += Runner.DeltaTime;
+			if (airSeconds >= groundTimeout) FailMove("Ground contact was not restored");
+			return;
+		}
+		airSeconds = 0f;
+
 		Vector3 velocity = body.linearVelocity;
 		float speed = new Vector2(velocity.x, velocity.z).magnitude;
 		bool usePath = moveMode == MoveMode.NavMesh;
@@ -281,10 +313,38 @@ public sealed class TankAI : NetworkBehaviour
 		offset.y = 0f;
 		float distance = offset.magnitude;
 		bool finalPoint = !usePath || path.IsLast;
-		if (finalPoint && distance <= stopRadius)
+		float arrivalRadius = stopping ? stopRange : stopRadius;
+		if (finalPoint && distance <= arrivalRadius && IsNearHeight(point))
 		{
+			// Keep braking across tiny boundary changes instead of alternating drive and turn.
+			if (!stopping)
+			{
+				stopPos = body.position;
+				stopForward = body.rotation * Vector3.forward;
+				float brakeSpeed = Mathf.Max(speed, Mathf.Abs(motor.AppliedForwardSpeed));
+				stopRange = stopRadius + brakeSpeed * brakeSpeed / (2f * motor.MoveDeceleration)
+					+ brakeSpeed * Runner.DeltaTime * 2f + 0.1f;
+			}
+			stopping = true;
 			leftLever = rightLever = 0f;
-			if (speed <= stopSpeed && Mathf.Abs(body.angularVelocity.y) * Mathf.Rad2Deg <= stopTurnSpeed)
+			Vector3 normal = motor.Ground.GroundNormal;
+			Vector3 drift = body.position - stopPos;
+			float yaw = Mathf.Abs(Vector3.SignedAngle(Vector3.ProjectOnPlane(stopForward, normal),
+				Vector3.ProjectOnPlane(body.rotation * Vector3.forward, normal), normal));
+			// Judge a quiet pose over a short window, rather than noisy single-tick contact velocities.
+			if (Mathf.Abs(motor.AppliedForwardSpeed) <= stopSpeed
+				&& Mathf.Abs(motor.AppliedTurnSpeed) <= stopTurnSpeed
+				&& drift.magnitude <= stopSpeed * settleTime && yaw <= stopTurnSpeed * settleTime
+				&& Mathf.Abs(Vector3.Dot(velocity, normal)) <= stopNormalSpeed)
+				stopSeconds += Runner.DeltaTime;
+			else
+			{
+				stopSeconds = 0f;
+				stopPos = body.position;
+				stopForward = body.rotation * Vector3.forward;
+			}
+
+			if (stopSeconds >= settleTime)
 			{
 				motor.Stop();
 				MoveStatus = MoveState.Arrived;
@@ -292,6 +352,9 @@ public sealed class TankAI : NetworkBehaviour
 			}
 			return;
 		}
+
+		stopping = false;
+		stopSeconds = 0f;
 
 		Vector3 forward = body.rotation * Vector3.forward;
 		forward.y = 0f;
@@ -334,7 +397,7 @@ public sealed class TankAI : NetworkBehaviour
 
 		Vector3 offset = path.Point - body.position;
 		offset.y = 0f;
-		if (path.IsLast || offset.sqrMagnitude > cornerRadius * cornerRadius) return true;
+		if (path.IsLast || offset.sqrMagnitude > cornerRadius * cornerRadius || !IsNearHeight(path.Point)) return true;
 
 		bool sharp = path.CornerAngle >= sharpAngle;
 		if (sharp && speed > stopSpeed)
@@ -347,6 +410,13 @@ public sealed class TankAI : NetworkBehaviour
 		path.Advance();
 		alignPath = sharp;
 		return true;
+	}
+
+	private bool IsNearHeight(Vector3 point)
+	{
+		TankGroundProbe ground = motor.Ground;
+		Vector3 foot = ground.transform.TransformPoint(ground.Center);
+		return Mathf.Abs(Vector3.Dot(point - foot, ground.GroundNormal)) <= heightTolerance;
 	}
 
 	private void ResetProgress()
@@ -384,7 +454,9 @@ public sealed class TankAI : NetworkBehaviour
 		Vector3 offset = path.Point - body.position;
 		offset.y = 0f;
 		float distance = offset.magnitude;
-		float angle = Vector3.Angle(body.rotation * Vector3.forward, offset);
+		Vector3 forward = body.rotation * Vector3.forward;
+		forward.y = 0f;
+		float angle = Vector3.Angle(forward, offset);
 		if (watchIndex != path.CornerIndex)
 		{
 			ResetProgress();
@@ -654,6 +726,10 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void OnValidate()
 	{
+		stopNormalSpeed = IsFinite(stopNormalSpeed) ? Mathf.Max(0.01f, stopNormalSpeed) : 0.2f;
+		settleTime = IsFinite(settleTime) ? Mathf.Max(0.02f, settleTime) : 0.15f;
+		heightTolerance = IsFinite(heightTolerance) ? Mathf.Max(0.05f, heightTolerance) : 0.5f;
+		groundTimeout = IsFinite(groundTimeout) ? Mathf.Max(0.5f, groundTimeout) : 5f;
 		stopRadius = IsFinite(stopRadius) ? Mathf.Max(0.05f, stopRadius) : 0.5f;
 		slowDistance = IsFinite(slowDistance) ? Mathf.Max(stopRadius, slowDistance) : 3f;
 		turnAngle = IsFinite(turnAngle) ? Mathf.Clamp(turnAngle, 5f, 90f) : 45f;

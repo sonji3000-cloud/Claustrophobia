@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 2898213130702081217}
   - component: {fileID: 2898213130702081218}
   - component: {fileID: 2898213130702081219}
+  - component: {fileID: 7042447960851535041}
   m_Layer: 0
   m_Name: EnemyTank-Sherman
   m_TagString: Untagged
@@ -182,7 +183,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 80
+  m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!65 &6118181481980098421
 BoxCollider:
@@ -288,6 +289,10 @@ MonoBehaviour:
   MoveDeceleration: 4
   TurnAcceleration: 90
   TurnDeceleration: 180
+  ground: {fileID: 7042447960851535041}
+  maxDriveSlope: 20
+  tiltSpeed: 90
+  tiltGain: 8
 --- !u!114 &2393754425843229371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -629,3 +634,28 @@ MonoBehaviour:
   areaMask: -1
   sampleDistance: 0.75
   drawPath: 1
+--- !u!114 &7042447960851535041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961189211342297997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb851c0a4d19af34ba02f16e0a1c78ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankGroundProbe
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1
+  center: {x: 0, y: 0.0846262, z: -0.010281086}
+  halfSize: {x: 1.1483307, y: 2.6376915}
+  startHeight: 0.6
+  scanDepth: 1
+  contactGap: 0.2
+  penetration: 0.12
+  minContacts: 2
+  maxSlope: 60
+  normalSpeed: 180
+  drawGizmos: 1
