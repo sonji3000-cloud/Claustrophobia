@@ -54,7 +54,15 @@ public static class TankNavMeshCheck
 			if (surface.collectObjects != CollectObjects.Children || surface.useGeometry != NavMeshCollectGeometry.PhysicsColliders)
 				throw new InvalidOperationException("The surface must collect only Geometry children using Physics Colliders.");
 
-			if (bake) BakeSurface(surface);
+			if (bake) BakeSurface(surface, DataPath);
+			Terrain terrain = FindRoot(scene, "Ground Probe Test").GetComponentInChildren<Terrain>();
+			NavMeshSurface slopes = terrain != null ? terrain.GetComponent<NavMeshSurface>() : null;
+			if (slopes == null || slopes.agentTypeID != AgentId || slopes.collectObjects != CollectObjects.Children
+				|| slopes.useGeometry != NavMeshCollectGeometry.PhysicsColliders)
+				throw new InvalidOperationException("The slope surface must collect only Terrain colliders for the tank agent.");
+			if (bake) BakeSurface(slopes, "Assets/TankPrototype/Navigation/TankAIIntegrationTest/NavMesh-TankSlope.asset");
+			if (slopes.navMeshData == null || !AssetDatabase.Contains(slopes.navMeshData))
+				throw new InvalidOperationException("The saved slope NavMesh data is missing.");
 			if (surface.navMeshData == null || !AssetDatabase.Contains(surface.navMeshData))
 				throw new InvalidOperationException("No saved NavMesh data. Run Bake and Check NavMesh first.");
 
@@ -62,7 +70,7 @@ public static class TankNavMeshCheck
 			{
 				"Scene: " + ScenePath,
 				"Unity: " + Application.unityVersion,
-				"Agent: TankFlat; radius=3.8m; height=3.5m; slope=1deg; climb=0.1m",
+				"Agent: TankFlat; radius=3.8m; height=3.5m; slope=" + settings.agentSlope + "deg; climb=0.1m",
 				"Geometry: Physics Colliders, Geometry hierarchy only",
 				"Data: " + AssetDatabase.GetAssetPath(surface.navMeshData)
 			};
@@ -79,7 +87,7 @@ public static class TankNavMeshCheck
 				bool blocked = NavMesh.Raycast(start, goal, out _, filter);
 				bool expectComplete = i != 3;
 				bool expectBlocked = i == 1 || i == 2 || i == 3;
-				if (complete != expectComplete || blocked != expectBlocked)
+				if (complete != expectComplete || i < 5 && blocked != expectBlocked)
 					throw new InvalidOperationException(test.name + ": unexpected path=" + path.status + ", directBlocked=" + blocked);
 
 				lines.Add("PASS " + test.name + ": " + path.status + ", directBlocked=" + blocked + ", corners=" + path.corners.Length);
@@ -89,9 +97,9 @@ public static class TankNavMeshCheck
 			if (blocker.gameObject.activeSelf || blocker.IsChildOf(geometry.transform))
 				throw new InvalidOperationException("The stall blocker must start inactive and remain outside Geometry.");
 			lines.Add("PASS stall blocker: inactive, physical collider, excluded from bake hierarchy");
-			lines.Add("Path calculation checked. Actual tank path following is the next implementation step.");
+			lines.Add("Path calculation checked. Actual tank path following is checked separately in Play Mode.");
 			File.WriteAllLines(ReportPath, lines);
-			Debug.Log("[TANK NAVMESH] All five test cases passed. Report: " + ReportPath);
+			Debug.Log("[TANK NAVMESH] All authored test cases passed. Report: " + ReportPath);
 		}
 		catch (Exception error)
 		{
@@ -134,7 +142,7 @@ public static class TankNavMeshCheck
 		agent.FindPropertyRelative("agentTypeID").intValue = AgentId;
 		agent.FindPropertyRelative("agentRadius").floatValue = 3.8f;
 		agent.FindPropertyRelative("agentHeight").floatValue = 3.5f;
-		agent.FindPropertyRelative("agentSlope").floatValue = 1f;
+		agent.FindPropertyRelative("agentSlope").floatValue = 16f;
 		agent.FindPropertyRelative("agentClimb").floatValue = 0.1f;
 		agent.FindPropertyRelative("ledgeDropHeight").floatValue = 0f;
 		agent.FindPropertyRelative("maxJumpAcrossDistance").floatValue = 0f;
@@ -147,21 +155,21 @@ public static class TankNavMeshCheck
 		settings.ApplyModifiedProperties();
 	}
 
-	private static void BakeSurface(NavMeshSurface surface)
+	private static void BakeSurface(NavMeshSurface surface, string dataPath)
 	{
-		string folder = Path.GetDirectoryName(DataPath).Replace('\\', '/');
+		string folder = Path.GetDirectoryName(dataPath).Replace('\\', '/');
 		Directory.CreateDirectory(folder);
 		AssetDatabase.ImportAsset("Assets/TankPrototype/Navigation", ImportAssetOptions.ForceSynchronousImport);
 		AssetDatabase.ImportAsset(folder, ImportAssetOptions.ForceSynchronousImport);
 
-		NavMeshData saved = AssetDatabase.LoadAssetAtPath<NavMeshData>(DataPath);
+		NavMeshData saved = AssetDatabase.LoadAssetAtPath<NavMeshData>(dataPath);
 		surface.BuildNavMesh();
 		NavMeshData generated = surface.navMeshData;
 		if (generated == null) throw new InvalidOperationException("Unity did not generate NavMesh data.");
 
 		if (saved == null)
 		{
-			AssetDatabase.CreateAsset(generated, DataPath);
+			AssetDatabase.CreateAsset(generated, dataPath);
 		}
 		else
 		{

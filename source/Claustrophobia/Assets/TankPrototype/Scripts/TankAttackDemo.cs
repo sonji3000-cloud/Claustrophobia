@@ -17,7 +17,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[Header("Path test")]
 	[SerializeField] private bool usePath;
 	[SerializeField] private Transform testCases;
-	[SerializeField, Range(0, 4)] private int testIndex = 1;
+	[SerializeField, Min(0)] private int testIndex = 1;
 	[SerializeField] private Camera testCamera;
 	[SerializeField] private GameObject stallBlocker;
 
@@ -60,9 +60,9 @@ public sealed class TankAttackDemo : MonoBehaviour
 			Debug.LogError("[AI ATTACK] Demo references are missing.", this);
 			return;
 		}
-		if (usePath && (testCases == null || testCases.childCount != 5 || testCamera == null))
+		if (usePath && (testCases == null || testCases.childCount < 5 || testCamera == null))
 		{
-			Debug.LogError("[AI PATH] Five authored test cases and the observation camera are required.", this);
+			Debug.LogError("[AI PATH] At least five authored test cases and the observation camera are required.", this);
 			return;
 		}
 		starting = true;
@@ -147,7 +147,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 
 		if (testCamera == null) return accepted;
 		Vector3 center = (start.position + goal.position) * 0.5f;
-		testCamera.transform.SetPositionAndRotation(new Vector3(center.x, 55f, center.z), Quaternion.Euler(90f, 0f, 0f));
+		Vector3 view = index >= 5 ? new Vector3(24f, 25f, -30f) : new Vector3(0f, 55f, 0f);
+		testCamera.transform.SetPositionAndRotation(center + view, Quaternion.LookRotation(-view));
 		testCamera.orthographic = true;
 		testCamera.orthographicSize = 27f;
 		testCamera.depth = 2f;
