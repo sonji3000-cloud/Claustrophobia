@@ -6,7 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(TankHealth))]
 public sealed class TankAI : NetworkBehaviour
 {
-	public enum MoveState { Idle, Moving, Arrived }
+	public enum MoveState { Idle, Moving, Arrived, Failed }
+	public enum MoveMode { Direct, NavMesh }
 	public enum AttackState { Idle, Aiming, Reloading, Attacking, Blocked, TargetDown }
 
 	[SerializeField] private TankMotor motor;
@@ -15,6 +16,7 @@ public sealed class TankAI : NetworkBehaviour
 	[SerializeField] private TankHealth health;
 	[SerializeField] private Rigidbody body;
 	[SerializeField] private TankBallistics ballistics;
+	[SerializeField] private TankPath path;
 
 	[Header("Point movement")]
 	[SerializeField, Min(0.05f)] private float stopRadius = 0.5f;
@@ -24,6 +26,13 @@ public sealed class TankAI : NetworkBehaviour
 	[SerializeField, Range(0.1f, 5f)] private float turnTolerance = 1.5f;
 	[SerializeField, Min(0.01f)] private float stopSpeed = 0.05f;
 	[SerializeField, Min(0.1f)] private float stopTurnSpeed = 0.5f;
+
+	[Header("Path movement")]
+	[SerializeField] private MoveMode moveMode;
+	[SerializeField, Min(0.05f)] private float cornerRadius = 0.25f;
+	[SerializeField, Range(5f, 90f)] private float sharpAngle = 30f;
+	[SerializeField, Min(0.1f)] private float cornerSpeed = 1.5f;
+	[SerializeField, Range(1f, 15f)] private float alignAngle = 3f;
 
 	[Header("Target attack")]
 	[SerializeField, Range(0.05f, 5f)] private float aimTolerance = 0.5f;
@@ -35,6 +44,7 @@ public sealed class TankAI : NetworkBehaviour
 	private Transform attackTarget;
 	private TankHealth targetHealth;
 	private float shotCheckLeft;
+	private bool alignPath;
 
 	public bool IsHost => Object != null && Object.IsValid
 		&& Runner != null && Runner.IsRunning && Runner.IsServer && HasStateAuthority;
@@ -46,6 +56,9 @@ public sealed class TankAI : NetworkBehaviour
 	public int TickCount { get; private set; }
 	public MoveState MoveStatus { get; private set; }
 	public Vector3 Destination { get; private set; }
+	public MoveMode Movement => moveMode;
+	public TankPath Path => path;
+	public string MoveFailure { get; private set; } = "";
 	public float StopRadius => stopRadius;
 	public float LeftDriveInput => leftLever;
 	public float RightDriveInput => rightLever;
@@ -81,6 +94,7 @@ public sealed class TankAI : NetworkBehaviour
 		if (health == null) health = GetComponent<TankHealth>();
 		if (body == null) body = GetComponent<Rigidbody>();
 		if (ballistics == null) ballistics = GetComponent<TankBallistics>();
+		if (path == null) path = GetComponent<TankPath>();
 	}
 
 	private void OnEnable()
@@ -95,6 +109,7 @@ public sealed class TankAI : NetworkBehaviour
 		aimInput = Vector2.zero;
 		if (body != null) body.isKinematic = !IsHost;
 		MoveStatus = MoveState.Idle;
+		ClearPath();
 		Destination = body != null ? body.position : transform.position;
 
 		if (IsHost) StopActions();
@@ -125,6 +140,7 @@ public sealed class TankAI : NetworkBehaviour
 
 		StopAttack();
 		MoveStatus = MoveState.Idle;
+		ClearPath();
 		leftLever = Mathf.Clamp(left, -1f, 1f);
 		rightLever = Mathf.Clamp(right, -1f, 1f);
 		return true;
@@ -141,8 +157,32 @@ public sealed class TankAI : NetworkBehaviour
 		if (!IsFinite(offset.sqrMagnitude)) return false;
 
 		StopAttack();
+		ClearPath();
 		Destination = point;
+		if (moveMode == MoveMode.NavMesh)
+		{
+			if (path == null || !path.isActiveAndEnabled)
+			{
+				FailMove("Path component is missing or disabled");
+				return true;
+			}
+			if (!path.TryBuild(body.position, point, out string reason))
+			{
+				FailMove(reason);
+				return true;
+			}
+		}
 		MoveStatus = MoveState.Moving;
+		return true;
+	}
+
+	public bool SetMoveMode(MoveMode mode)
+	{
+		if (!CanAct || mode != MoveMode.Direct && mode != MoveMode.NavMesh) return false;
+		if (mode == moveMode) return true;
+
+		StopMove();
+		moveMode = mode;
 		return true;
 	}
 
@@ -151,6 +191,23 @@ public sealed class TankAI : NetworkBehaviour
 		if (!IsHost) return;
 
 		MoveStatus = MoveState.Idle;
+		ClearPath();
+		leftLever = rightLever = 0f;
+		if (motor != null) motor.Stop();
+	}
+
+	private void ClearPath()
+	{
+		if (path != null) path.Clear();
+		alignPath = false;
+		MoveFailure = "";
+	}
+
+	private void FailMove(string reason)
+	{
+		ClearPath();
+		MoveStatus = MoveState.Failed;
+		MoveFailure = reason;
 		leftLever = rightLever = 0f;
 		if (motor != null) motor.Stop();
 	}
@@ -174,13 +231,17 @@ public sealed class TankAI : NetworkBehaviour
 			return;
 		}
 
-		Vector3 offset = Destination - body.position;
-		offset.y = 0f;
-		float distance = offset.magnitude;
 		Vector3 velocity = body.linearVelocity;
 		float speed = new Vector2(velocity.x, velocity.z).magnitude;
+		bool usePath = moveMode == MoveMode.NavMesh;
+		if (usePath && !UpdatePath(speed)) return;
 
-		if (distance <= stopRadius)
+		Vector3 point = usePath ? path.Point : Destination;
+		Vector3 offset = point - body.position;
+		offset.y = 0f;
+		float distance = offset.magnitude;
+		bool finalPoint = !usePath || path.IsLast;
+		if (finalPoint && distance <= stopRadius)
 		{
 			leftLever = rightLever = 0f;
 			if (speed <= stopSpeed && Mathf.Abs(body.angularVelocity.y) * Mathf.Rad2Deg <= stopTurnSpeed)
@@ -195,6 +256,7 @@ public sealed class TankAI : NetworkBehaviour
 		forward.y = 0f;
 		float angle = Vector3.SignedAngle(forward, offset, Vector3.up);
 		float absAngle = Mathf.Abs(angle);
+		if (alignPath && absAngle <= alignAngle) alignPath = false;
 		float turn = 0f;
 		if (absAngle > turnTolerance)
 		{
@@ -204,9 +266,13 @@ public sealed class TankAI : NetworkBehaviour
 		}
 
 		// Leave half the arrival radius and one tick of travel as a braking margin.
-		float brakeDistance = Mathf.Max(0f, distance - stopRadius * 0.5f - speed * Runner.DeltaTime);
-		float moveSpeed = Mathf.Min(motor.MaxMoveSpeed * Mathf.Clamp01(distance / slowDistance),
-			Mathf.Sqrt(2f * motor.MoveDeceleration * brakeDistance));
+		float radius = finalPoint ? stopRadius : cornerRadius;
+		float exitSpeed = finalPoint || path.CornerAngle >= sharpAngle ? 0f : cornerSpeed;
+		float brakeDistance = Mathf.Max(0f, distance - radius * 0.5f - speed * Runner.DeltaTime);
+		float moveSpeed = Mathf.Min(motor.MaxMoveSpeed,
+			Mathf.Sqrt(exitSpeed * exitSpeed + 2f * motor.MoveDeceleration * brakeDistance));
+		if (finalPoint) moveSpeed = Mathf.Min(moveSpeed, motor.MaxMoveSpeed * Mathf.Clamp01(distance / slowDistance));
+		if (alignPath) moveSpeed = 0f;
 		float drive = moveSpeed / motor.MaxMoveSpeed * Mathf.Clamp01(1f - absAngle / turnAngle);
 
 		float left = drive + turn;
@@ -214,6 +280,32 @@ public sealed class TankAI : NetworkBehaviour
 		float scale = Mathf.Max(1f, Mathf.Max(Mathf.Abs(left), Mathf.Abs(right)));
 		leftLever = left / scale;
 		rightLever = right / scale;
+	}
+
+	// False pauses at a corner or terminates an unavailable route.
+	private bool UpdatePath(float speed)
+	{
+		if (path == null || !path.isActiveAndEnabled || !path.HasPath)
+		{
+			FailMove("Active path is unavailable");
+			return false;
+		}
+
+		Vector3 offset = path.Point - body.position;
+		offset.y = 0f;
+		if (path.IsLast || offset.sqrMagnitude > cornerRadius * cornerRadius) return true;
+
+		bool sharp = path.CornerAngle >= sharpAngle;
+		if (sharp && speed > stopSpeed)
+		{
+			leftLever = rightLever = 0f;
+			return false;
+		}
+
+		if (sharp) motor.Stop();
+		path.Advance();
+		alignPath = sharp;
+		return true;
 	}
 
 	public bool SetAim(float turret, float barrel)
@@ -401,6 +493,10 @@ public sealed class TankAI : NetworkBehaviour
 		turnTolerance = IsFinite(turnTolerance) ? Mathf.Clamp(turnTolerance, 0.1f, 5f) : 1.5f;
 		stopSpeed = IsFinite(stopSpeed) ? Mathf.Max(0.01f, stopSpeed) : 0.05f;
 		stopTurnSpeed = IsFinite(stopTurnSpeed) ? Mathf.Max(0.1f, stopTurnSpeed) : 0.5f;
+		cornerRadius = IsFinite(cornerRadius) ? Mathf.Max(0.05f, cornerRadius) : 0.25f;
+		sharpAngle = IsFinite(sharpAngle) ? Mathf.Clamp(sharpAngle, 5f, 90f) : 30f;
+		cornerSpeed = IsFinite(cornerSpeed) ? Mathf.Max(0.1f, cornerSpeed) : 1.5f;
+		alignAngle = IsFinite(alignAngle) ? Mathf.Clamp(alignAngle, 1f, 15f) : 3f;
 		aimTolerance = IsFinite(aimTolerance) ? Mathf.Clamp(aimTolerance, 0.05f, 5f) : 0.5f;
 		shotCheckInterval = IsFinite(shotCheckInterval) ? Mathf.Max(0.02f, shotCheckInterval) : 0.1f;
 	}

@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 7272448614835972391}
   - component: {fileID: 2898213130702081217}
   - component: {fileID: 2898213130702081218}
+  - component: {fileID: 2898213130702081219}
   m_Layer: 0
   m_Name: EnemyTank-Sherman
   m_TagString: Untagged
@@ -358,6 +359,12 @@ MonoBehaviour:
   health: {fileID: 7272448614835972391}
   body: {fileID: 8615734490023117586}
   ballistics: {fileID: 2898213130702081218}
+  path: {fileID: 2898213130702081219}
+  moveMode: 0
+  cornerRadius: 0.25
+  sharpAngle: 30
+  cornerSpeed: 1.5
+  alignAngle: 3
   stopRadius: 0.5
   slowDistance: 3
   turnAngle: 45
@@ -601,3 +608,19 @@ MonoBehaviour:
   SurfaceOffset: 0.02
   marker: {fileID: 0}
   ring: {fileID: 0}
+--- !u!114 &2898213130702081219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961189211342297997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 345cb635783e4466a66172bc9975d215, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankPath
+  agentId: 174295371
+  areaMask: -1
+  sampleDistance: 0.75
+  drawPath: 1

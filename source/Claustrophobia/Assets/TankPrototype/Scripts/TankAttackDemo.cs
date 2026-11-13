@@ -12,14 +12,23 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[SerializeField] private bool startWithMove;
 	[SerializeField] private Transform movePoint;
 
+	[Header("Path test")]
+	[SerializeField] private bool usePath;
+	[SerializeField] private Transform testCases;
+	[SerializeField, Range(0, 4)] private int testIndex = 1;
+	[SerializeField] private Camera testCamera;
+
 	private TankAI.AttackState lastState;
 	private string lastReason;
 	private bool attackOnArrival;
 	private bool deathChecked;
+	private TankAI.MoveState lastMove;
 	public TankAI Enemy { get; private set; }
 	public TankHealth EnemyHealth { get; private set; }
 	public TankHealth TargetHealth { get; private set; }
 	public bool HasMovePoint => movePoint != null;
+	public bool HasPathTests => usePath && testCases != null;
+	public string TestName { get; private set; } = "Legacy integration";
 	public string DestructionCheck { get; private set; } = "Not run";
 
 	private async void Start()
@@ -27,6 +36,11 @@ public sealed class TankAttackDemo : MonoBehaviour
 		if (runner == null || sceneManager == null || enemyPrefab == null || spawnPoint == null || targetPoint == null)
 		{
 			Debug.LogError("[AI ATTACK] Demo references are missing.", this);
+			return;
+		}
+		if (usePath && (testCases == null || testCases.childCount != 5 || testCamera == null))
+		{
+			Debug.LogError("[AI PATH] Five authored test cases and the observation camera are required.", this);
 			return;
 		}
 		var result = await runner.StartGame(new StartGameArgs
@@ -40,10 +54,13 @@ public sealed class TankAttackDemo : MonoBehaviour
 			Debug.LogError("[AI ATTACK] Single session failed: " + result.ShutdownReason, this);
 			return;
 		}
-		NetworkObject entity = runner.Spawn(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
-		Enemy = entity.GetComponent<TankAI>();
-		EnemyHealth = entity.GetComponent<TankHealth>();
 		TargetHealth = targetPoint.GetComponentInParent<TankHealth>();
+		if (usePath)
+		{
+			RunPathTest(testIndex);
+			return;
+		}
+		if (!SpawnEnemy(spawnPoint)) return;
 		if (startWithMove) MoveThenAttack();
 		else AttackTarget();
 	}
@@ -53,18 +70,79 @@ public sealed class TankAttackDemo : MonoBehaviour
 		if (Enemy == null) return;
 		if (attackOnArrival)
 		{
-			if (!Enemy.CanAct || Enemy.MoveStatus == TankAI.MoveState.Idle) attackOnArrival = false;
+			if (!Enemy.CanAct || Enemy.MoveStatus == TankAI.MoveState.Idle || Enemy.MoveStatus == TankAI.MoveState.Failed) attackOnArrival = false;
 			else if (Enemy.MoveStatus == TankAI.MoveState.Arrived)
 			{
 				Debug.Log("[AI INTEGRATION] Arrived and stopped; starting target attack.", this);
 				AttackTarget();
 			}
 		}
+		if (Enemy.MoveStatus != lastMove)
+		{
+			lastMove = Enemy.MoveStatus;
+			Debug.Log("[AI MOVE] " + lastMove + (string.IsNullOrEmpty(Enemy.MoveFailure) ? "" : ": " + Enemy.MoveFailure), this);
+		}
 		if (!deathChecked && EnemyHealth != null && EnemyHealth.Destroyed) CheckDestroyed();
 		if (Enemy.AttackStatus == lastState && Enemy.AttackBlockReason == lastReason) return;
 		lastState = Enemy.AttackStatus;
 		lastReason = Enemy.AttackBlockReason;
 		Debug.Log("[AI ATTACK] " + lastState + (string.IsNullOrEmpty(lastReason) ? "" : ": " + lastReason), this);
+	}
+
+	public void RunPathTest(int index)
+	{
+		if (!Application.isPlaying || !HasPathTests || runner == null || !runner.IsRunning || !runner.IsServer) return;
+		if (index < 0 || index >= testCases.childCount) return;
+
+		Transform test = testCases.GetChild(index);
+		Transform start = test.Find("Start");
+		Transform goal = test.Find("Goal");
+		if (start == null || goal == null)
+		{
+			Debug.LogError("[AI PATH] Test case Start or Goal is missing.", this);
+			return;
+		}
+
+		attackOnArrival = false;
+		testIndex = index;
+		TestName = test.name;
+		if (!SpawnEnemy(start)) return;
+		if (!Enemy.SetMoveMode(TankAI.MoveMode.NavMesh) || !Enemy.MoveTo(goal.position))
+			Debug.LogError("[AI PATH] Movement request rejected.", this);
+
+		if (testCamera == null) return;
+		Vector3 center = (start.position + goal.position) * 0.5f;
+		testCamera.transform.SetPositionAndRotation(new Vector3(center.x, 55f, center.z), Quaternion.Euler(90f, 0f, 0f));
+		testCamera.orthographic = true;
+		testCamera.orthographicSize = 27f;
+		testCamera.depth = 2f;
+		testCamera.enabled = true;
+	}
+
+	private bool SpawnEnemy(Transform start)
+	{
+		if (Enemy != null)
+		{
+			Enemy.StopActions();
+			if (Enemy.Object != null && Enemy.Object.IsValid) runner.Despawn(Enemy.Object);
+		}
+
+		Vector3 pos = start.position;
+		if (usePath) pos.y += 0.15f;
+		NetworkObject entity = runner.Spawn(enemyPrefab, pos, start.rotation);
+		if (entity == null)
+		{
+			Enemy = null;
+			EnemyHealth = null;
+			Debug.LogError("[AI PATH] Enemy spawn failed.", this);
+			return false;
+		}
+		Enemy = entity.GetComponent<TankAI>();
+		EnemyHealth = entity.GetComponent<TankHealth>();
+		deathChecked = false;
+		DestructionCheck = "Not run";
+		lastMove = TankAI.MoveState.Idle;
+		return Enemy != null;
 	}
 
 	[ContextMenu("Attack Target")]
@@ -86,7 +164,9 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public void MoveThenAttack()
 	{
 		if (!Application.isPlaying || Enemy == null || movePoint == null) return;
-		attackOnArrival = Enemy.MoveTo(movePoint.position);
+		Transform goal = HasPathTests ? testCases.GetChild(testIndex).Find("Goal") : movePoint;
+		if (goal == null) return;
+		attackOnArrival = Enemy.MoveTo(goal.position);
 		if (attackOnArrival) Debug.Log("[AI INTEGRATION] Moving; target attack follows arrival.", this);
 	}
 
