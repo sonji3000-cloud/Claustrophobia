@@ -87,5 +87,22 @@ NavMeshProjectSettings:
     accuratePlacement: 0
     debug:
       m_Flags: 0
+  - serializedVersion: 2
+    agentTypeID: 174295371
+    agentRadius: 3.8
+    agentHeight: 3.5
+    agentSlope: 1
+    agentClimb: 0.1
+    ledgeDropHeight: 0
+    maxJumpAcrossDistance: 0
+    minRegionArea: 2
+    manualCellSize: 1
+    cellSize: 0.15
+    manualTileSize: 0
+    tileSize: 256
+    accuratePlacement: 0
+    debug:
+      m_Flags: 0
   m_SettingNames:
   - Humanoid
+  - TankFlat

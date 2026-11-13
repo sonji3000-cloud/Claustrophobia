@@ -230,6 +230,48 @@ UI 명령은 호스트에서 접수해 다음 `FixedUpdateNetwork`에서 실행�
 
 목표 전환은 `[AI PATROL]`, 정체 발생은 `[AI PATROL STALLED]` 로그로 기록한다. 정체 로그에는 목표 방향 차이, AI 좌우 입력, 모터 입력, 목표·적용·실제 속도, AI·구동 갱신 횟수, Kinematic·Rigidbody 제약이 포함된다. 같은 경고를 매 프레임 출력하지 않는다.
 
+## 경로 이동용 시험장·NavMesh 구성 (2026-11-13)
+
+`ksc`에서 `TankAIIntegrationTest`에 다섯 구역을 배치했다. 기존 적 프리팹, 생성·이동 후 공격 시연, 카메라와 목적지 참조는 유지했다. **이번 단계는 시험 환경과 NavMesh 설정이며, 적의 경로 추종은 다음 작업이다.**
+
+| Hierarchy | 용도 |
+| --- | --- |
+| `AI Test Ground / Geometry` | NavMeshSurface와 고정 바닥·벽. NavMesh 생성 대상은 이 계층의 물리 충돌체로 제한 |
+| `Test Cases / 01~05 / Start, Goal` | 각 구역의 시험 출발점과 목적지. 초록색은 출발, 주황색은 목적지 |
+| `Ground Markers` | 위치 확인용 표시. 충돌체가 없으며 NavMesh 생성 계층 밖에 배치 |
+| `Runtime Blockers / Enable In Play - Physical Blocker` | 기본 비활성. 05 구역에서 Play 중 켜면 실제 주행을 막는 장애물. NavMesh에는 포함하지 않음 |
+| `AI Test Overview Camera - Enable To View All` | 기본 카메라 컴포넌트 비활성. 활성화하면 전체 구역을 위에서 관찰. AudioListener를 추가하지 않음 |
+
+| 시험 구역 | Start (X, Z) | Goal (X, Z) | NavMesh 기대 결과 |
+| --- | --- | --- | --- |
+| 01 Straight | (0, 0) | (0, 8) | 완전한 경로, 직선 통과 가능. 기존 시연 영역 |
+| 02 Corner | (-78, -15) | (-50, 12) | 12m ㄱ자 통로를 도는 완전한 경로. 직선 통과 불가 |
+| 03 Bypass | (50, 0) | (80, 0) | 중앙 벽 양옆으로 우회하는 완전한 경로. 직선 통과 불가 |
+| 04 No Path | (-80, 60) | (-50, 60) | 바닥을 가로지른 벽 때문에 완전한 경로 없음 |
+| 05 Stall | (50, 60) | (80, 60) | 기본 상태는 직선 통과 가능. 물리 장애물 활성화 후 정체 처리에 사용 |
+
+각 구역의 NavMesh는 서로 떨어져 있다. 향후 시험 제어에서 해당 구역의 Start에 적을 생성하고 같은 구역의 Goal을 지정한다. 현재 기존 Demo는 계속 01 구역만 수행하며, 02~05로 자동 전환하거나 벽을 우회하지 않는다.
+
+### 전차용 생성 설정
+
+- Agent Type: `TankFlat` (ID `174295371`). 기존 `Humanoid` 설정 유지.
+- Radius 3.8m, Height 3.5m, Max Slope 1°, Step Height 0.1m.
+- `NavMeshSurface`: `Collect Objects = Current Object Hierarchy`, `Use Geometry = Physics Colliders`, Voxel Size 0.15m.
+- Radius는 약 2.9×6.2m 차체의 회전 여유를 고려한 초기값이다. 포신 돌출부와 실제 코너 통과는 다음 주행 구현 단계에서 확인·조정한다.
+- 베이크 데이터 저장 위치: `Assets/TankPrototype/Navigation/TankAIIntegrationTest/NavMesh-TankFlat.asset`.
+
+### 베이크와 확인
+
+**현재 자동 실행 환경에서는 Unity 연결 대상 불일치와 별도 Editor의 라이선스 연결 실패로 실제 베이크·경로 검증을 완료하지 못했다. 씬과 생성 설정, 아래 메뉴의 코드 컴파일·직렬화 참조 검사는 완료했다. 위 데이터 에셋은 메뉴 실행 성공 후 생성된다.**
+
+1. Play를 끄고 씬 변경 사항을 저장한다.
+2. `Tools > Tank > AI Test > Bake and Check NavMesh`를 실행한다. 메뉴는 정확한 시험 씬만 열어 베이크·저장하며, 다른 열린 씬을 저장하지 않는다.
+3. 성공하면 Console에 `[TANK NAVMESH] All five test cases passed.`가 표시된다. 이 결과는 경로 계산 검증이며 실제 탱크 주행 검증과는 별개다.
+4. 이미 저장된 데이터만 검사하려면 `Tools > Tank > AI Test > Check Saved NavMesh`를 실행한다.
+5. 씬의 Geometry를 선택하고 AI Navigation 오버레이에서 NavMesh를 표시한다. 배치를 바꾼 뒤에는 다시 베이크한다.
+
+결과 보고서는 `Builds/TankNavMeshSetup/navmesh-check.txt`에 저장한다. 메뉴는 다섯 구역의 출발·목적지 위치, 완전한 경로 존재 여부, 직선 통과 가능 여부, 기본 비활성 장애물의 계층을 검사한다. 런타임 환경 생성 코드나 새로운 AI 구동 코드는 추가하지 않았다.
+
 ## 기능별 개별 시험 씬
 
 다음 씬은 로컬 Fusion Single 세션을 만드는 개발용 시험이다. 3인 동기화 확인은 TankTest에서 별도로 진행한다. 실행 전에 Play를 끄고 원하는 씬을 열어 Hierarchy 상단의 씬 이름을 확인한다.
