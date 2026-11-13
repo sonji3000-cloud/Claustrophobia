@@ -34,6 +34,13 @@ public sealed class TankAI : NetworkBehaviour
 	[SerializeField, Min(0.1f)] private float cornerSpeed = 1.5f;
 	[SerializeField, Range(1f, 15f)] private float alignAngle = 3f;
 
+	[Header("Path recovery")]
+	[SerializeField, Min(0.1f)] private float stallTimeout = 4f;
+	[SerializeField, Min(0.01f)] private float progressDistance = 0.25f;
+	[SerializeField, Min(0.1f)] private float turnGrace = 8f;
+	[SerializeField, Min(0f)] private float retryDelay = 0.5f;
+	[SerializeField, Range(0, 5)] private int retryLimit = 2;
+
 	[Header("Target attack")]
 	[SerializeField, Range(0.05f, 5f)] private float aimTolerance = 0.5f;
 	[SerializeField, Min(0.02f)] private float shotCheckInterval = 0.1f;
@@ -45,6 +52,13 @@ public sealed class TankAI : NetworkBehaviour
 	private TankHealth targetHealth;
 	private float shotCheckLeft;
 	private bool alignPath;
+	private int watchIndex = -1;
+	private float bestDistance;
+	private float bestAngle;
+	private float stallSeconds;
+	private float turnSeconds;
+	private float turnLimit;
+	private float retryLeft;
 
 	public bool IsHost => Object != null && Object.IsValid
 		&& Runner != null && Runner.IsRunning && Runner.IsServer && HasStateAuthority;
@@ -58,6 +72,12 @@ public sealed class TankAI : NetworkBehaviour
 	public Vector3 Destination { get; private set; }
 	public MoveMode Movement => moveMode;
 	public TankPath Path => path;
+	public uint CommandId { get; private set; }
+	public int RetryCount { get; private set; }
+	public int RetryLimit => retryLimit;
+	public bool IsRetrying { get; private set; }
+	public float StallSeconds => stallSeconds;
+	public string RetryReason { get; private set; } = "";
 	public string MoveFailure { get; private set; } = "";
 	public float StopRadius => stopRadius;
 	public float LeftDriveInput => leftLever;
@@ -105,6 +125,8 @@ public sealed class TankAI : NetworkBehaviour
 	public override void Spawned()
 	{
 		TickCount = 0;
+		CommandId = 0;
+		RetryCount = 0;
 		leftLever = rightLever = 0f;
 		aimInput = Vector2.zero;
 		if (body != null) body.isKinematic = !IsHost;
@@ -138,9 +160,11 @@ public sealed class TankAI : NetworkBehaviour
 	{
 		if (!CanAct || !IsFinite(left) || !IsFinite(right)) return false;
 
-		StopAttack();
+		CommandId++;
+		ClearAttack();
 		MoveStatus = MoveState.Idle;
 		ClearPath();
+		RetryCount = 0;
 		leftLever = Mathf.Clamp(left, -1f, 1f);
 		rightLever = Mathf.Clamp(right, -1f, 1f);
 		return true;
@@ -156,8 +180,10 @@ public sealed class TankAI : NetworkBehaviour
 		offset.y = 0f;
 		if (!IsFinite(offset.sqrMagnitude)) return false;
 
-		StopAttack();
+		CommandId++;
+		ClearAttack();
 		ClearPath();
+		RetryCount = 0;
 		Destination = point;
 		if (moveMode == MoveMode.NavMesh)
 		{
@@ -190,8 +216,15 @@ public sealed class TankAI : NetworkBehaviour
 	{
 		if (!IsHost) return;
 
+		CommandId++;
+		ClearMove();
+	}
+
+	private void ClearMove()
+	{
 		MoveStatus = MoveState.Idle;
 		ClearPath();
+		RetryCount = 0;
 		leftLever = rightLever = 0f;
 		if (motor != null) motor.Stop();
 	}
@@ -200,12 +233,18 @@ public sealed class TankAI : NetworkBehaviour
 	{
 		if (path != null) path.Clear();
 		alignPath = false;
+		IsRetrying = false;
+		retryLeft = 0f;
+		RetryReason = "";
 		MoveFailure = "";
+		ResetProgress();
 	}
 
 	private void FailMove(string reason)
 	{
+		float elapsed = stallSeconds;
 		ClearPath();
+		stallSeconds = elapsed;
 		MoveStatus = MoveState.Failed;
 		MoveFailure = reason;
 		leftLever = rightLever = 0f;
@@ -227,13 +266,14 @@ public sealed class TankAI : NetworkBehaviour
 		if (!IsHost) return;
 		if (!CanMove())
 		{
-			StopMove();
+			FailMove(MoveBlockReason);
 			return;
 		}
 
 		Vector3 velocity = body.linearVelocity;
 		float speed = new Vector2(velocity.x, velocity.z).magnitude;
 		bool usePath = moveMode == MoveMode.NavMesh;
+		if (usePath && !UpdateRecovery()) return;
 		if (usePath && !UpdatePath(speed)) return;
 
 		Vector3 point = usePath ? path.Point : Destination;
@@ -248,6 +288,7 @@ public sealed class TankAI : NetworkBehaviour
 			{
 				motor.Stop();
 				MoveStatus = MoveState.Arrived;
+				ResetProgress();
 			}
 			return;
 		}
@@ -308,11 +349,129 @@ public sealed class TankAI : NetworkBehaviour
 		return true;
 	}
 
+	private void ResetProgress()
+	{
+		watchIndex = -1;
+		stallSeconds = 0f;
+		turnSeconds = 0f;
+		turnLimit = 0f;
+	}
+
+	private bool UpdateRecovery()
+	{
+		if (path == null || !path.isActiveAndEnabled)
+		{
+			FailMove("Path component is missing or disabled");
+			return false;
+		}
+		if (!IsFinite(Runner.DeltaTime) || Runner.DeltaTime <= 0f)
+		{
+			FailMove("Invalid movement timestep");
+			return false;
+		}
+		if (IsRetrying && !UpdateRetry()) return false;
+		if (!path.HasPath)
+		{
+			FailMove("Active path is unavailable");
+			return false;
+		}
+
+		return WatchProgress();
+	}
+
+	private bool WatchProgress()
+	{
+		Vector3 offset = path.Point - body.position;
+		offset.y = 0f;
+		float distance = offset.magnitude;
+		float angle = Vector3.Angle(body.rotation * Vector3.forward, offset);
+		if (watchIndex != path.CornerIndex)
+		{
+			ResetProgress();
+			watchIndex = path.CornerIndex;
+			bestDistance = distance;
+			bestAngle = angle;
+			return true;
+		}
+
+		float required = Mathf.Min(progressDistance, motor.MaxMoveSpeed * stallTimeout * 0.25f);
+		if (bestDistance - distance >= required)
+		{
+			bestDistance = distance;
+			bestAngle = angle;
+			stallSeconds = turnSeconds = 0f;
+			return true;
+		}
+
+		float radius = path.IsLast ? stopRadius : cornerRadius;
+		bool turning = distance > radius && angle > alignAngle;
+		if (turning)
+		{
+			if (turnSeconds == 0f)
+			{
+				bestAngle = angle;
+				float expected = 2f * angle / motor.MaxTurnSpeed + 2f * motor.MaxTurnSpeed / motor.TurnAcceleration;
+				turnLimit = IsFinite(expected) ? Mathf.Max(turnGrace, expected) : turnGrace;
+			}
+			turnSeconds += Runner.DeltaTime;
+			float turnProgress = Mathf.Min(1f, motor.MaxTurnSpeed * stallTimeout * 0.25f);
+			if (bestAngle - angle >= turnProgress && turnSeconds < turnLimit)
+			{
+				bestAngle = angle;
+				stallSeconds = 0f;
+				return true;
+			}
+		}
+
+		stallSeconds += Runner.DeltaTime;
+		if (stallSeconds < stallTimeout && (!turning || turnSeconds < turnLimit)) return true;
+
+		BeginRetry(turning && turnSeconds >= turnLimit ? "Turning made no travel progress" : "Movement made no progress");
+		return false;
+	}
+
+	private void BeginRetry(string reason)
+	{
+		if (RetryCount >= retryLimit)
+		{
+			FailMove("Retry limit reached: " + reason);
+			return;
+		}
+
+		RetryCount++;
+		RetryReason = reason;
+		IsRetrying = true;
+		retryLeft = retryDelay;
+		path.Clear();
+		alignPath = false;
+		leftLever = rightLever = 0f;
+		motor.Stop();
+		ResetProgress();
+	}
+
+	private bool UpdateRetry()
+	{
+		leftLever = rightLever = 0f;
+		retryLeft = Mathf.Max(0f, retryLeft - Runner.DeltaTime);
+		if (retryLeft > 0f) return false;
+
+		IsRetrying = false;
+		if (!path.TryBuild(body.position, Destination, out string reason))
+		{
+			BeginRetry(reason);
+			return false;
+		}
+
+		ResetProgress();
+		return true;
+	}
+
 	public bool SetAim(float turret, float barrel)
 	{
 		if (!CanAct || !IsFinite(turret) || !IsFinite(barrel)) return false;
 
-		StopAttack();
+		CommandId++;
+		ClearAttack();
 		aimInput = new Vector2(Mathf.Clamp(turret, -1f, 1f), Mathf.Clamp(barrel, -1f, 1f));
 		return true;
 	}
@@ -323,7 +482,8 @@ public sealed class TankAI : NetworkBehaviour
 		if (action != TankInputButton.Fire && action != TankInputButton.Insert && action != TankInputButton.Close
 			&& action != TankInputButton.OpenEmpty && action != TankInputButton.Open) return false;
 
-		StopAttack();
+		CommandId++;
+		ClearAttack();
 		return gun.RequestAI(action);
 	}
 
@@ -335,8 +495,9 @@ public sealed class TankAI : NetworkBehaviour
 		TankHealth victim = point.GetComponentInParent<TankHealth>();
 		if (victim == null || victim == health || !victim.isActiveAndEnabled || victim.Destroyed) return false;
 
-		StopAttack();
-		StopMove();
+		CommandId++;
+		ClearAttack();
+		ClearMove();
 		attackTarget = point;
 		targetHealth = victim;
 		AttackStatus = AttackState.Aiming;
@@ -347,6 +508,12 @@ public sealed class TankAI : NetworkBehaviour
 	{
 		if (!IsHost) return;
 
+		CommandId++;
+		ClearAttack();
+	}
+
+	private void ClearAttack()
+	{
 		attackTarget = null;
 		targetHealth = null;
 		aimInput = Vector2.zero;
@@ -362,7 +529,7 @@ public sealed class TankAI : NetworkBehaviour
 		if (attackTarget == null || !attackTarget.gameObject.activeInHierarchy || targetHealth == null
 			|| !targetHealth.isActiveAndEnabled || !attackTarget.IsChildOf(targetHealth.transform))
 		{
-			StopAttack();
+			ClearAttack();
 			AttackBlockReason = "Target unavailable";
 			return;
 		}
@@ -467,8 +634,9 @@ public sealed class TankAI : NetworkBehaviour
 	{
 		if (!IsHost) return;
 
-		StopMove();
-		StopAttack();
+		CommandId++;
+		ClearMove();
+		ClearAttack();
 		if (aim != null) aim.ApplyHostInput(0f, 0f);
 		if (gun != null) gun.ClearAIRequest();
 	}
@@ -497,6 +665,11 @@ public sealed class TankAI : NetworkBehaviour
 		sharpAngle = IsFinite(sharpAngle) ? Mathf.Clamp(sharpAngle, 5f, 90f) : 30f;
 		cornerSpeed = IsFinite(cornerSpeed) ? Mathf.Max(0.1f, cornerSpeed) : 1.5f;
 		alignAngle = IsFinite(alignAngle) ? Mathf.Clamp(alignAngle, 1f, 15f) : 3f;
+		stallTimeout = IsFinite(stallTimeout) ? Mathf.Max(0.1f, stallTimeout) : 4f;
+		progressDistance = IsFinite(progressDistance) ? Mathf.Max(0.01f, progressDistance) : 0.25f;
+		turnGrace = IsFinite(turnGrace) ? Mathf.Max(0.1f, turnGrace) : 8f;
+		retryDelay = IsFinite(retryDelay) ? Mathf.Max(0f, retryDelay) : 0.5f;
+		retryLimit = Mathf.Clamp(retryLimit, 0, 5);
 		aimTolerance = IsFinite(aimTolerance) ? Mathf.Clamp(aimTolerance, 0.05f, 5f) : 0.5f;
 		shotCheckInterval = IsFinite(shotCheckInterval) ? Mathf.Max(0.02f, shotCheckInterval) : 0.1f;
 	}

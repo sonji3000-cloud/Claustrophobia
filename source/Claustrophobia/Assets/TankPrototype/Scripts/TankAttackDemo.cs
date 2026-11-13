@@ -17,10 +17,12 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[SerializeField] private Transform testCases;
 	[SerializeField, Range(0, 4)] private int testIndex = 1;
 	[SerializeField] private Camera testCamera;
+	[SerializeField] private GameObject stallBlocker;
 
 	private TankAI.AttackState lastState;
 	private string lastReason;
 	private bool attackOnArrival;
+	private uint attackCommand;
 	private bool deathChecked;
 	private TankAI.MoveState lastMove;
 	public TankAI Enemy { get; private set; }
@@ -28,6 +30,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public TankHealth TargetHealth { get; private set; }
 	public bool HasMovePoint => movePoint != null;
 	public bool HasPathTests => usePath && testCases != null;
+	public bool HasBlocker => stallBlocker != null;
+	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
 	public string TestName { get; private set; } = "Legacy integration";
 	public string DestructionCheck { get; private set; } = "Not run";
 
@@ -70,7 +74,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 		if (Enemy == null) return;
 		if (attackOnArrival)
 		{
-			if (!Enemy.CanAct || Enemy.MoveStatus == TankAI.MoveState.Idle || Enemy.MoveStatus == TankAI.MoveState.Failed) attackOnArrival = false;
+			if (!Enemy.CanAct || Enemy.CommandId != attackCommand
+				|| Enemy.MoveStatus == TankAI.MoveState.Idle || Enemy.MoveStatus == TankAI.MoveState.Failed) attackOnArrival = false;
 			else if (Enemy.MoveStatus == TankAI.MoveState.Arrived)
 			{
 				Debug.Log("[AI INTEGRATION] Arrived and stopped; starting target attack.", this);
@@ -104,6 +109,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		}
 
 		attackOnArrival = false;
+		SetBlocker(false);
 		testIndex = index;
 		TestName = test.name;
 		if (!SpawnEnemy(start)) return;
@@ -117,6 +123,36 @@ public sealed class TankAttackDemo : MonoBehaviour
 		testCamera.orthographicSize = 27f;
 		testCamera.depth = 2f;
 		testCamera.enabled = true;
+	}
+
+	public void RunStallTest()
+	{
+		if (!HasBlocker) return;
+
+		RunPathTest(4);
+		SetBlocker(true);
+	}
+
+	public void SetBlocker(bool active)
+	{
+		if (!Application.isPlaying || stallBlocker == null) return;
+
+		stallBlocker.SetActive(active);
+	}
+
+	public void MoveToGoal() => MoveToMarker("Goal");
+	public void ReturnToStart() => MoveToMarker("Start");
+
+	private void MoveToMarker(string name)
+	{
+		if (!Application.isPlaying || Enemy == null || !HasPathTests) return;
+		if (testIndex < 0 || testIndex >= testCases.childCount) return;
+
+		Transform point = testCases.GetChild(testIndex).Find(name);
+		if (point == null) return;
+
+		attackOnArrival = false;
+		if (!Enemy.MoveTo(point.position)) Debug.LogWarning("[AI PATH] Movement request rejected.", this);
 	}
 
 	private bool SpawnEnemy(Transform start)
@@ -167,6 +203,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		Transform goal = HasPathTests ? testCases.GetChild(testIndex).Find("Goal") : movePoint;
 		if (goal == null) return;
 		attackOnArrival = Enemy.MoveTo(goal.position);
+		attackCommand = Enemy.CommandId;
 		if (attackOnArrival) Debug.Log("[AI INTEGRATION] Moving; target attack follows arrival.", this);
 	}
 
@@ -222,5 +259,6 @@ public sealed class TankAttackDemo : MonoBehaviour
 	private void OnDisable()
 	{
 		StopAllActions();
+		SetBlocker(false);
 	}
 }

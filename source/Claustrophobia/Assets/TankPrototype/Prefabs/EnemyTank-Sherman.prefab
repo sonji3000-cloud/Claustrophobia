@@ -365,6 +365,11 @@ MonoBehaviour:
   sharpAngle: 30
   cornerSpeed: 1.5
   alignAngle: 3
+  stallTimeout: 4
+  progressDistance: 0.25
+  turnGrace: 8
+  retryDelay: 0.5
+  retryLimit: 2
   stopRadius: 0.5
   slowDistance: 3
   turnAngle: 45

@@ -200,6 +200,7 @@ MonoBehaviour:
   testCases: {fileID: 1100006}
   testIndex: 1
   testCamera: {fileID: 502}
+  stallBlocker: {fileID: 1100096}
 --- !u!1 &200
 GameObject:
   m_ObjectHideFlags: 0

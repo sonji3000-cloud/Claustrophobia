@@ -15,7 +15,7 @@ public sealed class TankAttackDemoEditor : Editor
 		EditorGUILayout.HelpBox("HP 시험 버튼은 적 전차 자신에게 직접 피해를 적용합니다.\n이동 후 공격 버튼은 도착한 뒤 지정 표적을 공격합니다.", MessageType.Info);
 		if (demo.HasPathTests)
 		{
-			EditorGUILayout.HelpBox("경로 시험: 구역 버튼을 누르면 해당 출발점에서 새 적을 생성합니다.\nPlay 시작 시 Test Index의 구역을 시험합니다 (기본 02). Scene 뷰의 Gizmos로 경로를 확인합니다.\n04는 이동 실패가 정상입니다. 05의 장애물 활성화 후 정체 복구는 다음 단계입니다.", MessageType.Info);
+			EditorGUILayout.HelpBox("구역 버튼은 적을 새로 생성합니다. 재명령 버튼은 현재 적을 유지합니다.\n04는 경로 없음으로 실패, 05 정체 시험은 제한된 재탐색 후 실패가 정상입니다.\n대기 중 장애물을 끄면 이동을 재개할 수 있습니다.", MessageType.Info);
 			using (new EditorGUI.DisabledScope(!Application.isPlaying || ai == null))
 			{
 				if (GUILayout.Button("01 직선 이동")) demo.RunPathTest(0);
@@ -23,6 +23,10 @@ public sealed class TankAttackDemoEditor : Editor
 				if (GUILayout.Button("03 벽 우회")) demo.RunPathTest(2);
 				if (GUILayout.Button("04 이동 불가")) demo.RunPathTest(3);
 				if (GUILayout.Button("05 직선 통로 (정체 시험 준비)")) demo.RunPathTest(4);
+				if (demo.HasBlocker && GUILayout.Button("05 정체 유발 (장애물 포함)")) demo.RunStallTest();
+				if (demo.HasBlocker && GUILayout.Button(demo.BlockerEnabled ? "장애물 끄기" : "장애물 켜기")) demo.SetBlocker(!demo.BlockerEnabled);
+				if (GUILayout.Button("현재 목적지로 재명령")) demo.MoveToGoal();
+				if (GUILayout.Button("출발 지점으로 재명령")) demo.ReturnToStart();
 			}
 		}
 		using (new EditorGUI.DisabledScope(!Application.isPlaying || ai == null))
@@ -47,6 +51,11 @@ public sealed class TankAttackDemoEditor : Editor
 			EditorGUILayout.EnumPopup("이동 방식", ai.Movement);
 			EditorGUILayout.TextField("시험 구역", demo.TestName);
 			EditorGUILayout.TextField("이동 실패 사유", ai.MoveFailure);
+			EditorGUILayout.Toggle("재탐색 대기", ai.IsRetrying);
+			EditorGUILayout.IntField("재시도 횟수", ai.RetryCount);
+			EditorGUILayout.IntField("재시도 한도", ai.RetryLimit);
+			EditorGUILayout.FloatField("진전 없는 시간", ai.StallSeconds);
+			EditorGUILayout.TextField("최근 재시도 원인", ai.RetryReason);
 			if (ai.Path != null && ai.Path.HasPath)
 			{
 				EditorGUILayout.IntField("목표 지점 (시작 포함)", ai.Path.CornerIndex + 1);
