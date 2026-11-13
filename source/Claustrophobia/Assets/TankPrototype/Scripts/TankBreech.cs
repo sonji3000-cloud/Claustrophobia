@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>Loads a carried scene round through the gun's existing chamber state.</summary>
+/// <summary>Connects the interior breech and its round seat to the gun.</summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(CrewDevice))]
 public sealed class TankBreech : MonoBehaviour
@@ -15,16 +15,15 @@ public sealed class TankBreech : MonoBehaviour
 	private TankRound loaded;
 	private TankGun loadedGun;
 	private TankGun subscribedGun;
-	private TankRound pendingRound;
-	private int loadRequest;
+	private CrewInteract interaction;
 
 	public TankGun Gun => gun;
+	internal Transform LoadPoint => loadPoint;
 
-	/// <summary>A loaded round stays with its gun; this API does not transfer ammunition.</summary>
-	public bool Bind(TankGun next)
+	public bool Bind(TankGun next, CrewInteract user)
 	{
-		if (!CanBind(next)) return false;
-		if (gun == next)
+		if (!CanBind(next) || user == null || user.Carry == null) return false;
+		if (gun == next && interaction == user)
 		{
 			if (isActiveAndEnabled) Attach();
 			return true;
@@ -32,27 +31,27 @@ public sealed class TankBreech : MonoBehaviour
 
 		Detach();
 		gun = next;
+		interaction = user;
 		if (isActiveAndEnabled) Attach();
 		return true;
 	}
 
 	public bool CanBind(TankGun next) => next != null && (loaded == null || loadedGun == null || loadedGun == next);
-
 	public void Unbind()
 	{
 		Detach();
 		gun = null;
+		interaction = null;
 	}
 
 	public bool CanInsert(CrewInteract user)
 	{
 		return isActiveAndEnabled && device != null && gun != null && gun.CanInsert
-			&& pendingRound == null
 			&& loadPoint != null && loadPoint.gameObject.activeInHierarchy
 			&& user != null && user.CanSelect && user.Active == null && user.Crew != null
 			&& gun.CanLoad(user.Crew) && device.CanUse(user.Crew) && device.User == null
 			&& user.Carry != null && user.Carry.isActiveAndEnabled && user.Carry.Held != null
-			&& user.Carry.Held.isActiveAndEnabled && user.Carry.Held.Holder == user.Carry;
+			&& (gun.UsesNetwork || user.Carry.Held.Holder == user.Carry);
 	}
 
 	internal bool TryUse(CrewInteract user)
@@ -66,7 +65,6 @@ public sealed class TankBreech : MonoBehaviour
 
 		if (gun.State == TankGun.ChamberState.EmptyClosed || gun.State == TankGun.ChamberState.Ready)
 			return gun.RequestOpen();
-
 		return gun.RequestClose();
 	}
 
@@ -75,51 +73,23 @@ public sealed class TankBreech : MonoBehaviour
 		if (!CanInsert(user) || user.Selected != device) return false;
 		if (gun.UsesNetwork)
 		{
-			if (!user.Carry.BeginLoad()) return false;
-
-			pendingRound = user.Carry.Held;
-			if (++loadRequest == 0) loadRequest++;
-			if (!gun.RequestLoad(loadRequest))
-			{
-				pendingRound = null;
-				user.Carry.EndLoad();
-				return false;
-			}
-
-			user.ClearSelection();
-			return true;
+			if (!gun.RequestLoad(user.Carry.Held)) return false;
+		}
+		else
+		{
+			if (!gun.RequestInsert()) return false;
+			loaded = user.Carry.CommitLoad(loadPoint);
+			loadedGun = gun;
+			if (gun.State == TankGun.ChamberState.Ready) loaded.gameObject.SetActive(false);
 		}
 
-		if (!gun.RequestInsert()) return false;
-
-		CommitLoad(user.Carry);
 		user.ClearSelection();
 		return true;
-	}
-
-	private void OnLoadResolved(int request, bool accepted)
-	{
-		if (request != loadRequest || pendingRound == null) return;
-
-		TankRound round = pendingRound;
-		pendingRound = null;
-		CrewCarry carry = round.Holder;
-		if (accepted && gun != null && carry != null && carry.Held == round)
-			CommitLoad(carry);
-		else if (carry != null) carry.EndLoad();
-	}
-
-	private void CommitLoad(CrewCarry carry)
-	{
-		loaded = carry.CommitLoad(loadPoint);
-		loadedGun = gun;
-		if (gun.State == TankGun.ChamberState.Ready) loaded.gameObject.SetActive(false);
 	}
 
 	public string GetPrompt(CrewInteract user)
 	{
 		if (gun == null || !gun.isActiveAndEnabled) return "Chamber unavailable";
-		if (pendingRound != null) return "Loading round | Waiting for host";
 		if (CanInsert(user)) return "OPEN | EMPTY | Space - Insert round | Esc - Return to rack";
 		bool holding = user != null && user.Carry != null && user.Carry.Held != null;
 		switch (gun.State)
@@ -137,41 +107,47 @@ public sealed class TankBreech : MonoBehaviour
 	private void OnStateChanged(TankGun.ChamberState state)
 	{
 		if (gun == null) return;
-
 		bool open = state == TankGun.ChamberState.EmptyOpen || state == TankGun.ChamberState.LoadedOpen;
 		Transform pose = open ? openPose : closedPose;
 		if (block != null && pose != null) block.SetPositionAndRotation(pose.position, pose.rotation);
 		if (loaded != null) loaded.gameObject.SetActive(open && gun.HasLiveRound);
 		if (loaded == null || gun.HasLiveRound) return;
-
 		loaded.Consume();
 		loaded = null;
 		loadedGun = null;
 	}
 
 	private void OnEnable() => Attach();
-
 	private void Attach()
 	{
 		if (gun == null || subscribedGun == gun) return;
-
 		subscribedGun = gun;
 		subscribedGun.StateChanged += OnStateChanged;
-		subscribedGun.LoadResolved += OnLoadResolved;
+		if (gun.UsesNetwork && interaction != null)
+		{
+			gun.BindBreech(this, interaction);
+			interaction.Carry.BindGun(gun);
+		}
 		OnStateChanged(gun.State);
 	}
 
 	private void OnDisable() => Detach();
-
 	private void Detach()
 	{
 		if (subscribedGun != null)
 		{
 			subscribedGun.StateChanged -= OnStateChanged;
-			subscribedGun.LoadResolved -= OnLoadResolved;
+			if (subscribedGun.UsesNetwork && interaction != null)
+			{
+				CrewCarry carry = interaction.Carry;
+				if (carry != null)
+				{
+					carry.ReturnRound();
+					carry.BindGun(null);
+				}
+				subscribedGun.UnbindBreech(this);
+			}
 		}
 		subscribedGun = null;
-		if (pendingRound != null && pendingRound.Holder != null) pendingRound.Holder.EndLoad();
-		pendingRound = null;
 	}
 }

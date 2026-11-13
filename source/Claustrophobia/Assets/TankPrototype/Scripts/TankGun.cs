@@ -22,6 +22,9 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     [Networked] private TickTimer RecoveryTimer { get; set; }
     [Networked, OnChangedRender(nameof(ApplyNetworkShot))]
     private int NetworkShots { get; set; }
+	[Networked] private TankRound GunnerRound { get; set; }
+	[Networked] private TankRound CommanderRound { get; set; }
+	[Networked] private TankRound ChamberRound { get; set; }
 
     public ChamberState State { get; private set; } = ChamberState.EmptyOpen;
     public bool HasLiveRound => State == ChamberState.LoadedOpen || State == ChamberState.Ready;
@@ -29,7 +32,6 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     public bool UsesNetwork { get; private set; }
 
 	public event Action<ChamberState> StateChanged;
-	internal event Action<int, bool> LoadResolved;
     public float RecoverRemaining => State != ChamberState.Recovering ? 0f
         : IsSpawned ? RecoveryTimer.RemainingTime(Runner) ?? 0f
         : Mathf.Max(0f, recoveryEndsAt - Time.time);
@@ -39,12 +41,14 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     public string LastHitSummary { get; private set; } = "No impact";
     private float recoveryEndsAt;
     private TankCrewRegistry crewRegistry;
+	private TankBreech breech;
+	private CrewInteract interaction;
 	private TankAI ai;
 	private TankInputButton aiAction;
 	private bool hasAIRequest;
 	private bool aiTargetRequest;
     private readonly List<Collider> ownerColliders = new();
-    private readonly Queue<(PlayerRef player, TankInputButton action, int load)> requests = new(4);
+	private readonly Queue<(PlayerRef player, TankCrew.Role role, TankInputButton action, int source, NetworkId round)> requests = new(4);
 
     public Transform Muzzle => muzzle;
     public TankProjectile ProjectilePrefab => projectilePrefab;
@@ -93,10 +97,12 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 		LastSuccessfulFireTime = Time.time;
 	}
 
-	public bool CanLoad(TankCrew crew) => crew != null && (UsesNetwork ? crew.CanAim : crew.CanLoad);
+	public bool CanLoad(TankCrew crew) => crew != null && crew.CanLoad;
 
-	public bool RequestInsert() => Request(TankInputButton.Insert);
-	internal bool RequestLoad(int load) => Request(TankInputButton.Insert, load);
+	public bool RequestInsert() => UsesNetwork && breech != null
+		? RequestLoad(GetLocalRound()) : Request(TankInputButton.Insert);
+	internal bool RequestLoad(TankRound round) => round != null
+		&& Request(TankInputButton.Insert, round: round.Object.Id);
 	public bool RequestClose() => Request(TankInputButton.Close);
 	public bool RequestOpenEmpty() => Request(TankInputButton.OpenEmpty);
 	public bool RequestOpen() => Request(TankInputButton.Open);
@@ -130,29 +136,67 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 		aiTargetRequest = false;
 	}
 
-	private bool Request(TankInputButton action, int load = 0)
+	internal void BindBreech(TankBreech next, CrewInteract user)
+	{
+		breech = next;
+		interaction = user;
+	}
+
+	internal void UnbindBreech(TankBreech previous)
+	{
+		if (breech != previous) return;
+		breech = null;
+		interaction = null;
+	}
+
+	internal TankRound GetLocalRound()
+	{
+		if (!IsSpawned || crewRegistry == null) return null;
+		PlayerRef player = Runner.LocalPlayer;
+		TankRound round = GetRound(crewRegistry.GetRole(player));
+		return round != null && round.Object.InputAuthority == player ? round : null;
+	}
+
+	internal bool RequestTake(CrewDevice source)
+	{
+		if (interaction == null || source == null || source.AmmoRack == null) return false;
+		int index = Array.IndexOf(interaction.Devices, source);
+		return index >= 0 && Request(TankInputButton.TakeRound, source: index);
+	}
+
+	internal void RequestReturn()
+	{
+		TankRound round = GetLocalRound();
+		if (round != null) Request(TankInputButton.ReturnRound, round: round.Object.Id);
+	}
+
+	internal void SampleRoundPose(ref TankCrewNetworkInput input)
+	{
+		input.RoundRole = TankCrew.Role.None;
+		if (interaction != null && interaction.Carry != null) interaction.Carry.SamplePose(ref input);
+	}
+
+	private bool Request(TankInputButton action, int source = -1, NetworkId round = default)
 	{
 		if (!UsesNetwork) return Execute(action);
-		if (!IsSpawned || !Runner.IsRunning || crewRegistry == null || !crewRegistry.CanAim(Runner.LocalPlayer))
-			return false;
+		if (!IsSpawned || !Runner.IsRunning || crewRegistry == null) return false;
+		TankCrew.Role role = crewRegistry.GetRole(Runner.LocalPlayer);
+		if (!CanRequest(role, action)) return false;
 
-		RpcInvokeInfo info = RPC_Request(action, load);
+		RpcInvokeInfo info = RPC_Request(role, action, source, round);
 		return info.LocalInvokeResult == RpcLocalInvokeResult.Invoked
 			|| info.SendMessageResult == RpcSendMessageResult.Sent;
 	}
 
 	[Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
-	private RpcInvokeInfo RPC_Request(TankInputButton action, int load, RpcInfo info = default)
+	private RpcInvokeInfo RPC_Request(TankCrew.Role role, TankInputButton action, int source, NetworkId round, RpcInfo info = default)
 	{
-		requests.Enqueue((info.Source, action, load));
+		requests.Enqueue((info.Source, role, action, source, round));
 		return default;
 	}
 
-	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-	private void RPC_LoadResolved([RpcTarget] PlayerRef player, int load, NetworkBool accepted)
-	{
-		LoadResolved?.Invoke(load, accepted);
-	}
+	private static bool CanRequest(TankCrew.Role role, TankInputButton action) => action == TankInputButton.Fire
+		? role == TankCrew.Role.Gunner : role == TankCrew.Role.Gunner || role == TankCrew.Role.Commander;
 
 	// TankAim has applied the tick's authoritative turret and gun rotations by this point.
 	void IAfterTick.AfterTick()
@@ -180,20 +224,122 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 
 		while (requests.TryDequeue(out var request))
 		{
-			bool gunner = crewRegistry != null && crewRegistry.CanAim(request.player);
+			TankCrew.Role role = crewRegistry != null ? crewRegistry.GetRole(request.player) : TankCrew.Role.None;
+			bool allowed = role == request.role && CanRequest(role, request.action);
 			ChamberState previous = State;
-			bool accepted = gunner && Execute(request.action);
-			if (!gunner)
-				Debug.Log($"[WEAPON HOST] Tick={Runner.Tick}, Player={request.player}, Action={request.action}, Rejected: Gunner required", this);
+			bool accepted = allowed && ExecuteCrew(request.player, role, request.action, request.source, request.round);
+			if (!allowed)
+				Debug.Log($"[WEAPON HOST] Tick={Runner.Tick}, Player={request.player}, Action={request.action}, Rejected: Role {role}", this);
 			else if (accepted && request.action == TankInputButton.Fire)
 				Debug.Log($"[WEAPON HOST] Tick={Runner.Tick}, Player={request.player}, Action=Fire, ShotId={ShotCount}, {previous} -> {State}", this);
 			else
 				Debug.Log($"[WEAPON HOST] Tick={Runner.Tick}, Player={request.player}, Action={request.action}, {previous} -> {State}, {LastWeaponResult}", this);
-
-			if (request.action != TankInputButton.Insert || request.load == 0) continue;
-			if (request.player == Runner.LocalPlayer) LoadResolved?.Invoke(request.load, accepted);
-			else if (Runner.IsPlayerCommitted(request.player)) RPC_LoadResolved(request.player, request.load, accepted);
 		}
+	}
+
+	public override void FixedUpdateNetwork()
+	{
+		if (!HasStateAuthority || crewRegistry == null) return;
+		UpdateHeldRound(TankCrew.Role.Gunner, crewRegistry.GunnerPlayer);
+		UpdateHeldRound(TankCrew.Role.Commander, crewRegistry.CommanderPlayer);
+	}
+
+	private bool ExecuteCrew(PlayerRef player, TankCrew.Role role, TankInputButton action, int source, NetworkId id)
+	{
+		switch (action)
+		{
+			case TankInputButton.TakeRound: return TakeRound(player, role, source);
+			case TankInputButton.ReturnRound: return ReturnRound(player, role, id);
+			case TankInputButton.Insert when breech != null || id.IsValid: return LoadRound(player, role, id);
+			default: return Execute(action);
+		}
+	}
+
+	private TankRound GetRound(TankCrew.Role role) => role switch
+	{
+		TankCrew.Role.Gunner => GunnerRound,
+		TankCrew.Role.Commander => CommanderRound,
+		_ => null
+	};
+
+	private void SetRound(TankCrew.Role role, TankRound round)
+	{
+		if (role == TankCrew.Role.Gunner) GunnerRound = round;
+		else if (role == TankCrew.Role.Commander) CommanderRound = round;
+	}
+
+	private bool TakeRound(PlayerRef player, TankCrew.Role role, int index)
+	{
+		if (interaction == null || (uint)index >= (uint)interaction.Devices.Length || GetRound(role) != null)
+			return Reject("Take round", "No available rack or hands already occupied");
+
+		CrewDevice source = interaction.Devices[index];
+		TankRound prefab = source != null && source.AmmoRack != null && source.AmmoRack.isActiveAndEnabled
+			? source.AmmoRack.RoundPrefab : null;
+		if (prefab == null || !source.CanUse(role) || !TryGetRoundPose(player, role, out var pose))
+			return Reject("Take round", "Rack or carry pose unavailable");
+
+		TankRound round = Runner.Spawn(prefab, pose.RoundPosition, pose.RoundRotation, player);
+		if (round == null) return Reject("Take round", "Spawn failed");
+		SetRound(role, round);
+		LastWeaponResult = "Round issued";
+		return true;
+	}
+
+	private bool ReturnRound(PlayerRef player, TankCrew.Role role, NetworkId id)
+	{
+		TankRound round = GetRound(role);
+		if (round == null || round.Object.InputAuthority != player || round.Object.Id != id)
+			return Reject("Return round", "No matching carried round");
+		RemoveHeldRound(role, round);
+		LastWeaponResult = "Round returned";
+		return true;
+	}
+
+	private bool LoadRound(PlayerRef player, TankCrew.Role role, NetworkId id)
+	{
+		TankRound round = GetRound(role);
+		Transform point = breech != null ? breech.LoadPoint : null;
+		if (point == null || !point.gameObject.activeInHierarchy || round == null
+			|| round.Object.InputAuthority != player || round.Object.Id != id || !CanInsert)
+			return Reject("Insert", "Requires an open empty chamber and the player's carried round");
+
+		SetRound(role, null);
+		ChamberRound = round;
+		round.Seat(point.position, point.rotation);
+		return Insert();
+	}
+
+	private void UpdateHeldRound(TankCrew.Role role, PlayerRef player)
+	{
+		TankRound round = GetRound(role);
+		if (round == null) return;
+		if (interaction == null || player.IsNone || round.Object.InputAuthority != player)
+		{
+			RemoveHeldRound(role, round);
+			return;
+		}
+
+		if (TryGetRoundPose(player, role, out var pose))
+			round.transform.SetPositionAndRotation(pose.RoundPosition, pose.RoundRotation);
+	}
+
+	private void RemoveHeldRound(TankCrew.Role role, TankRound round)
+	{
+		SetRound(role, null);
+		Runner.Despawn(round.Object);
+	}
+
+	private bool TryGetRoundPose(PlayerRef player, TankCrew.Role role, out TankCrewNetworkInput pose)
+	{
+		pose = default;
+		Transform anchor = interaction != null && interaction.Carry != null ? interaction.Carry.GetAnchor(role) : null;
+		if (anchor == null || !Runner.TryGetInputForPlayer(player, out pose) || pose.RoundRole != role) return false;
+
+		// RoundHold sits beside the seat and rotates with the player's local view.
+		Quaternion rotation = pose.RoundRotation;
+		return (pose.RoundPosition - anchor.position).sqrMagnitude <= 4f
+			&& Mathf.Abs(Quaternion.Dot(rotation, rotation) - 1f) < .01f;
 	}
 
 	private bool Execute(TankInputButton action)
@@ -272,7 +418,21 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     private void ChangeState(ChamberState next)
     {
         ChamberState previous = State;
-        if (UsesNetwork) NetworkState = next;
+		if (UsesNetwork)
+		{
+			NetworkState = next;
+			TankRound round = ChamberRound;
+			if (round != null)
+			{
+				if (next == ChamberState.LoadedOpen || next == ChamberState.Ready)
+					round.SetVisible(next == ChamberState.LoadedOpen);
+				else
+				{
+					ChamberRound = null;
+					Runner.Despawn(round.Object);
+				}
+			}
+		}
         Debug.Log($"Tank chamber: {previous} -> {next}", this);
         ApplyState(next);
     }

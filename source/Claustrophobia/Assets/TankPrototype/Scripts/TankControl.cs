@@ -388,6 +388,7 @@ public sealed class TankControl : MonoBehaviour
 			$"R={pendingInput.RightLever:F2}"
 		);
 
+		if (gun != null) gun.SampleRoundPose(ref pendingInput);
         input.Set(pendingInput);
     }
 }

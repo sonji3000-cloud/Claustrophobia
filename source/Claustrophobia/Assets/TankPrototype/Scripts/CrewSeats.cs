@@ -146,7 +146,7 @@ public sealed class CrewSeats : MonoBehaviour
 			&& !anchor.IsChildOf(transform);
 	}
 
-	private Transform GetAnchor(TankCrew.Role role)
+	internal Transform GetAnchor(TankCrew.Role role)
 	{
 		switch (role)
 		{

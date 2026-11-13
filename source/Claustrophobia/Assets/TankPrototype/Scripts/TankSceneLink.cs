@@ -226,7 +226,7 @@ public sealed class TankSceneLink : MonoBehaviour
 		if (request != version || !next.Mode.Bind(input, cameras, tankHud)) return false;
 		if (request != version || !next.DriverScreen.Bind(driverFeed)) return false;
 		if (request != version || !next.Sight.Bind(gunnerFeed)) return false;
-		if (request != version || !next.Breech.Bind(gun)) return false;
+		if (request != version || !next.Breech.Bind(gun, next.Interaction)) return false;
 		if (request != version || !next.StatusPanel.Bind(status, control)) return false;
 
 		for (int i = 0; i < next.Levers.Length; i++)

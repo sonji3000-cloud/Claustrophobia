@@ -29,10 +29,15 @@ public sealed class CrewDevice : MonoBehaviour
 
 	public bool CanUse(TankCrew crew)
 	{
-		if (!isActiveAndEnabled || crew == null || crew.CurrentRole == TankCrew.Role.None
+		return crew != null && CanUse(crew.CurrentRole);
+	}
+
+	internal bool CanUse(TankCrew.Role role)
+	{
+		if (!isActiveAndEnabled || role == TankCrew.Role.None
 			|| round != null && (!round.isActiveAndEnabled || round.Holder != null || round.IsLoaded)) return false;
 
-		return ((int)roles & (1 << ((int)crew.CurrentRole - 1))) != 0;
+		return ((int)roles & (1 << ((int)role - 1))) != 0;
 	}
 
 	public bool Contains(Collider part)

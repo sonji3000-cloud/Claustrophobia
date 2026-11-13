@@ -8,14 +8,29 @@ public sealed class CrewCarry : MonoBehaviour
 	[SerializeField] private CrewSeats seats;
 	[SerializeField] private Transform holdPoint;
 
-	public TankRound Held { get; private set; }
-	public bool IsLoading { get; private set; }
+	private TankGun gun;
+	private TankRound held;
 
-	private bool returnPending;
+	public TankRound Held => gun != null ? gun.GetLocalRound() : held;
+
+	internal bool UsesNetwork => gun != null;
+	internal void BindGun(TankGun next) => gun = next;
+	internal bool RequestTake(CrewDevice source) => gun != null && gun.RequestTake(source);
+	internal Transform GetAnchor(TankCrew.Role role) => seats != null ? seats.GetAnchor(role) : null;
+
+	internal void SamplePose(ref TankCrewNetworkInput input)
+	{
+		input.RoundRole = TankCrew.Role.None;
+		if (!isActiveAndEnabled || holdPoint == null || !holdPoint.gameObject.activeInHierarchy
+			|| interaction == null || interaction.Crew == null || !interaction.Crew.CanLoad) return;
+
+		input.RoundRole = interaction.Crew.CurrentRole;
+		holdPoint.GetPositionAndRotation(out input.RoundPosition, out input.RoundRotation);
+	}
 
 	internal bool CanTake(CrewDevice source)
 	{
-		return isActiveAndEnabled && Held == null && !IsLoading && source != null && holdPoint != null
+		return isActiveAndEnabled && Held == null && source != null && holdPoint != null
 			&& holdPoint.gameObject.activeInHierarchy && interaction != null && interaction.CanSelect
 			&& interaction.Active == null && source == interaction.Selected && source.CanUse(interaction.Crew);
 	}
@@ -26,54 +41,39 @@ public sealed class CrewCarry : MonoBehaviour
 	{
 		if (!CanTake(source) || round == null || round.Device == null
 			|| !round.Device.CanUse(interaction.Crew)) return false;
+		if (UsesNetwork) return RequestTake(source);
 
 		if (!round.TryHold(this, holdPoint)) return false;
-
-		Held = round;
+		held = round;
 		return true;
 	}
 
 	public void ReturnRound()
 	{
-		if (IsLoading)
+		if (gun != null)
 		{
-			returnPending = true;
+			gun.RequestReturn();
 			return;
 		}
-		if (Held == null) return;
 
-		TankRound round = Held;
-		Held = null;
+		if (held == null) return;
+		TankRound round = held;
+		held = null;
 		round.Return(this);
 	}
 
 	internal TankRound CommitLoad(Transform loadPoint)
 	{
-		TankRound round = Held;
-		Held = null;
-		IsLoading = false;
-		returnPending = false;
+		TankRound round = held;
+		held = null;
 		round.Load(this, loadPoint);
 		return round;
 	}
 
-	internal bool BeginLoad()
+	private void OnSeatApplied(TankCrew.Role role)
 	{
-		if (Held == null || IsLoading) return false;
-
-		IsLoading = true;
-		return true;
+		if (!UsesNetwork) ReturnRound();
 	}
-
-	internal void EndLoad()
-	{
-		IsLoading = false;
-		bool shouldReturn = returnPending;
-		returnPending = false;
-		if (shouldReturn) ReturnRound();
-	}
-
-	private void OnSeatApplied(TankCrew.Role role) => ReturnRound();
 
 	private void OnEnable()
 	{

@@ -1,11 +1,17 @@
+using Fusion;
 using UnityEngine;
 
 /// <summary>A carried round, either authored in the scene or issued by an ammo rack.</summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(CrewDevice))]
-public sealed class TankRound : MonoBehaviour
+public sealed class TankRound : NetworkBehaviour
 {
+	[Networked, OnChangedRender(nameof(ApplyVisibility))]
+	private NetworkBool Visible { get; set; }
+
 	private CrewDevice device;
+	private MeshRenderer mesh;
+	private NetworkTransform networkTransform;
 	private Transform home;
 	private Vector3 homePos;
 	private Quaternion homeRot;
@@ -22,7 +28,31 @@ public sealed class TankRound : MonoBehaviour
 	private void Awake()
 	{
 		device = GetComponent<CrewDevice>();
+		mesh = GetComponent<MeshRenderer>();
+		networkTransform = GetComponent<NetworkTransform>();
 		colliderStates = new bool[device.Parts.Length];
+	}
+
+	public override void Spawned()
+	{
+		foreach (Collider part in device.Parts)
+			if (part != null) part.enabled = false;
+
+		if (HasStateAuthority) Visible = true;
+		ApplyVisibility();
+	}
+
+	internal void SetVisible(bool visible)
+	{
+		Visible = visible;
+		ApplyVisibility();
+	}
+
+	internal void Seat(Vector3 position, Quaternion rotation) => networkTransform.Teleport(position, rotation);
+
+	private void ApplyVisibility()
+	{
+		if (mesh != null) mesh.enabled = Visible;
 	}
 
 	internal bool TryHold(CrewCarry holder, Transform grip)

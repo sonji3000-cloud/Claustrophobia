@@ -8,10 +8,14 @@ public sealed class TankAmmoRack : MonoBehaviour
 	[SerializeField] private CrewDevice device;
 	[SerializeField] private TankRound roundPrefab;
 
+	internal TankRound RoundPrefab => roundPrefab;
+
 	internal bool TryTake(CrewInteract user)
 	{
 		if (!isActiveAndEnabled || device == null || roundPrefab == null || user == null
 			|| user.Carry == null || !user.Carry.CanTake(device)) return false;
+
+		if (user.Carry.UsesNetwork) return user.Carry.RequestTake(device);
 
 		TankRound round = Instantiate(roundPrefab, transform.root);
 		round.MarkIssued();

@@ -90,8 +90,7 @@ public sealed class CrewInteractHud : MonoBehaviour
 
 		string text = observe ? "Rear view | Mouse - Look | F7 - First person" : "";
 		TankRound held = interaction.Carry != null ? interaction.Carry.Held : null;
-		if (held != null) text = interaction.Carry.IsLoading
-			? "Loading round | Waiting for host" : "Carrying round | Esc - Return to ammo rack";
+		if (held != null) text = "Carrying round | Esc - Return to ammo rack";
 		for (int i = 0; i < interaction.Devices.Length; i++)
 		{
 			CrewDevice device = interaction.Devices[i];
