@@ -26,6 +26,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 	private bool attackOnArrival;
 	private uint attackCommand;
 	private bool deathChecked;
+	private bool started;
+	private bool starting;
 	private TankAI.MoveState lastMove;
 	private readonly List<NetworkObject> cleanupObjects = new List<NetworkObject>(16);
 	public TankAI Enemy { get; private set; }
@@ -33,14 +35,26 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public TankHealth TargetHealth { get; private set; }
 	public bool HasMovePoint => movePoint != null;
 	public bool HasPathTests => usePath && testCases != null;
-	public bool CanRunTests => Application.isPlaying && runner != null && runner.IsRunning && runner.IsServer;
+	public bool CanRunTests => isActiveAndEnabled && Application.isPlaying && runner != null && runner.IsRunning && runner.IsServer;
 	public bool HasBlocker => stallBlocker != null;
 	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
 	public string TestName { get; private set; } = "Legacy integration";
 	public string DestructionCheck { get; private set; } = "Not run";
 
-	private async void Start()
+	private void Start()
 	{
+		started = true;
+		StartTests();
+	}
+
+	private void OnEnable()
+	{
+		if (started) StartTests();
+	}
+
+	private async void StartTests()
+	{
+		if (starting || !isActiveAndEnabled) return;
 		if (runner == null || sceneManager == null || enemyPrefab == null || spawnPoint == null || targetPoint == null)
 		{
 			Debug.LogError("[AI ATTACK] Demo references are missing.", this);
@@ -51,26 +65,36 @@ public sealed class TankAttackDemo : MonoBehaviour
 			Debug.LogError("[AI PATH] Five authored test cases and the observation camera are required.", this);
 			return;
 		}
-		var result = await runner.StartGame(new StartGameArgs
+		starting = true;
+		try
 		{
-			GameMode = GameMode.Single,
-			SceneManager = sceneManager
-		});
-		if (this == null || !isActiveAndEnabled) return;
-		if (!result.Ok)
-		{
-			Debug.LogError("[AI ATTACK] Single session failed: " + result.ShutdownReason, this);
-			return;
+			if (!runner.IsRunning)
+			{
+				var result = await runner.StartGame(new StartGameArgs
+				{
+					GameMode = GameMode.Single,
+					SceneManager = sceneManager
+				});
+				if (this == null || !isActiveAndEnabled) return;
+				if (!result.Ok)
+				{
+					Debug.LogError("[AI ATTACK] Single session failed: " + result.ShutdownReason, this);
+					return;
+				}
+			}
+			if (this == null || !isActiveAndEnabled) return;
+
+			TargetHealth = targetPoint.GetComponentInParent<TankHealth>();
+			if (usePath)
+			{
+				RunPathTest(testIndex);
+				return;
+			}
+			if (!SpawnEnemy(spawnPoint)) return;
+			if (startWithMove) MoveThenAttack();
+			else AttackTarget();
 		}
-		TargetHealth = targetPoint.GetComponentInParent<TankHealth>();
-		if (usePath)
-		{
-			RunPathTest(testIndex);
-			return;
-		}
-		if (!SpawnEnemy(spawnPoint)) return;
-		if (startWithMove) MoveThenAttack();
-		else AttackTarget();
+		finally { starting = false; }
 	}
 
 	private void Update()
@@ -311,6 +335,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 	private void OnDisable()
 	{
 		StopAllActions();
+		if (Enemy != null && runner != null && runner.IsRunning && runner.IsServer) ClearProjectiles();
 		SetBlocker(false);
 	}
 }

@@ -8,18 +8,12 @@ public sealed class TankGroundDriveEditor : Editor
 	{
 		DrawDefaultInspector();
 		var demo = (TankGroundDriveDemo)target;
-		EditorGUILayout.HelpBox("Play Mode: select a tank and terrain, enable keyboard control, then focus Game. W/S forward/reverse, A/D turn, Space immediate stop. Release keys for normal braking. Reset places the hull level so the motor must align it.", MessageType.Info);
+		EditorGUILayout.HelpBox("Play 후 Game 화면의 패널에서 전차·지형을 선택하세요. 키보드 제어는 자동으로 켜집니다. WASD/방향키, Space 정지, Tab 전차 변경, R 재배치. 화면의 운전 버튼과 2초 전진 시험도 사용할 수 있습니다.", MessageType.Info);
 
 		using (new EditorGUI.DisabledScope(!Application.isPlaying))
 		{
-			if (GUILayout.Button("Drive Tiger")) demo.SelectTank(true);
-			if (GUILayout.Button("Drive Sherman")) demo.SelectTank(false);
-			if (GUILayout.Button(demo.UsesKeyboard ? "Disable keyboard control" : "Enable keyboard control"))
-				demo.SetKeyboard(!demo.UsesKeyboard);
-			if (GUILayout.Button("Stop both tanks")) demo.StopTanks();
-			for (int i = 0; i < demo.CaseCount; i++)
-				if (GUILayout.Button("Reset: " + demo.CaseName(i))) demo.Place(i);
-			if (GUILayout.Button("Show driving camera")) demo.ShowCamera();
+			if (GUILayout.Button("Game 화면으로 이동")) EditorApplication.ExecuteMenuItem("Window/General/Game");
+			if (GUILayout.Button("전차 정지")) demo.StopTanks();
 		}
 
 		TankMotor motor = demo.ActiveMotor;
