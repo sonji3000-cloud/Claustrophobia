@@ -16,6 +16,41 @@
 
 맵에는 `TankFlat` Agent와 물리 충돌체를 기준으로 NavMesh를 새로 생성한다. 호스트에서 적을 Spawn한 뒤 `SetMoveMode(NavMesh)`를 한 번 호출하고, 행동을 변경할 때 `MoveTo()`를 전달한다. `Arrived`, `Failed`, 재시도 상태를 확인해 다음 행동을 결정한다. 현재 주행 기반은 평지용이며 실제 시가지의 회전 공간·경사 대응은 별도 적용·검증이 필요하다.
 
+## 경사 시험장·지면 감지 — 1단계
+
+경사 시험은 **`Assets/TankPrototype/Scenes/TankAIIntegrationTest.unity`의 `Ground Probe Test`**에서 한다. 기존 평지 경로 시험 옆에 독립 Terrain을 추가했다. 맵 제작자가 사용하는 `TankTest` 씬은 이 작업에서 수정하지 않았다.
+
+- Terrain 높이맵: 513×513, 크기 160×14×120m, 월드 위치 (-80, -1, 120). 5°·10°·15° 오르내리막은 중간에 일정 경사 구간을 두고 시작·끝을 부드럽게 연결했다. 옆경사 10°와 둔덕도 있다.
+- `TigerTank`, `EnemyTank-Sherman` 원본 프리팹에 `TankGroundProbe`를 추가하고, 각 차체 BoxCollider 바닥에 맞춰 중앙·네 모서리 감지 위치를 저장했다.
+- 씬의 두 `Probe Sample - parked`는 원본 전차의 메시와 차체 크기를 복사한 **감지 확인용 고정 샘플**이다. Rigidbody는 kinematic이며 모터·AI·네트워크 컴포넌트가 없다. 경사에 맞춰 놓인 자세는 시험 배치이며, 자동 자세 보정의 구현 결과가 아니다.
+- `TankMotor`, `TankAI`, `TankPath`, 회전 잠금, 기존 NavMesh는 변경하지 않았다. **이번 완료 범위는 지면 감지까지다. 실제 경사 주행은 2단계에서 구현·검증한다.**
+
+### 직접 확인하기
+
+1. `TankAIIntegrationTest`를 열고 Hierarchy에서 **`Ground Probe Test`**를 선택한다.
+2. Inspector의 `Tank Ground Demo`에서 평지, 5°·10°·15°, 옆경사, 둔덕, 공중, 가장자리, 먼 지면 버튼을 선택한다. 편집 모드와 Play Mode 모두 사용할 수 있다.
+3. **`View samples in Scene`**을 누르면 두 샘플 주변으로 화면이 이동하고 Tiger 샘플이 선택된다. Scene의 Gizmos를 켠다. Sherman은 같은 루트 아래에서 선택한다.
+4. 각 샘플의 **`Tank Ground Probe → Ground reading`**에서 `Grounded`, `Contacts / hits`, `Supported slope`를 본다. `Show samples in Game camera`는 기존 관찰 카메라를 샘플 쪽으로 돌린다. Play Mode에서 누르면 종료 시 카메라가 원래 상태로 돌아간다.
+
+| 조건 | 두 샘플의 Play Mode 확인 결과 |
+| --- | --- |
+| 평지 / 5° / 10° / 15° / 옆경사 / 둔덕 | 접지 YES, 접촉·감지 5/5. 일정 경사는 각각 0° / 5° / 10° / 15° / 10°로 측정 |
+| 공중 3m | 접지 NO, 접촉·감지 0/0 |
+| Terrain 가장자리 | 접지 YES, 접촉·감지 3/3. 나머지 두 감지점은 지면을 놓침 |
+| 지면에서 0.6m 떨어짐 | 접지 NO, 접촉 0 / 감지 5. 아래 지면이 보인다는 이유로 접지 처리하지 않음 |
+
+Gizmos 색은 **초록=접촉, 노랑=감지됐지만 접촉 범위 밖, 빨강=감지 없음, 하늘색=지지면 방향**이다. 접지가 해제되면 `Supported slope`는 마지막 접지 때의 값을 보관한다. 공중에서는 이 값을 유효한 지지면으로 사용하면 안 된다.
+
+### 감지 기준과 검증 범위
+
+Raycast는 월드 아래 방향으로 쏘고, 기본 `Ground Mask`는 `Default`다. 현재 정적 Terrain·도로 Collider를 감지하며 자기 계층, 모든 Rigidbody에 붙은 Collider(다른 전차 포함), 트리거는 제외한다. `InteriorDevice`, `TankInterior` 레이어는 기본 마스크 밖이다. 추후 도로·지형에 별도 레이어를 사용하면 프리팹의 마스크에도 추가한다. 네트워크 전차의 반복 감지는 유효한 `NetworkObject`의 StateAuthority에서만 수행하고, 네트워크가 없는 고정 샘플은 로컬에서 감지한다.
+
+차체 바닥에서 -0.12~+0.2m 범위에 든 점을 접촉으로 보고 기본 2점 이상에서 접지로 판단한다. Raycast의 전체 감지 깊이(바닥 아래 1m)와 접촉 허용 거리를 구분한다. 유효한 지점들의 위치로 지지면을 구하고, 3점 미만만 남으면 기존 지지면 방향을 유지한다. 16개 결과 버퍼가 가득 차면 해당 점을 제외하고 Inspector에 경고한다.
+
+Unity 6000.6.3f1 Play Mode에서 두 차체 × 9조건과 정적 도로·자기 차체·트리거·다른 Rigidbody·내부 레이어 필터를 확인했다. 워밍업 후 1,000회 감지 측정에서 추가 관리 메모리 할당은 0바이트였다. 로컬 검증 기록은 `Builds/TankGroundProbe/play-check.txt`에 있다. 이 수치는 해당 에디터에서의 감지 검사이며, Player 성능·실제 경사 주행·네트워크 검증을 대신하지 않는다.
+
+TerrainData와 감지 샘플은 씬·에셋으로 저장되어 있다. 일회용 생성·검증 도구 없이 동작한다. 이후 2단계에서 이 Terrain과 공용 프리팹의 감지 정보를 그대로 사용한다.
+
 ## TankTest에서 바로 시험하기
 
 네트워크 담당자와 확인할 때는 `Assets/TankPrototype/Scenes/TankTest.unity`를 사용한다. 기존 3인 Fusion 세션을 사용하며, Game 화면과 PC 실행 파일 오른쪽 위에 시험 패널이 표시된다.

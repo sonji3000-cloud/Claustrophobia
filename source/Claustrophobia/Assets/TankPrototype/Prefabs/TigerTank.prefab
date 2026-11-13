@@ -2763,6 +2763,7 @@ GameObject:
   - component: {fileID: 4558277848473030191}
   - component: {fileID: 7730531810713849741}
   - component: {fileID: 6942209695766268889}
+  - component: {fileID: 7541321313365003064}
   m_Layer: 0
   m_Name: TigerTank
   m_TagString: Untagged
@@ -3096,6 +3097,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TankStatus
   health: {fileID: 7730531810713849741}
   motor: {fileID: 6645272728011381682}
+--- !u!114 &7541321313365003064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6390709329587793397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb851c0a4d19af34ba02f16e0a1c78ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankGroundProbe
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1
+  center: {x: 0, y: 0.038134575, z: -0.14038181}
+  halfSize: {x: 1.5330353, y: 2.6928983}
+  startHeight: 0.6
+  scanDepth: 1
+  contactGap: 0.2
+  penetration: 0.12
+  minContacts: 2
+  maxSlope: 60
+  normalSpeed: 180
+  drawGizmos: 1
 --- !u!1 &6426098942453746036
 GameObject:
   m_ObjectHideFlags: 0
