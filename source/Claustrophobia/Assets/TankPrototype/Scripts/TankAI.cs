@@ -133,7 +133,13 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void OnEnable()
 	{
-		if (health != null) health.Died += StopActions;
+		if (health != null) health.Died += OnDied;
+	}
+
+	private void OnDied()
+	{
+		if (sensor != null) sensor.ClearState();
+		StopActions();
 	}
 
 	public override void Spawned()
@@ -725,7 +731,7 @@ public sealed class TankAI : NetworkBehaviour
 	private void OnDisable()
 	{
 		if (sensor != null) sensor.ClearState();
-		if (health != null) health.Died -= StopActions;
+		if (health != null) health.Died -= OnDied;
 		if (IsHost) StopActions();
 	}
 

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Host-only observations. Does not issue commands or retain last-seen positions.
+// Host-only observations and one selected target's sighting memory. Never issues commands.
 [DisallowMultipleComponent]
 [RequireComponent(typeof(TankTarget))]
 public sealed class TankSensor : MonoBehaviour
@@ -22,6 +23,10 @@ public sealed class TankSensor : MonoBehaviour
 		public int VisibleMask;
 		public Collider Blocker;
 		internal double VisibleSince;
+		internal uint Version;
+		internal TankHealth Health;
+		internal NetworkObject Object;
+		internal NetworkId Id;
 	}
 
 	[SerializeField] private TankAI owner;
@@ -35,6 +40,7 @@ public sealed class TankSensor : MonoBehaviour
 	[SerializeField, Range(1f, 360f)] private float acquireAngle = 120f;
 	[SerializeField, Range(1f, 360f)] private float keepAngle = 140f;
 	[SerializeField, Min(0f)] private float confirmTime = 0.3f;
+	[SerializeField, Min(0.1f)] private float memoryTime = 10f;
 
 	private readonly List<Reading> readings = new List<Reading>(16);
 	private readonly RaycastHit[] hits = new RaycastHit[64];
@@ -45,9 +51,22 @@ public sealed class TankSensor : MonoBehaviour
 	private PhysicsScene physicsScene;
 	private SightState originState;
 	private Collider originBlocker;
+	private bool visible;
+	private bool hasSighting;
+	private Vector3 lastSeenPos;
+	private double lastSeenTime = -1;
+	private uint seenVersion;
+	private TankHealth seenHealth;
+	private NetworkRunner seenRunner;
+	private NetworkObject seenObject;
+	private NetworkId seenId;
+	private bool seenNetworked;
 
 	public TankTarget SelectedTarget { get; private set; }
-	public bool IsVisible { get; private set; }
+	public bool IsVisible => visible && HasMemory;
+	public bool HasMemory => CanObserve && IsMemoryValid(owner.Runner.SimulationTime);
+	public float MemoryAge => HasMemory ? Mathf.Max(0f, (float)(owner.Runner.SimulationTime - lastSeenTime)) : 0f;
+	public float MemoryTime => memoryTime;
 	public int ScanCount { get; private set; }
 	public int RayCount { get; private set; }
 	public bool QueryOverflow { get; private set; }
@@ -92,11 +111,66 @@ public sealed class TankSensor : MonoBehaviour
 	public void ClearState()
 	{
 		readings.Clear();
-		SelectedTarget = null;
-		IsVisible = false;
+		ClearMemory();
 		nextScan = 0;
 		ScanCount = RayCount = 0;
 		QueryOverflow = false;
+	}
+
+	// Callers must check the return value, including when the valid position is zero.
+	public bool TryGetLastSeen(out Vector3 pos, out double time)
+	{
+		bool valid = HasMemory;
+		pos = valid ? lastSeenPos : default;
+		time = valid ? lastSeenTime : -1;
+		return valid;
+	}
+
+	private bool IsKnownTarget()
+	{
+		if (SelectedTarget == null || SelectedTarget.Version != seenVersion
+			|| SelectedTarget.Health != seenHealth || owner.Runner != seenRunner
+			|| CheckCandidate(SelectedTarget) != SightState.Visible) return false;
+
+		if (!seenNetworked) return SelectedTarget.Health.Object == null;
+
+		return seenObject != null && seenObject.IsValid && SelectedTarget.Health.Object == seenObject
+			&& seenObject.Id == seenId;
+	}
+
+	private bool IsMemoryValid(double now) => hasSighting && IsKnownTarget()
+		&& (visible || now - lastSeenTime < memoryTime);
+
+	private void ValidateMemory(double now)
+	{
+		if (hasSighting && !IsMemoryValid(now)) ClearMemory();
+	}
+
+	private void Remember(double now)
+	{
+		lastSeenPos = SelectedTarget.GroundPoint.position;
+		lastSeenTime = now;
+		seenVersion = SelectedTarget.Version;
+		seenHealth = SelectedTarget.Health;
+		seenRunner = owner.Runner;
+		seenObject = seenHealth.Object;
+		seenNetworked = seenObject != null;
+		seenId = seenNetworked ? seenObject.Id : default;
+		hasSighting = true;
+	}
+
+	private void ClearMemory()
+	{
+		SelectedTarget = null;
+		visible = hasSighting = false;
+		lastSeenPos = default;
+		lastSeenTime = -1;
+		seenVersion = 0;
+		seenHealth = null;
+		seenRunner = null;
+		seenObject = null;
+		seenId = default;
+		seenNetworked = false;
 	}
 
 	// Called by TankAI after its host check, independently of motor/weapon readiness.
@@ -109,6 +183,7 @@ public sealed class TankSensor : MonoBehaviour
 		}
 
 		double now = owner.Runner.SimulationTime;
+		ValidateMemory(now);
 		if (now < nextScan) return;
 
 		nextScan = now + interval;
@@ -119,6 +194,7 @@ public sealed class TankSensor : MonoBehaviour
 	{
 		physicsScene = gameObject.scene.GetPhysicsScene();
 		if (!physicsScene.IsValid()) { ClearState(); return; }
+		ValidateMemory(now);
 
 		SyncCandidates();
 		RayCount = 0;
@@ -146,8 +222,14 @@ public sealed class TankSensor : MonoBehaviour
 			}
 		}
 
-		SelectedTarget = keep != null ? keep : nearest;
-		IsVisible = SelectedTarget != null;
+		TankTarget found = keep != null ? keep : nearest;
+		visible = found != null;
+		if (visible)
+		{
+			SelectedTarget = found;
+			Remember(now);
+		}
+		else ValidateMemory(now);
 		ScanCount++;
 	}
 
@@ -165,7 +247,7 @@ public sealed class TankSensor : MonoBehaviour
 				if (readings[j].Target == candidate) { found = true; break; }
 
 			if (!found && candidate != null)
-				readings.Add(new Reading { Target = candidate, VisibleSince = -1 });
+				readings.Add(new Reading { Target = candidate, VisibleSince = -1, Version = candidate.Version });
 		}
 	}
 
@@ -191,10 +273,23 @@ public sealed class TankSensor : MonoBehaviour
 		SightState state = CheckCandidate(reading.Target);
 		if (state != SightState.Visible) { Reject(ref reading, state); return; }
 
+		TankHealth health = reading.Target.Health;
+		NetworkObject obj = health.Object;
+		NetworkId id = obj != null ? obj.Id : default;
+		if (reading.Version != reading.Target.Version || reading.Health != health
+			|| reading.Object != obj || reading.Id != id)
+		{
+			reading.Version = reading.Target.Version;
+			reading.Health = health;
+			reading.Object = obj;
+			reading.Id = id;
+			Reject(ref reading, SightState.Invalid);
+		}
+
 		Vector3 groundOffset = reading.Target.GroundPoint.position - transform.position;
 		groundOffset.y = 0f;
 		reading.Distance = groundOffset.magnitude;
-		bool maintaining = reading.Target == SelectedTarget && IsVisible;
+		bool maintaining = reading.Target == SelectedTarget && HasMemory;
 		float range = maintaining ? keepRange : acquireRange;
 		float cosine = Mathf.Cos((maintaining ? keepAngle : acquireAngle) * 0.5f * Mathf.Deg2Rad);
 		int inRange = 0;
@@ -303,6 +398,7 @@ public sealed class TankSensor : MonoBehaviour
 		acquireAngle = Mathf.Clamp(Finite(acquireAngle, 120f, 1f), 1f, 360f);
 		keepAngle = Mathf.Clamp(Finite(keepAngle, 140f, acquireAngle), acquireAngle, 360f);
 		confirmTime = Finite(confirmTime, 0.3f, 0f);
+		memoryTime = Finite(memoryTime, 10f, 0.1f);
 	}
 
 	private static float Finite(float value, float fallback, float minimum)
@@ -314,6 +410,11 @@ public sealed class TankSensor : MonoBehaviour
 
 		Gizmos.color = Color.cyan;
 		Gizmos.DrawWireSphere(origin.position, 0.15f);
+		if (TryGetLastSeen(out Vector3 remembered, out _))
+		{
+			Gizmos.color = Color.magenta;
+			Gizmos.DrawWireSphere(remembered + Vector3.up * 0.2f, 0.5f);
+		}
 		Vector3 forward = transform.forward;
 		forward.y = 0f;
 		forward.Normalize();

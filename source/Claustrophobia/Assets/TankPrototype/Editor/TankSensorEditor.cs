@@ -23,6 +23,14 @@ public sealed class TankSensorEditor : Editor
 			EditorGUILayout.Toggle("관측 가능", sensor.CanObserve);
 			EditorGUILayout.ObjectField("선택 표적", sensor.SelectedTarget, typeof(TankTarget), true);
 			EditorGUILayout.Toggle("현재 보임", sensor.IsVisible);
+			EditorGUILayout.Toggle("기억 유효", sensor.HasMemory);
+			EditorGUILayout.FloatField("목격 후 경과 시간", sensor.MemoryAge);
+			EditorGUILayout.FloatField("기억 유지 시간", sensor.MemoryTime);
+			if (sensor.TryGetLastSeen(out Vector3 pos, out double time))
+			{
+				EditorGUILayout.Vector3Field("마지막 목격 위치", pos);
+				EditorGUILayout.DoubleField("마지막 목격 시각", time);
+			}
 			EditorGUILayout.IntField("누적 검사 횟수", sensor.ScanCount);
 			EditorGUILayout.IntField("최근 Ray 수", sensor.RayCount);
 			EditorGUILayout.Toggle("검사 버퍼 초과", sensor.QueryOverflow);
@@ -74,7 +82,7 @@ public sealed class TankSensorTestEditor : Editor
 	{
 		DrawDefaultInspector();
 		var test = (TankSensorTest)target;
-		EditorGUILayout.HelpBox("Play 후 탐지 시험 시작을 누르세요. 기존 로컬 호스트를 재사용하며 적은 정지합니다.\n목격 기억·자동 공격은 다음 단계입니다. 벽에 가려지면 선택이 해제됩니다.", MessageType.Info);
+		EditorGUILayout.HelpBox("Play 후 탐지 시험 시작을 누르세요. 적은 정지하고 관측·기억만 계산합니다.\n가려지면 마지막 위치를 10초 기억합니다. 분홍 표시는 저장한 목격 위치입니다.", MessageType.Info);
 		using (new EditorGUI.DisabledScope(!Application.isPlaying))
 		{
 			if (GUILayout.Button(test.IsWaiting ? "로컬 호스트 준비 중…" : "탐지 시험 시작 / 초기화")) test.StartTest();
@@ -92,6 +100,11 @@ public sealed class TankSensorTestEditor : Editor
 			Button(test, "09 발견 후 45m (거리 유지)", TankSensorTest.TestCase.KeepRange);
 			Button(test, "10 발견 후 65도 (각도 유지)", TankSensorTest.TestCase.KeepAngle);
 			Button(test, "11 각도 밖 85도", TankSensorTest.TestCase.BeyondAngle);
+			Button(test, "12 벽 뒤에서 A 이동 (기억 고정)", TankSensorTest.TestCase.HiddenMove);
+			Button(test, "13 A 다시 노출 (재발견)", TankSensorTest.TestCase.Reappear);
+			Button(test, "14 A 비활성화 (기억 해제)", TankSensorTest.TestCase.RemoveA);
+			Button(test, "15 A 재활성화 (새 발견)", TankSensorTest.TestCase.RestoreA);
+			if (GUILayout.Button("목격·확인 상태 초기화 (명령 유지)")) test.ResetMemory();
 			if (GUILayout.Button("시험 종료 / 기존 배치 복원")) test.EndTest();
 		}
 		if (!test.IsRunning) return;

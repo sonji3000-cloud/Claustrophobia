@@ -3,7 +3,11 @@ using UnityEngine;
 // Authored-scene test controls. All sensing still runs through the production host AI.
 public sealed class TankSensorTest : MonoBehaviour
 {
-	public enum TestCase { Front, Rear, Far, Wall, Partial, Two, NearerB, SwitchToB, KeepRange, BeyondRange, KeepAngle, BeyondAngle }
+	public enum TestCase
+	{
+		Front, Rear, Far, Wall, Partial, Two, NearerB, SwitchToB, KeepRange, BeyondRange, KeepAngle, BeyondAngle,
+		HiddenMove, Reappear, RemoveA, RestoreA
+	}
 
 	[SerializeField] private TankTestMenu menu;
 	[SerializeField] private TankAttackDemo demo;
@@ -12,6 +16,7 @@ public sealed class TankSensorTest : MonoBehaviour
 	[SerializeField] private TankTarget targetB;
 	[SerializeField] private Transform wall;
 	[SerializeField] private Camera testCamera;
+	[SerializeField] private Transform memoryMarker;
 
 	private bool requested;
 	private bool active;
@@ -28,6 +33,7 @@ public sealed class TankSensorTest : MonoBehaviour
 	public TankTarget TargetB => targetB;
 	public Transform Wall => wall;
 	public TankAttackDemo Demo => demo;
+	public Transform MemoryMarker => memoryMarker;
 
 	public void StartTest()
 	{
@@ -48,6 +54,28 @@ public sealed class TankSensorTest : MonoBehaviour
 			BeginTest();
 		}
 		if (active && (!demo.isActiveAndEnabled || !demo.IsSensorTest)) EndTest();
+		UpdateMarker();
+	}
+
+	private void UpdateMarker()
+	{
+		if (memoryMarker == null) return;
+
+		bool show = IsRunning && Sensor.TryGetLastSeen(out _, out _);
+		if (memoryMarker.gameObject.activeSelf != show) memoryMarker.gameObject.SetActive(show);
+		if (show && Sensor.TryGetLastSeen(out Vector3 pos, out _))
+		{
+			pos += Vector3.up * 0.12f;
+			if (memoryMarker.position != pos) memoryMarker.position = pos;
+		}
+	}
+
+	public void ResetMemory()
+	{
+		if (!IsRunning) return;
+
+		Sensor.ClearState();
+		UpdateMarker();
 	}
 
 	private void BeginTest()
@@ -81,7 +109,7 @@ public sealed class TankSensorTest : MonoBehaviour
 		Case = test;
 		wall.gameObject.SetActive(false);
 		targetA.gameObject.SetActive(true);
-		targetB.gameObject.SetActive(false);
+		targetB.gameObject.SetActive(test == TestCase.Two || test == TestCase.NearerB || test == TestCase.SwitchToB);
 		Place(targetA.transform, new Vector3(0f, 0f, 20f));
 
 		switch (test)
@@ -96,16 +124,17 @@ public sealed class TankSensorTest : MonoBehaviour
 				Place(targetA.transform, new Vector3(0f, 0f, 60f)); break;
 			case TestCase.Wall:
 			case TestCase.Partial:
+			case TestCase.HiddenMove:
 				wall.gameObject.SetActive(true);
 				float height = test == TestCase.Partial ? 2.15f : 3.5f;
 				Place(wall, new Vector3(0f, height * 0.5f, 10f));
 				wall.localScale = new Vector3(8f, height, 1f);
+				if (test == TestCase.HiddenMove) Place(targetA.transform, new Vector3(3f, 0f, 24f));
 				break;
 			case TestCase.Two:
 			case TestCase.NearerB:
 			case TestCase.SwitchToB:
 				Place(targetA.transform, test == TestCase.SwitchToB ? new Vector3(0f, 0f, -20f) : new Vector3(-6f, 0f, 22f));
-				targetB.gameObject.SetActive(true);
 				Place(targetB.transform, test == TestCase.Two ? new Vector3(8f, 0f, 28f) : new Vector3(6f, 0f, 12f));
 				if (test == TestCase.Two) Sensor.ClearState();
 				break;
@@ -115,6 +144,10 @@ public sealed class TankSensorTest : MonoBehaviour
 			case TestCase.BeyondAngle:
 				float angle = test == TestCase.KeepAngle ? 65f : 85f;
 				Place(targetA.transform, Quaternion.Euler(0f, angle, 0f) * Vector3.forward * 24f); break;
+			case TestCase.Reappear:
+				Place(targetA.transform, new Vector3(3f, 0f, 24f)); break;
+			case TestCase.RemoveA:
+				targetA.gameObject.SetActive(false); break;
 		}
 		Physics.SyncTransforms();
 	}
@@ -129,6 +162,7 @@ public sealed class TankSensorTest : MonoBehaviour
 	public void EndTest()
 	{
 		requested = false;
+		if (memoryMarker != null) memoryMarker.gameObject.SetActive(false);
 		if (!active) return;
 
 		active = false;

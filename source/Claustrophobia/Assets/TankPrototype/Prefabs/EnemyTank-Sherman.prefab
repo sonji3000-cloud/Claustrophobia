@@ -875,6 +875,7 @@ MonoBehaviour:
   acquireAngle: 120
   keepAngle: 140
   confirmTime: 0.3
+  memoryTime: 10
 --- !u!1 &6153834344820703128
 GameObject:
   m_ObjectHideFlags: 0

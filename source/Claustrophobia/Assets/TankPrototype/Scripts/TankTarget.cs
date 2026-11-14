@@ -20,6 +20,7 @@ public sealed class TankTarget : MonoBehaviour
 	public TankHealth Health => health;
 	public Transform AimPoint => aimPoint;
 	public Transform GroundPoint => groundPoint;
+	public uint Version { get; private set; }
 	public int SightPointCount => sightPoints != null ? sightPoints.Length : 0;
 	public bool IsPlayer => CompareTag(PlayerTag);
 	public bool IsEnemy => CompareTag(EnemyTag);
@@ -53,7 +54,10 @@ public sealed class TankTarget : MonoBehaviour
 
 	private void OnEnable()
 	{
-		if (Application.isPlaying) Register();
+		if (!Application.isPlaying) return;
+
+		unchecked { Version++; }
+		Register();
 	}
 
 	private void Register()
