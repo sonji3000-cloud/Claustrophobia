@@ -16,6 +16,48 @@
 
 맵에는 `TankFlat` Agent와 물리 충돌체를 기준으로 NavMesh를 새로 생성한다. 호스트에서 적을 Spawn한 뒤 `SetMoveMode(NavMesh)`를 한 번 호출하고, 행동을 변경할 때 `MoveTo()`를 전달한다. `Arrived`, `Failed`, 재시도 상태를 확인해 다음 행동을 결정한다. 공용 모터의 지형 대응과 AI의 5° 경사 경로 연결을 적용했다. TankFlat Agent의 최대 경사는 16°이며, 기존 평지 데이터에 더해 시험 Terrain용 NavMesh 데이터를 별도로 저장했다. AI는 시험장의 5°·10°·15°·옆경사 10°·둔덕에서 왕복 이동을 확인했다. 16° 설정은 15° 경계의 베이크 여유이며, 16° 주행 검증을 뜻하지 않는다. 실제 맵의 회전 공간과 경사 경로 연결은 별도 적용·검증이 필요하다.
 
+## 태그·표적 구성과 후보 등록 (2026-11-14)
+
+탐지 작업 1번의 완료 범위다. 전차 루트의 진영과 개별 전차를 식별하고, 시야 검사에 사용할 고정 참조를 준비했다. **후보 목록에 있다는 사실은 발견했다는 뜻이 아니다.** 시야 판정·표적 선정·목격 기억과 `TankSensor`는 다음 작업에서 추가한다.
+
+| 대상 | 저장한 구성 |
+| --- | --- |
+| `TigerTank.prefab` | 루트 `player_tank`, 기존 `TankHealth`와 `Aim Point`를 참조하는 `TankTarget` |
+| `EnemyTank-Sherman.prefab` | 루트 `enemy_tank`, 기존 `TankHealth`와 새 조준점을 참조하는 `TankTarget` |
+| `TankTarget.prefab`, `TankAINetworkTestTarget.prefab` | 시험용 플레이어 진영 표적. 루트 `player_tank`, 전차마다 별도 HP·참조 |
+| `TankAIIntegrationTest`의 `Attack Target` | 기존 배치와 공격 조준점을 유지하고 `TankTarget` 연결 |
+| 같은 씬의 `Target Setup B` | 두 번째 플레이어 표적. `(-6, 0, 14)`에 위 시험 프리팹을 직접 배치 |
+| `TankAttackTest`의 기존 표적 | 기존 배치·조준점 유지, 표적 구성 연결 |
+
+각 `TankTarget`에는 같은 루트의 HP, 차체 앞·뒤 확인점과 포탑 확인점 총 3개, 조준점, 지면 기준점이 직렬화돼 있다. 확인점은 차체·포탑의 자식이고 포탑 확인점은 포탑 회전에 따라 움직인다. 런타임에 고정 지점을 생성하거나 모델 구조를 재구성하지 않는다. `TankTest`는 기존 전차·시험 표적 프리팹의 변경을 상속하며 3인 1전차의 승무원·입력·생성 구조는 유지한다.
+
+### 공용 API와 유효성
+
+- `TankTarget.Candidates`: 활성 `TankTarget` 목록. 플레이어와 적 모두 포함한다. `OnEnable` 등록, `OnDisable`·제거 시 해제하며 재활성화해도 중복 등록하지 않는다.
+- `IsPlayer` / `IsEnemy`: 그 컴포넌트가 붙은 전차 루트의 태그를 확인한다. 같은 태그의 전차도 서로 다른 `TankTarget`·`TankHealth` 참조로 구분한다.
+- `Health`, `GetSightPoint(0..2)`, `AimPoint`, `GroundPoint`: 이후 탐지·공격에서 사용할 고정 참조다.
+- `IsConfigured`: HP가 같은 루트에 있고, 서로 다른 확인점 3개와 조준점·지면 기준점이 해당 전차에 속하는지 확인한다.
+- `CanTarget`: 활성 상태·진영·참조 구성·HP 활성 상태·네트워크 생성 완료·생존 여부를 확인한다. 시야 확보 여부는 검사하지 않는다.
+- `TryResolve(Collider, out TankTarget)`: 자식 충돌체에서 부모의 전차를 찾아 식별한다. 자식이 `Untagged`여도 루트의 진영과 개별 전차를 확인할 수 있다. 이 API는 신원을 확인하며, 생존·사용 가능 여부는 `CanTarget`으로 별도 확인한다.
+
+등록 목록은 존재하는 전차 목록이다. `NetworkObject`가 활성화됐지만 아직 Fusion 생성이 끝나지 않은 전차와 HP가 0인 전차도 활성 상태라면 등록될 수 있으나 `CanTarget`은 거짓이다. 센서는 목록의 각 항목을 사용하기 전에 이를 확인해야 한다. 목격 시간·위치는 이 컴포넌트에 저장하지 않는다.
+
+도메인 재로드를 끄는 Play 설정도 고려해 시작 시 정적 목록을 비우고, 씬 로드 후 한 번만 활성 대상을 복구한다. 이후에는 활성화·비활성화 시점에만 목록을 수정한다. 반복 탐색이나 프레임별 검색은 하지 않는다. `TankAI`의 이동·공격 명령과 `CommandId`, 기존 탄도·피해·HP 동기화 코드는 변경하지 않았다.
+
+### 직접 확인하기
+
+1. `TankAIIntegrationTest`를 열고 Play 한다. `Tools > Tank > AI Test > Target Registry`로 **전차 후보 목록**을 연다.
+2. 시험 선택 화면에서는 `Attack Target`, `Target Setup B`가 각각 한 행씩 등록된다. 둘 다 `player_tank`지만 전차 루트와 HP 참조가 다르다.
+3. **AI 이동·공격 시험**을 선택하면 호스트가 생성한 `EnemyTank-Sherman`이 `enemy_tank`로 추가된다. 기본 구성이면 총 3개다. ㄱ자/직선 등 구역을 바꿔 적을 재생성해도 총수는 3개로 유지된다.
+4. Play 중 Hierarchy에서 `Target Setup B`를 선택한다. GameObject 활성 체크를 끄면 한 행이 사라지고 다시 켜면 한 행만 돌아온다. `TankTarget` 컴포넌트만 비활성화해도 동일하다. Game 화면이 최대화됐다면 `Shift+Space`로 해제하고 조작한다.
+5. 해당 전차 Inspector에서 **참조 구성 정상**과 **표적 후보로 사용 가능**을 확인한다. Scene에서 선택하면 노란 확인점 3개·빨간 조준점·하늘색 지면 기준점을 볼 수 있다.
+
+### 확인 결과와 남은 범위
+
+Unity 6000.6.3f1에서 컴파일과 실제 Play Mode 검사를 구분해 확인했다. 같은 태그의 두 전차·HP 분리, 차체/포탑 충돌체의 동일 전차 식별, GameObject/컴포넌트 비활성화와 재활성화, 런타임 생성·제거, Fusion 생성 전 전차·파괴된 전차의 후보 사용 제외, 호스트 적 등록과 네트워크 재생성 시 중복 해제를 확인했다. 기존 경로 주행이 진행되는 동안 등록 기능이 `CommandId`를 바꾸거나 자동 공격을 시작하지 않는 것도 확인했다. 프리팹 4개와 `TankTest`의 플레이어·표적·적 미리보기 참조 상속도 에디터에서 확인했다. 로컬 상세 결과는 `Builds/TankTargetSetup/play-result.txt`, `saved-result.txt`에 남긴다.
+
+이번 확인은 후보 구성과 수명 처리, 기존 주행의 간단한 회귀 확인이다. 거리·시야각·가림·부분 노출·목격 기억과 실제 다중 접속에서의 탐지 판단은 아직 검증 대상이 아니다. 임시 배치 도구는 결과 에셋 저장 후 제거하며, `TankTargetEditor`와 후보 목록 창은 확인용으로 유지한다.
+
 ## 경사 시험장·지면 감지 — 1단계
 
 경사 시험은 **`Assets/TankPrototype/Scenes/TankAIIntegrationTest.unity`의 `Ground Probe Test`**에서 한다. 기존 평지 경로 시험 옆에 독립 Terrain을 추가했다. 맵 제작자가 사용하는 `TankTest` 씬은 이 작업에서 수정하지 않았다.
