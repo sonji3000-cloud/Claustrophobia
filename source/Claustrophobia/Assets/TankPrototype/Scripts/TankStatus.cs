@@ -1,25 +1,22 @@
 using Fusion;
 using UnityEngine;
 
-/// <summary>Replicates the host's health and applied lever positions for interior instruments.</summary>
+/// <summary>Reads tank health and replicates applied lever positions for interior instruments.</summary>
 [DisallowMultipleComponent]
 public sealed class TankStatus : NetworkBehaviour
 {
 	[SerializeField] private TankHealth health;
 	[SerializeField] private TankMotor motor;
 
-	[Networked] private float NetworkHP { get; set; }
-	[Networked] private float NetworkMaxHP { get; set; }
-	[Networked] private int NetworkHits { get; set; }
 	[Networked] private Vector2 NetworkLevers { get; set; }
 
 	private NetworkObject entity;
 	private bool spawned;
 
-	public bool IsReady => health != null && (entity == null || spawned);
-	public float HP => spawned && !HasStateAuthority ? NetworkHP : health != null ? health.CurrentHP : 0f;
-	public float MaxHP => spawned && !HasStateAuthority ? NetworkMaxHP : health != null ? health.MaxHP : 0f;
-	public int Hits => spawned && !HasStateAuthority ? NetworkHits : health != null ? health.DamageHitCount : 0;
+	public bool IsReady => health != null && health.IsReady && (entity == null || spawned);
+	public float HP => health != null ? health.CurrentHP : 0f;
+	public float MaxHP => health != null ? health.Capacity : 0f;
+	public int Hits => health != null ? health.DamageHitCount : 0;
 
 	private void Awake()
 	{
@@ -41,11 +38,6 @@ public sealed class TankStatus : NetworkBehaviour
 
 	private void Capture()
 	{
-		if (health == null) return;
-
-		NetworkHP = health.CurrentHP;
-		NetworkMaxHP = health.MaxHP;
-		NetworkHits = health.DamageHitCount;
 		NetworkLevers = motor != null ? new Vector2(motor.LeftInput, motor.RightInput) : Vector2.zero;
 	}
 
