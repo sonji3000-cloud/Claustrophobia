@@ -8,7 +8,7 @@ using UnityEngine;
 [DefaultExecutionOrder(200)]
 public sealed class TankAINetworkTest : NetworkBehaviour
 {
-	public enum TestCommand { None, ResetEnemy, Patrol, Stop, Attack }
+	public enum TestCommand { None, ResetEnemy, Patrol, Stop, Attack, AttackTiger }
 	public enum TestState { Empty, Stopped, Patrolling, Attacking, Destroyed, TargetDown }
 
 	[SerializeField] private SessionJoinInit session;
@@ -17,6 +17,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 	[SerializeField] private Transform spawnPoint;
 	[SerializeField] private Transform[] waypoints = new Transform[4];
 	[SerializeField] private Transform targetSpawnPoint;
+	[SerializeField] private Transform tigerAimPoint;
 	[SerializeField] private Camera previewCamera;
 	[SerializeField, Min(0f)] private float cornerPause = 0.1f;
 	[SerializeField, Min(0.1f)] private float patrolArrivalRadius = 1f;
@@ -54,6 +55,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 	private TankMotor motor;
 	private Rigidbody body;
 	private TankHealth targetHealth;
+	private TankHealth tigerHealth;
 	private Transform targetPoint;
 	private string message = "연결 후 호스트가 적을 생성하세요.";
 	private bool expanded = true;
@@ -69,6 +71,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 
 	public override void Spawned()
 	{
+		tigerHealth = tigerAimPoint != null ? tigerAimPoint.GetComponentInParent<TankHealth>() : null;
 		pending = TestCommand.None;
 		waiting = lapStarted = false;
 		if (!IsHost) return;
@@ -84,7 +87,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 	public bool Request(TestCommand command)
 	{
 		if (!CanCommand || (command != TestCommand.ResetEnemy && command != TestCommand.Patrol
-			&& command != TestCommand.Stop && command != TestCommand.Attack)) return false;
+			&& command != TestCommand.Stop && command != TestCommand.Attack && command != TestCommand.AttackTiger)) return false;
 		if (command != TestCommand.ResetEnemy && (EnemyObject == null || !EnemyObject.IsValid))
 		{
 			message = "먼저 적을 생성하세요.";
@@ -113,7 +116,13 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 			case TestCommand.Patrol: StartPatrol(); break;
 			case TestCommand.Stop:
 				StopHost(); message = "이동·공격을 정지했습니다."; break;
-			case TestCommand.Attack: StartAttack(); break;
+			case TestCommand.Attack:
+				CacheTarget();
+				StartAttack(targetPoint, "고정 시험 표적을 공격합니다.");
+				break;
+			case TestCommand.AttackTiger:
+				StartAttack(tigerAimPoint, "아군 Tiger를 공격합니다.");
+				break;
 		}
 
 		if (ai == null || EnemyObject == null || !EnemyObject.IsValid)
@@ -136,7 +145,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 			if (ai.AttackStatus == TankAI.AttackState.TargetDown)
 			{
 				State = TestState.TargetDown;
-				message = "표적을 파괴했습니다. 초기화하면 다시 시험할 수 있습니다.";
+				message = "공격 대상이 파괴됐습니다.";
 			}
 			else if (ai.AttackStatus == TankAI.AttackState.Idle) State = TestState.Stopped;
 		}
@@ -341,10 +350,9 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 			+ " kinematic=" + body.isKinematic + " constraints=" + body.constraints;
 	}
 
-	private void StartAttack()
+	private void StartAttack(Transform point, string description)
 	{
-		CacheTarget();
-		if (ai == null || !ai.Attack(targetPoint))
+		if (ai == null || !ai.Attack(point))
 		{
 			message = "공격 명령 거부: 적과 지정 표적이 살아 있는지 확인하세요.";
 			return;
@@ -353,7 +361,7 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 		pause = TickTimer.None;
 		motionWarning = "";
 		State = TestState.Attacking;
-		message = "고정 시험 표적을 공격합니다.";
+		message = description;
 	}
 
 	private void StopHost()
@@ -489,6 +497,8 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 			if (GUILayout.Button("전체 정지", buttonStyle)) Request(TestCommand.Stop);
 			GUILayout.EndHorizontal();
 			if (GUILayout.Button("지정 표적 공격", buttonStyle)) Request(TestCommand.Attack);
+			GUI.enabled = GUI.enabled && tigerHealth != null && tigerHealth.IsReady && !tigerHealth.Destroyed;
+			if (GUILayout.Button("아군 Tiger 공격", buttonStyle)) Request(TestCommand.AttackTiger);
 			GUI.enabled = savedEnabled;
 			if (Valid)
 			{
@@ -502,6 +512,8 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 						GUILayout.Label("포탑 " + aim.CurrentYaw.ToString("F1") + "° / 포신 " + aim.CurrentPitch.ToString("F1")
 							+ "° / 발사 " + gun.ShotCount, labelStyle);
 					GUILayout.Label("이동 " + MoveStatus + " / 공격 " + AttackStatus, labelStyle);
+					GUILayout.Label(HealthText("적", health) + " / " + HealthText("아군", tigerHealth), labelStyle);
+					GUILayout.Label(HealthText("고정 표적", targetHealth), labelStyle);
 					if (IsHost && health != null)
 					{
 						if (State == TestState.Patrolling)
@@ -513,15 +525,13 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 							+ "°/s / 명령 " + motor.TargetTurnSpeed.ToString("F1") + "°/s", labelStyle);
 						GUILayout.Label("갱신: AI " + ai.TickCount + "회 / 구동 " + motor.PhysicsTickCount
 							+ "회" + (body.isKinematic ? " · Kinematic" : ""), labelStyle);
-						GUILayout.Label("호스트 HP: 적 " + health.CurrentHP.ToString("F0")
-							+ " / 표적 " + (targetHealth != null ? targetHealth.CurrentHP.ToString("F0") : "없음"), labelStyle);
 					}
 				}
 			}
 			string detail = IsHost && ai != null && ai.AttackStatus == TankAI.AttackState.Blocked
 				? ai.AttackBlockReason : motionWarning != "" ? motionWarning : message;
 			GUILayout.Label(!IsReady && session != null && !string.IsNullOrEmpty(session.LastError)
-				? session.LastError : IsHost ? detail : "호스트의 적을 관찰합니다. HP 공유는 별도 연결.", labelStyle);
+				? session.LastError : IsHost ? detail : "호스트의 적을 관찰합니다.", labelStyle);
 			GUI.enabled = savedEnabled && previewCamera != null;
 			if (GUILayout.Button(showPreview ? "시험 구역 화면 닫기" : "시험 구역 화면 보기", buttonStyle)) SetPreview(!showPreview);
 			GUI.enabled = savedEnabled;
@@ -545,6 +555,9 @@ public sealed class TankAINetworkTest : NetworkBehaviour
 		}
 		GUI.matrix = previous;
 	}
+
+	private static string HealthText(string label, TankHealth value) => value != null && value.IsReady
+		? $"{label} HP {value.CurrentHP:F0} · 피격 {value.DamageHitCount}" : $"{label} —";
 
 	private void OnDestroy()
 	{
