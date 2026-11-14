@@ -16,6 +16,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	[SerializeField] private NetworkSceneManagerDefault sceneManager;
 	[Tooltip("Use the authored scene manager. Legacy prototype scenes may retain their old fallback.")]
 	[SerializeField] private bool requireSceneManager;
+	[SerializeField] private bool localSession;
 
 	private NetworkRunner runner;
 	private TankCrewRegistry crewRegistry;
@@ -84,7 +85,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 		{
 			var result = await runner.StartGame(new StartGameArgs
 			{
-				GameMode = GameMode.AutoHostOrClient,
+				GameMode = localSession ? GameMode.Single : GameMode.AutoHostOrClient,
 				SessionName = "MySession",
 				PlayerCount = 3,
 				IsOpen = true,

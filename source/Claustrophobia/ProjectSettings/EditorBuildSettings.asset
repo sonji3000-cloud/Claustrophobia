@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TankPrototype/Scenes/TankInterior.unity
     guid: 6650d1d592178ed459d3fc926410b0bd
+  - enabled: 1
+    path: Assets/TankPrototype/Scenes/Carentan.unity
+    guid: eab6dc2dc156bcf4abd1d4923576a124
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
