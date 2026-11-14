@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 2898213130702081219}
   - component: {fileID: 7042447960851535041}
   - component: {fileID: 8470313098057557886}
+  - component: {fileID: 4807215229821167592}
   m_Layer: 0
   m_Name: EnemyTank-Sherman
   m_TagString: enemy_tank
@@ -158,6 +159,7 @@ Transform:
   - {fileID: 7100000000000000002}
   - {fileID: 630983812199697543}
   - {fileID: 5377341526475331537}
+  - {fileID: 479045723281520471}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &8615734490023117586
@@ -368,6 +370,7 @@ MonoBehaviour:
   body: {fileID: 8615734490023117586}
   ballistics: {fileID: 2898213130702081218}
   path: {fileID: 2898213130702081219}
+  sensor: {fileID: 4807215229821167592}
   moveMode: 0
   cornerRadius: 0.25
   sharpAngle: 30
@@ -848,3 +851,58 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400032, guid: efad970e0998e4c6592bbc378defdaae, type: 3}
   m_PrefabInstance: {fileID: 7100000000000000001}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4807215229821167592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961189211342297997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d19e96c542850f94a80da703624df677, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankSensor
+  owner: {fileID: 2898213130702081217}
+  self: {fileID: 8470313098057557886}
+  origin: {fileID: 479045723281520471}
+  sightMask:
+    serializedVersion: 2
+    m_Bits: 4294966523
+  interval: 0.1
+  acquireRange: 40
+  keepRange: 50
+  acquireAngle: 120
+  keepAngle: 140
+  confirmTime: 0.3
+--- !u!1 &6153834344820703128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 479045723281520471}
+  m_Layer: 0
+  m_Name: Sensor Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &479045723281520471
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153834344820703128}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2063358222327826323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

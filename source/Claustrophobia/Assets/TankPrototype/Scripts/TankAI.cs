@@ -17,6 +17,7 @@ public sealed class TankAI : NetworkBehaviour
 	[SerializeField] private Rigidbody body;
 	[SerializeField] private TankBallistics ballistics;
 	[SerializeField] private TankPath path;
+	[SerializeField] private TankSensor sensor;
 
 	[Header("Point movement")]
 	[SerializeField, Min(0.05f)] private float stopRadius = 0.5f;
@@ -83,6 +84,7 @@ public sealed class TankAI : NetworkBehaviour
 	public Vector3 Destination { get; private set; }
 	public MoveMode Movement => moveMode;
 	public TankPath Path => path;
+	public TankSensor Sensor => sensor;
 	public uint CommandId { get; private set; }
 	public int RetryCount { get; private set; }
 	public int RetryLimit => retryLimit;
@@ -126,6 +128,7 @@ public sealed class TankAI : NetworkBehaviour
 		if (body == null) body = GetComponent<Rigidbody>();
 		if (ballistics == null) ballistics = GetComponent<TankBallistics>();
 		if (path == null) path = GetComponent<TankPath>();
+		if (sensor == null) sensor = GetComponent<TankSensor>();
 	}
 
 	private void OnEnable()
@@ -135,6 +138,7 @@ public sealed class TankAI : NetworkBehaviour
 
 	public override void Spawned()
 	{
+		if (sensor != null) sensor.ClearState();
 		TickCount = 0;
 		CommandId = 0;
 		RetryCount = 0;
@@ -150,8 +154,13 @@ public sealed class TankAI : NetworkBehaviour
 
 	public override void FixedUpdateNetwork()
 	{
-		if (!IsHost) return;
+		if (!IsHost)
+		{
+			if (sensor != null) sensor.ClearState();
+			return;
+		}
 
+		if (sensor != null) sensor.Tick();
 		TickCount++;
 		if (!CanAct)
 		{
@@ -715,8 +724,14 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void OnDisable()
 	{
+		if (sensor != null) sensor.ClearState();
 		if (health != null) health.Died -= StopActions;
 		if (IsHost) StopActions();
+	}
+
+	public override void Despawned(NetworkRunner runner, bool hasState)
+	{
+		if (sensor != null) sensor.ClearState();
 	}
 
 	private static bool IsFinite(float value)

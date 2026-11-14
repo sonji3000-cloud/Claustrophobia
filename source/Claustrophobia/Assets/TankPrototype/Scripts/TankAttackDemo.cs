@@ -40,6 +40,25 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
 	public string TestName { get; private set; } = "Legacy integration";
 	public string DestructionCheck { get; private set; } = "Not run";
+	public bool IsStarting => starting;
+	public bool IsSensorTest { get; private set; }
+
+	public bool PrepareSensorTest(Transform start)
+	{
+		if (!CanRunTests || start == null) return false;
+
+		attackOnArrival = false;
+		SetBlocker(false);
+		if (!SpawnEnemy(start)) return false;
+		Enemy.StopActions();
+		if (Enemy.Sensor == null) return false;
+		Enemy.Sensor.SetLocalTargets(true);
+		IsSensorTest = true;
+		TestName = "Sensor";
+		return true;
+	}
+
+	public void EndSensorTest() => IsSensorTest = false;
 
 	private void Start()
 	{
@@ -139,6 +158,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		attackOnArrival = false;
 		SetBlocker(false);
 		testIndex = index;
+		IsSensorTest = false;
 		TestName = test.name;
 		if (!SpawnEnemy(start)) return false;
 		bool accepted = Enemy.SetMoveMode(TankAI.MoveMode.NavMesh) && Enemy.MoveTo(goal.position);
@@ -194,6 +214,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		if (point == null) return;
 
 		attackOnArrival = false;
+		IsSensorTest = false;
 		if (!Enemy.MoveTo(point.position)) Debug.LogWarning("[AI PATH] Movement request rejected.", this);
 	}
 
@@ -261,6 +282,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public void AttackTarget()
 	{
 		if (!Application.isPlaying || Enemy == null) return;
+		IsSensorTest = false;
 		attackOnArrival = false;
 		if (!Enemy.Attack(targetPoint)) Debug.LogWarning("[AI ATTACK] Target command rejected.", this);
 	}
@@ -276,6 +298,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public void MoveThenAttack()
 	{
 		if (!Application.isPlaying || Enemy == null || movePoint == null) return;
+		IsSensorTest = false;
 		Transform goal = HasPathTests ? testCases.GetChild(testIndex).Find("Goal") : movePoint;
 		if (goal == null) return;
 		attackOnArrival = Enemy.MoveTo(goal.position) && Enemy.MoveStatus != TankAI.MoveState.Failed;
@@ -335,6 +358,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 
 	private void OnDisable()
 	{
+		IsSensorTest = false;
 		StopAllActions();
 		if (Enemy != null && runner != null && runner.IsRunning && runner.IsServer) ClearProjectiles();
 		SetBlocker(false);

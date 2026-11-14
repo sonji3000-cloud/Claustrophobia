@@ -17,10 +17,6 @@ public sealed class TankTestMenu : MonoBehaviour
 	[SerializeField] private Text[] captions;
 	private Font font;
 	private float nextRefresh;
-#if UNITY_EDITOR
-	private UnityEditor.EditorWindow gameWindow;
-	private bool wasMaximized;
-#endif
 
 	public TestMode Mode { get; private set; }
 
@@ -37,23 +33,9 @@ public sealed class TankTestMenu : MonoBehaviour
 	public void ShowAI() => SelectMode(TestMode.AI);
 	public void ShowGround() => SelectMode(TestMode.Ground);
 	public void RunAIPath(int index) { if (Mode == TestMode.AI) ai.RunPathTest(index); }
-	private void Start() => ExpandView();
-
-	private void ExpandView()
-	{
-#if UNITY_EDITOR
-		if (gameWindow != null) return;
-		var window = UnityEditor.EditorWindow.focusedWindow;
-		if (window == null || window.GetType().Name != "GameView") return;
-		gameWindow = window;
-		wasMaximized = window.maximized;
-		window.maximized = true;
-#endif
-	}
 
 	private void SelectMode(TestMode mode)
 	{
-		if (mode != TestMode.Menu) ExpandView();
 		ai.enabled = false;
 		ground.SetKeyboard(false);
 		ground.enabled = false;
@@ -94,9 +76,6 @@ public sealed class TankTestMenu : MonoBehaviour
 
 	private void OnDestroy()
 	{
-#if UNITY_EDITOR
-		if (gameWindow != null) gameWindow.maximized = wasMaximized;
-#endif
 		if (font != null) Destroy(font);
 	}
 }
