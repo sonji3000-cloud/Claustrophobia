@@ -2998,6 +2998,7 @@ MonoBehaviour:
   ProjectileSpeed: 20
   ShotDamage: 25
   RecoveryDuration: 1.5
+  openAfterRecovery: 1
 --- !u!114 &4895437089772899164
 MonoBehaviour:
   m_ObjectHideFlags: 0

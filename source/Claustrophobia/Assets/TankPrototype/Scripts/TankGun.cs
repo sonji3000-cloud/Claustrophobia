@@ -14,8 +14,9 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     public bool TestAllowFire = true;
     [Min(0.01f)] public float ProjectileSpeed = 20f;
     [Min(0.01f)] public float ShotDamage = 25f;
-    [Tooltip("Recovery delay after firing. The empty chamber stays closed until manually opened.")]
+    [Tooltip("Recovery delay after firing.")]
     [Min(0f)] public float RecoveryDuration = 1.5f;
+	[SerializeField] private bool openAfterRecovery;
 
     [Networked, OnChangedRender(nameof(ApplyNetworkState))]
     private ChamberState NetworkState { get; set; }
@@ -29,6 +30,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     public ChamberState State { get; private set; } = ChamberState.EmptyOpen;
     public bool HasLiveRound => State == ChamberState.LoadedOpen || State == ChamberState.Ready;
     public bool CanInsert => isActiveAndEnabled && State == ChamberState.EmptyOpen;
+	public bool OpensAfterRecovery => openAfterRecovery;
     public bool UsesNetwork { get; private set; }
 
 	public event Action<ChamberState> StateChanged;
@@ -211,7 +213,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 		if (State == ChamberState.Recovering && RecoveryTimer.Expired(Runner))
 		{
 			RecoveryTimer = TickTimer.None;
-			ChangeState(ChamberState.EmptyClosed);
+			FinishRecovery();
 		}
 
 		if (hasAIRequest)
@@ -412,8 +414,13 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     public void TickRecovery()
     {
         if (!UsesNetwork && State == ChamberState.Recovering && Time.time >= recoveryEndsAt)
-            ChangeState(ChamberState.EmptyClosed);
+            FinishRecovery();
     }
+
+	private void FinishRecovery()
+	{
+		ChangeState(openAfterRecovery ? ChamberState.EmptyOpen : ChamberState.EmptyClosed);
+	}
 
     private void ChangeState(ChamberState next)
     {
@@ -425,7 +432,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 			if (round != null)
 			{
 				if (next == ChamberState.LoadedOpen || next == ChamberState.Ready)
-					round.SetVisible(next == ChamberState.LoadedOpen);
+					round.SetVisible(next == ChamberState.LoadedOpen && (breech == null || !breech.HasModel));
 				else
 				{
 					ChamberRound = null;

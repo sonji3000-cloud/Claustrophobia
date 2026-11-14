@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2968333443039596437}
-  m_Mesh: {fileID: 4300000, guid: 1dd41ff6e80aa9e48875f79d31b5f1cb, type: 2}
+  m_Mesh: {fileID: 7066132821756358804, guid: 7d94b57a5cc44c44798f1513aba235cc, type: 2}
 --- !u!23 &389391237109922966
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -136,7 +136,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6622236960441922850}
-  m_Mesh: {fileID: 2534964839176971238, guid: f5a4c8cc11c5b474d8aaad6ad8bacbb1, type: 3}
+  m_Mesh: {fileID: 7066132821756358804, guid: 7d94b57a5cc44c44798f1513aba235cc, type: 2}
 --- !u!23 &9076263785645356713
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -162,7 +162,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: eaeddb951cd365749ae2ff4e2c2bf19b, type: 2}
+  - {fileID: 2100000, guid: 6a5e105e4e84e89489a704d2f95b7e8f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5580fc8e8748e4fb0df0a136fb5422, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrewDevice
   label: Gunner shell 1
   roles: 6
@@ -229,7 +229,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 2534964839176971238, guid: f5a4c8cc11c5b474d8aaad6ad8bacbb1, type: 3}
+  m_Mesh: {fileID: 7066132821756358804, guid: 7d94b57a5cc44c44798f1513aba235cc, type: 2}
 --- !u!114 &1785408737045106749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 280e7055bd5105f4a8e89059faedf997, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankRound
 --- !u!114 &7619683096380663197
 MonoBehaviour:
