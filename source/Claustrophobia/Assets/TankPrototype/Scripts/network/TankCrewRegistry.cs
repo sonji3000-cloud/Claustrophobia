@@ -15,10 +15,9 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 	public PlayerRef CommanderPlayer { get; private set; }
 
 	private readonly List<PlayerRef> pending = new(3);
+	private readonly List<(PlayerRef player, TankCrew.Role current, TankCrew.Role target)> seatRequests = new(3);
 	private CrewSeats seats;
 	private bool spawned;
-	private bool swapPending;
-	private TankCrew.Role seatPending;
 
 	public TankCrew.Role GetRole(PlayerRef player)
 	{
@@ -49,8 +48,7 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 	public override void Despawned(NetworkRunner runner, bool hasState)
 	{
 		spawned = false;
-		swapPending = false;
-		seatPending = TankCrew.Role.None;
+		seatRequests.Clear();
 		UnbindSeats(seats);
 	}
 
@@ -87,6 +85,7 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 		}
 		if (!HasStateAuthority) return;
 
+		RemoveRequest(player);
 		TankCrew.Role role = GetRole(player);
 		if (role == TankCrew.Role.None) return;
 		SetPlayer(role, PlayerRef.None);
@@ -98,54 +97,78 @@ public sealed class TankCrewRegistry : NetworkBehaviour
 	{
 		if (!spawned || !HasStateAuthority || DriverPlayer.IsNone || GunnerPlayer.IsNone) return false;
 
-		swapPending = true;
-		seatPending = TankCrew.Role.None;
+		QueueSeat(Runner.LocalPlayer, TankCrew.Role.None, TankCrew.Role.None);
 		return true;
 	}
 
 	public bool RequestSeat(TankCrew.Role role)
 	{
-		if (!spawned || !HasStateAuthority || role == TankCrew.Role.None
-			|| (uint)role > (uint)TankCrew.Role.Commander) return false;
+		if (!spawned || !Runner.IsRunning || !IsSeat(role)) return false;
 
 		TankCrew.Role current = GetRole(Runner.LocalPlayer);
 		if (current == TankCrew.Role.None || current == role) return false;
 
-		seatPending = role;
-		swapPending = false;
-		return true;
+		RpcInvokeInfo info = RPC_RequestSeat(current, role);
+		return info.LocalInvokeResult == RpcLocalInvokeResult.Invoked
+			|| info.SendMessageResult == RpcSendMessageResult.Sent;
+	}
+
+	[Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
+	private RpcInvokeInfo RPC_RequestSeat(TankCrew.Role current, TankCrew.Role target, RpcInfo info = default)
+	{
+		if (spawned && HasStateAuthority && IsSeat(current) && IsSeat(target)
+			&& current != target && GetRole(info.Source) == current)
+			QueueSeat(info.Source, current, target);
+		return default;
+	}
+
+	private static bool IsSeat(TankCrew.Role role) => role != TankCrew.Role.None
+		&& (uint)role <= (uint)TankCrew.Role.Commander;
+
+	private void QueueSeat(PlayerRef player, TankCrew.Role current, TankCrew.Role target)
+	{
+		RemoveRequest(player);
+		seatRequests.Add((player, current, target));
+	}
+
+	private void RemoveRequest(PlayerRef player)
+	{
+		for (int i = 0; i < seatRequests.Count; i++)
+		{
+			if (seatRequests[i].player != player) continue;
+			seatRequests.RemoveAt(i);
+			return;
+		}
 	}
 
 	public override void FixedUpdateNetwork()
 	{
-		if (seatPending != TankCrew.Role.None)
+		if (!HasStateAuthority) return;
+
+		foreach (var request in seatRequests)
 		{
-			TankCrew.Role target = seatPending;
-			seatPending = TankCrew.Role.None;
-			if (HasStateAuthority) MoveHost(target);
-			return;
+			// Only the host's local F10 path can queue a request with no target seat.
+			if (request.target == TankCrew.Role.None) SwapDriverGunner();
+			else if (GetRole(request.player) == request.current)
+				MovePlayer(request.player, request.current, request.target);
 		}
+		seatRequests.Clear();
+	}
 
-		if (!swapPending) return;
-
-		swapPending = false;
-		if (!HasStateAuthority || DriverPlayer.IsNone || GunnerPlayer.IsNone) return;
-
+	private void SwapDriverGunner()
+	{
+		if (DriverPlayer.IsNone || GunnerPlayer.IsNone) return;
 		PlayerRef driver = DriverPlayer;
 		DriverPlayer = GunnerPlayer;
 		GunnerPlayer = driver;
 		Debug.Log($"[CREW SWAP] Driver={DriverPlayer}, Gunner={GunnerPlayer}", this);
 	}
 
-	private void MoveHost(TankCrew.Role target)
+	private void MovePlayer(PlayerRef player, TankCrew.Role current, TankCrew.Role target)
 	{
-		PlayerRef host = Runner.LocalPlayer;
-		TankCrew.Role current = GetRole(host);
-		if (current == TankCrew.Role.None || current == target) return;
-
 		SetPlayer(current, GetPlayer(target));
-		SetPlayer(target, host);
-		Debug.Log($"[CREW SEAT] Host={host}, {current} -> {target}, Driver={DriverPlayer}, Gunner={GunnerPlayer}, Commander={CommanderPlayer}", this);
+		SetPlayer(target, player);
+		Debug.Log($"[CREW SEAT] Player={player}, {current} -> {target}, Driver={DriverPlayer}, Gunner={GunnerPlayer}, Commander={CommanderPlayer}", this);
 	}
 
 	private PlayerRef GetPlayer(TankCrew.Role role) => role switch
