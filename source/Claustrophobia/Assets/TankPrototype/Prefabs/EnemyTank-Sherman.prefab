@@ -134,9 +134,11 @@ GameObject:
   - component: {fileID: 2898213130702081218}
   - component: {fileID: 2898213130702081219}
   - component: {fileID: 7042447960851535041}
+  - component: {fileID: 8470313098057557886}
+  - component: {fileID: 4807215229821167592}
   m_Layer: 0
   m_Name: EnemyTank-Sherman
-  m_TagString: Untagged
+  m_TagString: enemy_tank
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -156,6 +158,8 @@ Transform:
   m_Children:
   - {fileID: 7100000000000000002}
   - {fileID: 630983812199697543}
+  - {fileID: 5377341526475331537}
+  - {fileID: 479045723281520471}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &8615734490023117586
@@ -366,6 +370,7 @@ MonoBehaviour:
   body: {fileID: 8615734490023117586}
   ballistics: {fileID: 2898213130702081218}
   path: {fileID: 2898213130702081219}
+  sensor: {fileID: 4807215229821167592}
   moveMode: 0
   cornerRadius: 0.25
   sharpAngle: 30
@@ -385,7 +390,6 @@ MonoBehaviour:
   stopTurnSpeed: 0.5
   aimTolerance: 0.5
   shotCheckInterval: 0.1
-
 --- !u!1 &7957378543919201718
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,6 +423,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8516578836178964164}
+  - {fileID: 141699076915014983}
+  - {fileID: 887831086944276083}
   m_Father: {fileID: 2063358222327826323}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4400054545279720338
@@ -587,7 +593,13 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 100004, guid: efad970e0998e4c6592bbc378defdaae, type: 3}
     - {fileID: 100002, guid: efad970e0998e4c6592bbc378defdaae, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 400032, guid: efad970e0998e4c6592bbc378defdaae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2333290759198766128}
+    - targetCorrespondingSourceObject: {fileID: 400032, guid: efad970e0998e4c6592bbc378defdaae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2953449590107094042}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: efad970e0998e4c6592bbc378defdaae, type: 3}
 --- !u!4 &7100000000000000002 stripped
@@ -660,3 +672,238 @@ MonoBehaviour:
   maxSlope: 60
   normalSpeed: 180
   drawGizmos: 1
+--- !u!1 &10290003741198024
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2333290759198766128}
+  m_Layer: 0
+  m_Name: Sight Hull Front
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2333290759198766128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 10290003741198024}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00000033807385, y: 1.2724125, z: 1.4804088}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7099999999999613601}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2860218038137082734
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 141699076915014983}
+  m_Layer: 0
+  m_Name: Sight Turret
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &141699076915014983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2860218038137082734}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0000000036860772, y: 0.8107908, z: -0.14764762}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 630983812199697543}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4428338218982879134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5377341526475331537}
+  m_Layer: 0
+  m_Name: Target Ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5377341526475331537
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4428338218982879134}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2063358222327826323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8470313098057557886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961189211342297997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfb873394c8d24c488da54f93f31e4b9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankTarget
+  health: {fileID: 7272448614835972391}
+  sightPoints:
+  - {fileID: 2333290759198766128}
+  - {fileID: 2953449590107094042}
+  - {fileID: 141699076915014983}
+  aimPoint: {fileID: 887831086944276083}
+  groundPoint: {fileID: 5377341526475331537}
+--- !u!1 &7158020568339153647
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 887831086944276083}
+  m_Layer: 0
+  m_Name: Aim Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &887831086944276083
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7158020568339153647}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0000000036860772, y: 0.5230906, z: -0.14764762}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 630983812199697543}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8019506709744424186
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2953449590107094042}
+  m_Layer: 0
+  m_Name: Sight Hull Rear
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2953449590107094042
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8019506709744424186}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0000008442931, y: 1.2724125, z: -1.5558606}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7099999999999613601}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &7099999999999613601 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400032, guid: efad970e0998e4c6592bbc378defdaae, type: 3}
+  m_PrefabInstance: {fileID: 7100000000000000001}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4807215229821167592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961189211342297997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d19e96c542850f94a80da703624df677, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankSensor
+  owner: {fileID: 2898213130702081217}
+  self: {fileID: 8470313098057557886}
+  origin: {fileID: 479045723281520471}
+  sightMask:
+    serializedVersion: 2
+    m_Bits: 4294966523
+  interval: 0.1
+  acquireRange: 40
+  keepRange: 50
+  acquireAngle: 120
+  keepAngle: 140
+  confirmTime: 0.3
+  memoryTime: 10
+--- !u!1 &6153834344820703128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 479045723281520471}
+  m_Layer: 0
+  m_Name: Sensor Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &479045723281520471
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153834344820703128}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2063358222327826323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
