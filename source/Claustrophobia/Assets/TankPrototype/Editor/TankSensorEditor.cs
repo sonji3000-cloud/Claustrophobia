@@ -82,6 +82,18 @@ public sealed class TankSensorTestEditor : Editor
 	{
 		DrawDefaultInspector();
 		var test = (TankSensorTest)target;
+		EditorGUILayout.Space();
+		EditorGUILayout.HelpBox("통합 검사는 실제 호스트에서 탐지·기억·주행·사격을 순서대로 실행합니다.\n완료까지 수 분이 걸리며 표적이 파괴됩니다. 다시 실행하려면 Play를 재시작하세요.\n기록: Builds/TankSensorIntegration/play-results.txt", MessageType.Info);
+		EditorGUILayout.LabelField("통합 검사", TankSensorChecks.Status);
+		if (TankSensorChecks.IsRunning)
+		{
+			if (GUILayout.Button("통합 검사 취소")) TankSensorChecks.Cancel();
+			return;
+		}
+		using (new EditorGUI.DisabledScope(!Application.isPlaying))
+		{
+			if (GUILayout.Button("통합 검사 실행 (결과 저장)")) TankSensorChecks.Run(test);
+		}
 		EditorGUILayout.HelpBox("Play 후 탐지 시험 시작을 누르세요. 적은 정지하고 관측·기억만 계산합니다.\n가려지면 마지막 위치를 10초 기억합니다. 분홍 표시는 저장한 목격 위치입니다.", MessageType.Info);
 		using (new EditorGUI.DisabledScope(!Application.isPlaying))
 		{
