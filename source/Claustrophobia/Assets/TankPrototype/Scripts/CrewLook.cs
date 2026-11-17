@@ -1,9 +1,10 @@
+using Fusion;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 [DisallowMultipleComponent]
-public sealed class CrewLook : MonoBehaviour
+public sealed class CrewLook : NetworkBehaviour
 {
 	[SerializeField] private Camera view;
 	[SerializeField] private Transform yawPivot;
@@ -15,6 +16,9 @@ public sealed class CrewLook : MonoBehaviour
 	[SerializeField, Range(-89f, 0f)] private float minPitch = -80f;
 	[SerializeField, Range(0f, 89f)] private float maxPitch = 80f;
 
+	[Networked] private Vector2 LookAngles { get; set; }
+	[Networked] private TankCrew.Role LookRole { get; set; }
+
 	private Quaternion yawBase;
 	private Quaternion pitchBase;
 	private ShadowCastingMode[] shadowModes;
@@ -24,6 +28,15 @@ public sealed class CrewLook : MonoBehaviour
 	private bool ownsCursor;
 	private CursorLockMode savedLock;
 	private bool savedVisible;
+	private SessionJoinInit session;
+	private TankInterior inputInterior;
+	private CrewLook localLook;
+	private bool avatarSpawned;
+	private bool avatarVisible;
+	private float nextSend;
+	private float lastSend;
+	private Vector2 sentAngles;
+	private TankCrew.Role sentRole;
 
 	public bool HasCursor => ownsCursor;
 	public Transform Pivot => pitchPivot;
@@ -41,6 +54,8 @@ public sealed class CrewLook : MonoBehaviour
 
 	private void Update()
 	{
+		if (avatarSpawned) return;
+
 		bool hasView = view != null && view.isActiveAndEnabled;
 		SetBodyHidden(hasView);
 
@@ -83,14 +98,100 @@ public sealed class CrewLook : MonoBehaviour
 		Vector2 delta = mouse.delta.ReadValue() * sensitivity;
 		yaw = Mathf.Repeat(yaw + delta.x, 360f);
 		pitch = Mathf.Clamp(pitch - delta.y, minPitch, maxPitch);
+		ApplyLook(yaw, pitch);
+	}
 
-		yawPivot.localRotation = yawBase * Quaternion.Euler(0f, yaw, 0f);
-		pitchPivot.localRotation = pitchBase * Quaternion.Euler(pitch, 0f, 0f);
+	private void ApplyLook(float yaw, float pitch)
+	{
+		if (yawPivot != null) yawPivot.localRotation = yawBase * Quaternion.Euler(0f, yaw, 0f);
+		if (pitchPivot != null) pitchPivot.localRotation = pitchBase * Quaternion.Euler(pitch, 0f, 0f);
+	}
+
+	public override void Spawned()
+	{
+		avatarSpawned = true;
+		session = Runner.GetComponent<SessionJoinInit>();
+		if (view != null)
+		{
+			view.enabled = false;
+			view.tag = "Untagged";
+			if (view.TryGetComponent(out AudioListener listener)) listener.enabled = false;
+		}
+
+		if (TryGetComponent(out CrewDebugView debugView)) debugView.enabled = false;
+		if (TryGetComponent(out CrewSeats seats)) seats.enabled = false;
+		if (interaction != null) interaction.enabled = false;
+		SetAvatarVisible(false);
+	}
+
+	public override void Render()
+	{
+		if (!avatarSpawned) return;
+
+		TankInterior interior = !HasInputAuthority && session != null ? session.Interior : null;
+		TankCrew.Role role = interior != null ? session.GetCrewRole(Object.InputAuthority) : TankCrew.Role.None;
+		Transform anchor = interior != null ? interior.Seats.GetAnchor(role) : null;
+		bool visible = anchor != null && anchor.gameObject.activeInHierarchy;
+		if (visible)
+		{
+			transform.SetPositionAndRotation(anchor.position, anchor.rotation);
+			Vector2 angles = LookRole == role ? LookAngles : Vector2.zero;
+			ApplyLook(angles.x, angles.y);
+		}
+		if (avatarVisible == visible) return;
+
+		SetAvatarVisible(visible);
+	}
+
+	private void SetAvatarVisible(bool visible)
+	{
+		avatarVisible = visible;
+		foreach (Renderer renderer in bodyRenderers)
+			if (renderer != null) renderer.forceRenderingOff = !visible;
+	}
+
+	private void LateUpdate()
+	{
+		if (!avatarSpawned || !HasInputAuthority || session == null) return;
+		TankInterior interior = session.Interior;
+		if (inputInterior != interior)
+		{
+			inputInterior = interior;
+			localLook = interior != null ? interior.Crew.GetComponent<CrewLook>() : null;
+		}
+		if (localLook == null || localLook == this) return;
+
+		TankCrew.Role role = interior.Crew.CurrentRole;
+		if (role == TankCrew.Role.None) return;
+		float now = Time.unscaledTime;
+		if (now < nextSend) return;
+
+		Vector2 angles = new Vector2(Mathf.DeltaAngle(0f, localLook.yaw), localLook.pitch);
+		// Resend unchanged angles periodically so a lost final sample can recover.
+		if (role == sentRole && (angles - sentAngles).sqrMagnitude < .01f && now - lastSend < .25f) return;
+
+		nextSend = now + .05f;
+		lastSend = now;
+		sentRole = role;
+		sentAngles = angles;
+		RPC_SetLook(role, angles);
+	}
+
+	[Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, Channel = RpcChannel.Unreliable,
+		HostMode = RpcHostMode.SourceIsHostPlayer)]
+	private void RPC_SetLook(TankCrew.Role role, Vector2 angles, RpcInfo info = default)
+	{
+		if (!avatarSpawned || !HasStateAuthority || session == null || info.Source != Object.InputAuthority
+			|| role == TankCrew.Role.None || session.GetCrewRole(info.Source) != role) return;
+		if (!(angles.x >= -180f && angles.x <= 180f && angles.y >= minPitch && angles.y <= maxPitch)) return;
+
+		LookRole = role;
+		LookAngles = angles;
 	}
 
 	public void CaptureCursor()
 	{
-		if (ownsCursor || !isActiveAndEnabled || !Application.isFocused) return;
+		if (avatarSpawned || ownsCursor || !isActiveAndEnabled || !Application.isFocused) return;
 
 		savedLock = Cursor.lockState;
 		savedVisible = Cursor.visible;
@@ -103,9 +204,7 @@ public sealed class CrewLook : MonoBehaviour
 	public void ResetLook()
 	{
 		yaw = pitch = 0f;
-
-		if (yawPivot != null) yawPivot.localRotation = yawBase;
-		if (pitchPivot != null) pitchPivot.localRotation = pitchBase;
+		ApplyLook(0f, 0f);
 	}
 
 	public void ReleaseCursor()

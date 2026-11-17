@@ -12,6 +12,8 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 {
 	public enum State { Idle, Starting, Running, Stopped, Failed }
 
+	private static readonly NetworkObjectGuid CrewPlayerGuid = NetworkObjectGuid.Parse("9375fc0e9b7510b4ab57ee31aeb2f740");
+
 	public TankControl tankControl;
 	[SerializeField] private NetworkSceneManagerDefault sceneManager;
 	[Tooltip("Use the authored scene manager. Legacy prototype scenes may retain their old fallback.")]
@@ -19,6 +21,8 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 
 	private NetworkRunner runner;
 	private TankCrewRegistry crewRegistry;
+	private TankSceneLink sceneLink;
+	private readonly Dictionary<PlayerRef, NetworkObject> crewPlayers = new(3);
 	private bool attached;
 	private bool startSucceeded;
 	private bool sceneLoaded;
@@ -37,15 +41,21 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	public bool HasSceneLoaded => sceneLoaded;
 	public bool IsSceneReady => sceneReady && isActiveAndEnabled && runner != null && runner.IsRunning;
 	public string LastError { get; private set; }
+	internal TankInterior Interior => sceneLink != null && sceneLink.IsReady ? sceneLink.Interior : null;
 
 	public event Action SceneReady;
 	public event Action Stopped;
+
+	internal TankCrew.Role GetCrewRole(PlayerRef player) => crewRegistry != null
+		? crewRegistry.GetRole(player) : TankCrew.Role.None;
 
 	private void Awake()
 	{
 		runner = GetComponent<NetworkRunner>();
 		if (tankControl != null) crewRegistry = tankControl.GetComponent<TankCrewRegistry>();
 		if (sceneManager == null) sceneManager = GetComponent<NetworkSceneManagerDefault>();
+		TankSceneLink link = GetComponent<TankSceneLink>();
+		if (link != null && link.Session == this) sceneLink = link;
 		// Cache the owning scene before Fusion can move the runner to DontDestroyOnLoad.
 		scenePath = gameObject.scene.path;
 		sceneIndex = SceneUtility.GetBuildIndexByScenePath(scenePath);
@@ -138,7 +148,28 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 			|| CurrentState != State.Running || runner == null || !runner.IsRunning) return;
 
 		sceneReady = true;
+		if (runner.IsServer && sceneLink != null)
+		{
+			foreach (PlayerRef player in runner.CommittedPlayers) SpawnCrewPlayer(player);
+		}
 		SceneReady?.Invoke();
+	}
+
+	private void SpawnCrewPlayer(PlayerRef player)
+	{
+		if (!IsSceneReady || sceneLink == null || player.IsNone) return;
+		if (crewPlayers.TryGetValue(player, out NetworkObject existing) && existing != null && existing.IsValid) return;
+
+		NetworkSpawnStatus status = runner.TrySpawn(CrewPlayerGuid, out NetworkObject avatar, inputAuthority: player);
+		if (status != NetworkSpawnStatus.Spawned)
+		{
+			Debug.LogError($"[CREW AVATAR] Spawn failed. Player={player}, Status={status}", this);
+			return;
+		}
+
+		crewPlayers[player] = avatar;
+		runner.SetPlayerObject(player, avatar);
+		Debug.Log($"[CREW AVATAR] Spawned. Player={player}, Object={avatar.Id}", this);
 	}
 
 	private void EndSession(string error)
@@ -201,18 +232,29 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 
 	public void OnShutdown(NetworkRunner source, ShutdownReason reason)
 	{
-		if (source == runner) EndSession(reason == ShutdownReason.Ok ? null : reason.ToString());
+		if (source != runner) return;
+		crewPlayers.Clear();
+		EndSession(reason == ShutdownReason.Ok ? null : reason.ToString());
 	}
 
 	public void OnPlayerJoined(NetworkRunner source, PlayerRef player)
 	{
-		if (source == runner && source.IsServer && crewRegistry != null) crewRegistry.Register(player);
+		if (source == runner && source.IsServer)
+		{
+			if (crewRegistry != null) crewRegistry.Register(player);
+			SpawnCrewPlayer(player);
+		}
 		Debug.Log($"Player {player} joined the session.");
 	}
 
 	public void OnPlayerLeft(NetworkRunner source, PlayerRef player)
 	{
-		if (source == runner && source.IsServer && crewRegistry != null) crewRegistry.Unregister(player);
+		if (source == runner && source.IsServer)
+		{
+			if (crewRegistry != null) crewRegistry.Unregister(player);
+			if (crewPlayers.Remove(player, out NetworkObject avatar) && avatar != null && avatar.IsValid && avatar.HasStateAuthority)
+				source.Despawn(avatar);
+		}
 		Debug.Log($"Player {player} left the session.");
 	}
 	public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
