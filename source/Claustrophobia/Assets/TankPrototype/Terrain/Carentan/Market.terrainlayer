@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!28 &-7856600306687507155
+Texture2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Market Texture
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 4
+  m_Width: 16
+  m_Height: 16
+  m_CompleteImageSize: 1023
+  m_MipsStripped: 0
+  m_TextureFormat: 3
+  m_MipCount: 5
+  m_IsReadable: 1
+  m_IsPreProcessed: 0
+  m_IgnoreMipmapLimit: 1
+  m_MipmapLimitGroupName: 
+  m_StreamingMipmaps: 0
+  m_StreamingMipmapsPriority: 0
+  m_VTOnly: 0
+  m_AlphaIsTransparency: 0
+  m_ImageCount: 1
+  m_TextureDimension: 2
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_LightmapFormat: 0
+  m_ColorSpace: 1
+  m_PlatformBlob: 
+  image data: 1023
+  _typelessdata: 8c7c668677618c7c668c7c668b7c659181698a7b64897a638c7c668f7f688e7e678d7d668d7e67897a648c7c668d7e67897a6494846c8c7c658a7b648678628d7e668d7d668e7e678778628a7b648778628b7c658b7c658b7c658b7b6592826a8c7d66887a638b7c659181698b7c658a7b648a7b648f7f688a7b658778628d7d66887a63897a648a7b648879638e7f688c7d668d7e67897a638f8068897a648f7f688d7d668b7c658b7c658d7e678f80688d7e6787786291826a91816993836b8b7c658b7c658d7d668c7d668e7e678b7c658c7d66897a64897a648e7f678879638b7c658d7e678d7d668f7f68897a649181698c7d6691816a8b7b658c7d668e7e678f7f688b7c659080698f7f689080688b7c658e7e678a7b648c7d668b7c658d7d668a7b648c7d668f80688a7b658e7f688c7c658f7f688a7b648f7f688d7e67908069887a638c7d668a7b64897a638778628d7e679181698b7b658e7e678d7d668778628879638f7f688c7d668c7d66897a638d7e678e7e67867761887a638a7b658779638a7b648a7b648a7b648c7c658d7d668d7e678d7e678e7e678a7b648c7d668e7f678a7b648e7e678e7e678d7e67897a638a7b648b7c65897a648778628c7d668f7f688a7b658d7d668f7f688f7f688f80688879638879639181698c7d668e7f68897a648f8068897a648f80688c7d668f80688a7b658678628879638c7c668c7c669080698f7f688e7e67887963897a648e7e679181698c7d668778628c7d668779638d7d668b7b658c7d668c7d668e7f688f7f68897a64897a648f7f688e7e678f80688a7b658a7b648a7b658b7c658c7c668b7c658678629080688a7b6491826a8a7b648a7b649081698f7f688c7d668d7e668c7d668d7e678a7b648a7b649080698c7d6692826a8c7d668d7e678c7d66897a649080698a7b648b7b658e7f678d7e6791816a8d7e678f7f688d7e67897a648e7e67897a648a7b648778628e7e678d7e678778628e7f688a7b648879638e7e67867761897a638f80688d7e6792826a8c7d66897a648a7b648d7e678b7b658a7b658a7b658d7d668b7c658b7b658b7c658b7b648a7b658b7b648b7c658d7d668b7c658d7d668b7b658c7c658a7b648c7d658a7b658e7f678c7d668d7d668c7d668b7c658d7d668b7c658c7c658b7c658a7b648d7e678c7d668a7a648c7d668c7d668b7c65887962897b648a7b64897a638d7d668c7d668d7d668b7c658d7d668a7b658d7e678a7b658b7c658a7a648b7b658e7e678b7c658d7e678c7d668a7b648c7c658b7c658c7d668b7c668d7d668a7b648c7c668d7d668d7e668a7b65897a648b7c668a7b658b7b658b7b648a7b648c7c658b7c658b7b658c7c658a7b648a7b658a7b648b7b658c7c658b7c658c7c658a7b648b7b658b7b648b7b648a7b648a7b648a7b64
+  m_StreamData:
+    serializedVersion: 2
+    offset: 0
+    size: 0
+    path: 
+--- !u!1953259897 &8574412962073106934
+TerrainLayer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Market
+  m_DiffuseTexture: {fileID: -7856600306687507155}
+  m_NormalMapTexture: {fileID: 0}
+  m_MaskMapTexture: {fileID: 0}
+  m_TileSize: {x: 5, y: 5}
+  m_TileOffset: {x: 0, y: 0}
+  m_Specular: {r: 0, g: 0, b: 0, a: 0}
+  m_Metallic: 0
+  m_Smoothness: 0
+  m_NormalScale: 1
+  m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
+  m_DiffuseRemapMax: {x: 1, y: 1, z: 1, w: 1}
+  m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
+  m_MaskMapRemapMax: {x: 1, y: 1, z: 1, w: 1}
+  m_SmoothnessSource: 1
