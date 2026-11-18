@@ -41,6 +41,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public TankAI Enemy { get; private set; }
 	public TankHealth EnemyHealth { get; private set; }
 	public TankHealth TargetHealth { get; private set; }
+	public TankHealth CombatTargetHealth { get; private set; }
+	public TankHealth DisplayTargetHealth => CombatTargetHealth != null ? CombatTargetHealth : TargetHealth;
 	public bool HasMovePoint => movePoint != null;
 	public bool HasPathTests => usePath && testCases != null;
 	public bool HasCombatTest => combatTargetPrefab != null && combatStart != null && testCamera != null
@@ -226,7 +228,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 			return;
 		}
 
-		TestName = near ? "Patrol Detection - Near" : "Patrol Detection - Far";
+		CombatTargetHealth = combatTarget.GetComponent<TankHealth>();
+		TestName = near ? "Autonomous Fire - Near" : "Autonomous Approach - Far";
 		Vector3 center = (combatStart.position + point.position) * 0.5f;
 		testCamera.transform.SetPositionAndRotation(center + Vector3.up * 55f,
 			Quaternion.LookRotation(Vector3.down, Vector3.forward));
@@ -237,6 +240,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 
 	private void EndCombatTest()
 	{
+		CombatTargetHealth = null;
 		if (combatTarget == null) return;
 
 		if (Enemy != null && Enemy.Combat != null && Enemy.Combat.State != TankCombat.CombatState.Idle)

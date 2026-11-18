@@ -7,9 +7,19 @@ public sealed class TankCombat : MonoBehaviour
 
 	[SerializeField] private TankAI owner;
 	[SerializeField, Min(0f)] private float fireRange = 28f;
+	[SerializeField, Min(0f)] private float approachRange = 24f;
+	[SerializeField, Min(0f)] private float sideOffset = 4f;
+	[SerializeField, Min(0f)] private float engageRadius = 35f;
+	[SerializeField, Min(0f)] private float replanDistance = 3f;
+	[SerializeField, Min(0.02f)] private float replanInterval = 0.5f;
+	[SerializeField, Min(0.1f)] private float approachTimeout = 8f;
 
 	private Transform[] patrol;
 	private uint moveCommand;
+	private Vector3 plannedTarget;
+	private double approachDeadline;
+	private double nextPlanTime;
+	private bool attackStarted;
 
 	public CombatState State { get; private set; }
 	public int PatrolIndex { get; private set; } = -1;
@@ -50,19 +60,32 @@ public sealed class TankCombat : MonoBehaviour
 		TankSensor sensor = owner.Sensor;
 		if (sensor == null || !sensor.isActiveAndEnabled)
 		{
-			StopPatrol("Sensor unavailable");
-			return;
-		}
-		if (State != CombatState.Patrol)
-		{
-			if (Target != null && Target.Version == TargetVersion) ReadSighting(sensor, Target);
+			StopCombat("Sensor unavailable");
 			return;
 		}
 
+		if (State == CombatState.Patrol)
+		{
+			UpdatePatrol(sensor, position);
+			return;
+		}
+
+		if (Target == null || Target.Version != TargetVersion || !ReadSighting(sensor, Target))
+		{
+			StopCombat("Tracked target lost");
+			return;
+		}
+
+		if (State == CombatState.Approach) UpdateApproach(position);
+		else UpdateFire();
+	}
+
+	private void UpdatePatrol(TankSensor sensor, Vector3 position)
+	{
 		if (owner.MoveStatus == TankAI.MoveState.Idle && !MovePatrol()) return;
 		if (owner.MoveStatus == TankAI.MoveState.Failed)
 		{
-			StopPatrol(owner.MoveFailure);
+			StopCombat(owner.MoveFailure);
 			return;
 		}
 
@@ -72,14 +95,18 @@ public sealed class TankCombat : MonoBehaviour
 			Target = target;
 			TargetVersion = target.Version;
 			EngageOrigin = position;
-			Vector3 offset = LastSeenPosition - position;
-			offset.y = 0f;
-			ContactDistance = offset.magnitude;
+			ContactDistance = Mathf.Sqrt(FlatDistanceSquared(LastSeenPosition, position));
 
-			owner.StopMove();
-			moveCommand = owner.CommandId;
-			CombatState next = ContactDistance <= fireRange ? CombatState.StopAndFire : CombatState.Approach;
-			ChangeState(next, $"Detected {target.name} at {ContactDistance:0.0} m, waypoint {PatrolIndex + 1}");
+			string reason = $"Detected {target.name} at {ContactDistance:0.0} m, waypoint {PatrolIndex + 1}";
+			if (ContactDistance <= fireRange)
+				BeginFire(reason);
+			else
+			{
+				double now = owner.Runner.SimulationTime;
+				approachDeadline = now + approachTimeout;
+				ChangeState(CombatState.Approach, reason);
+				if (!TryPlanApproach(position, now, false)) StopCombat("No reachable approach point");
+			}
 			return;
 		}
 
@@ -87,6 +114,127 @@ public sealed class TankCombat : MonoBehaviour
 
 		PatrolIndex = (PatrolIndex + 1) % patrol.Length;
 		MovePatrol();
+	}
+
+	private void UpdateApproach(Vector3 position)
+	{
+		if (owner.MoveStatus == TankAI.MoveState.Failed)
+		{
+			StopCombat(owner.MoveFailure);
+			return;
+		}
+
+		TankPath path = owner.Path;
+		if (FlatDistanceSquared(position, EngageOrigin) > engageRadius * engageRadius
+			|| path != null && !path.IsWithin(EngageOrigin, engageRadius))
+		{
+			StopCombat("Approach left engagement radius");
+			return;
+		}
+
+		bool arrived = owner.MoveStatus == TankAI.MoveState.Arrived;
+		float range = arrived ? fireRange : approachRange;
+		if (FlatDistanceSquared(position, LastSeenPosition) <= range * range)
+		{
+			BeginFire(arrived ? "Approach arrived in range" : "Target within approach distance");
+			return;
+		}
+
+		double now = owner.Runner.SimulationTime;
+		if (now >= approachDeadline)
+		{
+			StopCombat("Approach timed out");
+			return;
+		}
+
+		if (now < nextPlanTime || owner.IsRetrying
+			|| !arrived && FlatDistanceSquared(plannedTarget, LastSeenPosition) < replanDistance * replanDistance) return;
+
+		if (!TryPlanApproach(position, now, !arrived) && arrived) StopCombat("No closer approach point");
+	}
+
+	private bool TryPlanApproach(Vector3 position, double now, bool keepRoute)
+	{
+		plannedTarget = LastSeenPosition;
+		nextPlanTime = now + replanInterval;
+		if (!TryFindApproach(position, out Vector3 point)) return false;
+
+		float stopRadius = owner.StopRadius;
+		if (keepRoute && owner.MoveStatus == TankAI.MoveState.Moving && owner.Path.HasPath
+			&& FlatDistanceSquared(point, owner.Destination) <= stopRadius * stopRadius
+			&& Mathf.Abs(point.y - owner.Destination.y) <= stopRadius) return true;
+
+		if (!owner.MoveTo(point)) return false;
+		moveCommand = owner.CommandId;
+		return true;
+	}
+
+	private bool TryFindApproach(Vector3 position, out Vector3 point)
+	{
+		point = default;
+		TankPath path = owner.Path;
+		if (path == null) return false;
+
+		Vector3 offset = position - LastSeenPosition;
+		float height = offset.y;
+		offset.y = 0f;
+		float distance = offset.magnitude;
+		if (distance <= approachRange || distance <= 0.01f) return false;
+
+		Vector3 dir = offset / distance;
+		Vector3 center = LastSeenPosition + dir * approachRange;
+		center.y += height * (approachRange / distance);
+		Vector3 side = new Vector3(-dir.z, 0f, dir.x) * sideOffset;
+		float bestLength = float.PositiveInfinity;
+		for (int i = -1; i <= 1; i++)
+		{
+			if (!path.TryMeasure(position, center + side * i, EngageOrigin, engageRadius,
+					out Vector3 candidate, out float length)
+				|| length >= bestLength || length <= owner.StopRadius) continue;
+
+			float distanceSquared = FlatDistanceSquared(candidate, LastSeenPosition);
+			if (distanceSquared > fireRange * fireRange || distanceSquared >= distance * distance) continue;
+
+			point = candidate;
+			bestLength = length;
+		}
+		return bestLength < float.PositiveInfinity;
+	}
+
+	private void BeginFire(string reason)
+	{
+		if (owner.MoveStatus != TankAI.MoveState.Arrived)
+		{
+			owner.StopMove();
+			moveCommand = owner.CommandId;
+		}
+		ChangeState(CombatState.StopAndFire, reason);
+	}
+
+	private void UpdateFire()
+	{
+		if (attackStarted)
+		{
+			if (owner.AttackStatus == TankAI.AttackState.Idle) StopCombat("Attack target unavailable");
+			return;
+		}
+
+		if (owner.MoveStatus != TankAI.MoveState.Arrived && !owner.UpdateSettle()) return;
+
+		if (!owner.Attack(Target.AimPoint))
+		{
+			StopCombat("Attack request rejected");
+			return;
+		}
+		attackStarted = true;
+		moveCommand = owner.CommandId;
+	}
+
+	private static float FlatDistanceSquared(Vector3 from, Vector3 to)
+	{
+		Vector3 offset = to - from;
+		offset.y = 0f;
+		return offset.sqrMagnitude;
 	}
 
 	private bool ReadSighting(TankSensor sensor, TankTarget target)
@@ -104,14 +252,14 @@ public sealed class TankCombat : MonoBehaviour
 		Transform point = patrol[PatrolIndex];
 		if (point == null || !owner.MoveTo(point.position))
 		{
-			StopPatrol("Patrol waypoint unavailable");
+			StopCombat("Patrol waypoint unavailable");
 			return false;
 		}
 		moveCommand = owner.CommandId;
 		return true;
 	}
 
-	private void StopPatrol(string reason)
+	private void StopCombat(string reason)
 	{
 		ClearState(reason);
 		owner.StopActions();
@@ -128,6 +276,9 @@ public sealed class TankCombat : MonoBehaviour
 		EngageOrigin = LastSeenPosition = default;
 		LastSeenTime = -1d;
 		ContactDistance = 0f;
+		plannedTarget = default;
+		approachDeadline = nextPlanTime = 0d;
+		attackStarted = false;
 	}
 
 	private void ChangeState(CombatState next, string reason)

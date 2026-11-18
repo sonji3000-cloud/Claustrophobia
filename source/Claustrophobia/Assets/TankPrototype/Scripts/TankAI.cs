@@ -349,24 +349,8 @@ public sealed class TankAI : NetworkBehaviour
 			}
 			stopping = true;
 			leftLever = rightLever = 0f;
-			Vector3 normal = motor.Ground.GroundNormal;
-			Vector3 drift = body.position - stopPos;
-			float yaw = Mathf.Abs(Vector3.SignedAngle(Vector3.ProjectOnPlane(stopForward, normal),
-				Vector3.ProjectOnPlane(body.rotation * Vector3.forward, normal), normal));
-			// Judge a quiet pose over a short window, rather than noisy single-tick contact velocities.
-			if (Mathf.Abs(motor.AppliedForwardSpeed) <= stopSpeed
-				&& Mathf.Abs(motor.AppliedTurnSpeed) <= stopTurnSpeed
-				&& drift.magnitude <= stopSpeed * settleTime && yaw <= stopTurnSpeed * settleTime
-				&& Mathf.Abs(Vector3.Dot(velocity, normal)) <= stopNormalSpeed)
-				stopSeconds += Runner.DeltaTime;
-			else
-			{
-				stopSeconds = 0f;
-				stopPos = body.position;
-				stopForward = body.rotation * Vector3.forward;
-			}
 
-			if (stopSeconds >= settleTime)
+			if (UpdateSettle())
 			{
 				motor.Stop();
 				MoveStatus = MoveState.Arrived;
@@ -406,6 +390,34 @@ public sealed class TankAI : NetworkBehaviour
 		float scale = Mathf.Max(1f, Mathf.Max(Mathf.Abs(left), Mathf.Abs(right)));
 		leftLever = left / scale;
 		rightLever = right / scale;
+	}
+
+	internal bool UpdateSettle()
+	{
+		if (body == null || motor.Ground == null || !motor.Ground.isActiveAndEnabled || !motor.Ground.IsGrounded)
+		{
+			stopSeconds = 0f;
+			return false;
+		}
+
+		Vector3 normal = motor.Ground.GroundNormal;
+		Vector3 forward = body.rotation * Vector3.forward;
+		Vector3 drift = body.position - stopPos;
+		float yaw = Mathf.Abs(Vector3.SignedAngle(Vector3.ProjectOnPlane(stopForward, normal),
+			Vector3.ProjectOnPlane(forward, normal), normal));
+		// Contact velocities are noisy. Require a quiet pose over a short window.
+		if (Mathf.Abs(motor.AppliedForwardSpeed) <= stopSpeed
+			&& Mathf.Abs(motor.AppliedTurnSpeed) <= stopTurnSpeed
+			&& drift.magnitude <= stopSpeed * settleTime && yaw <= stopTurnSpeed * settleTime
+			&& Mathf.Abs(Vector3.Dot(body.linearVelocity, normal)) <= stopNormalSpeed)
+			stopSeconds += Runner.DeltaTime;
+		else
+		{
+			stopSeconds = 0f;
+			stopPos = body.position;
+			stopForward = forward;
+		}
+		return stopSeconds >= settleTime;
 	}
 
 	// False pauses at a corner or terminates an unavailable route.

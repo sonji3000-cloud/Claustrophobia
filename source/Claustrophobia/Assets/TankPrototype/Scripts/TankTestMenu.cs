@@ -68,9 +68,10 @@ public sealed class TankTestMenu : MonoBehaviour
 		}
 		TankAI enemy = ai.Enemy;
 		if (enemy == null) { aiState.text = "시험 구역을 선택하세요"; return; }
+		TankHealth target = ai.DisplayTargetHealth;
 		aiState.text = $"구역: {ai.TestName}\n이동: {enemy.MoveStatus} / 공격: {enemy.AttackStatus}\n"
 			+ $"재시도: {enemy.RetryCount}/{enemy.RetryLimit}\n"
-			+ (ai.TargetHealth != null ? $"표적 HP: {ai.TargetHealth.CurrentHP:0}\n" : "")
+			+ (target != null ? $"표적 HP: {target.CurrentHP:0}\n" : "")
 			+ (!string.IsNullOrEmpty(enemy.MoveFailure) ? enemy.MoveFailure : enemy.AttackBlockReason);
 	}
 

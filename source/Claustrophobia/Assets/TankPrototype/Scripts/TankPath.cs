@@ -11,7 +11,9 @@ public sealed class TankPath : MonoBehaviour
 	[SerializeField] private bool drawPath = true;
 
 	private readonly Vector3[] corners = new Vector3[64];
+	private readonly Vector3[] probeCorners = new Vector3[64];
 	private NavMeshPath route;
+	private NavMeshPath probe;
 
 	public int CornerCount { get; private set; }
 	public int CornerIndex { get; private set; }
@@ -24,19 +26,60 @@ public sealed class TankPath : MonoBehaviour
 	private void Awake()
 	{
 		route = new NavMeshPath();
+		probe = new NavMeshPath();
 	}
 
 	public bool TryBuild(Vector3 start, Vector3 goal, out string reason)
 	{
 		Clear();
+		route ??= new NavMeshPath();
+		if (!TryCalculate(start, goal, route, corners, out int count, out reason)) return false;
+
+		CornerCount = count;
+		CornerIndex = 1;
+		UpdateCorner();
+		return true;
+	}
+
+	internal bool TryMeasure(Vector3 start, Vector3 goal, Vector3 center, float radius,
+		out Vector3 destination, out float length)
+	{
+		destination = default;
+		length = 0f;
+		probe ??= new NavMeshPath();
+		if (!TryCalculate(start, goal, probe, probeCorners, out int count, out _)
+			|| !IsWithin(probeCorners, count, center, radius)) return false;
+
+		destination = probeCorners[count - 1];
+		for (int i = 1; i < count; i++)
+			length += Vector3.Distance(probeCorners[i - 1], probeCorners[i]);
+		return true;
+	}
+
+	internal bool IsWithin(Vector3 center, float radius) => IsWithin(corners, CornerCount, center, radius);
+
+	private static bool IsWithin(Vector3[] points, int count, Vector3 center, float radius)
+	{
+		float limit = radius * radius;
+		for (int i = 0; i < count; i++)
+		{
+			Vector3 offset = points[i] - center;
+			offset.y = 0f;
+			if (offset.sqrMagnitude > limit) return false;
+		}
+		return true;
+	}
+
+	private bool TryCalculate(Vector3 start, Vector3 goal, NavMeshPath result, Vector3[] points,
+		out int count, out string reason)
+	{
+		count = 0;
 		reason = "";
 		if (!isActiveAndEnabled)
 		{
 			reason = "Path component is disabled";
 			return false;
 		}
-		if (route == null) route = new NavMeshPath();
-
 		var filter = new NavMeshQueryFilter { agentTypeID = agentId, areaMask = areaMask };
 		if (!NavMesh.SamplePosition(start, out NavMeshHit from, sampleDistance, filter))
 		{
@@ -48,35 +91,32 @@ public sealed class TankPath : MonoBehaviour
 			reason = "Destination is outside the navigation surface";
 			return false;
 		}
-		if (!NavMesh.CalculatePath(from.position, to.position, filter, route)
-			|| route.status != NavMeshPathStatus.PathComplete)
+		if (!NavMesh.CalculatePath(from.position, to.position, filter, result)
+			|| result.status != NavMeshPathStatus.PathComplete)
 		{
 			reason = "No complete path to destination";
 			return false;
 		}
 
-		int count = route.GetCornersNonAlloc(corners);
+		count = result.GetCornersNonAlloc(points);
 		// A full buffer may contain a truncated route; never follow it as a complete one.
-		if (count <= 0 || count >= corners.Length)
+		if (count <= 0 || count >= points.Length)
 		{
 			reason = "Path corner buffer is empty or full";
 			return false;
 		}
 		if (count == 1)
 		{
-			corners[0] = from.position;
-			corners[1] = to.position;
+			points[0] = from.position;
+			points[1] = to.position;
 			count = 2;
 		}
-		if ((corners[count - 1] - to.position).sqrMagnitude > 0.01f)
+		if ((points[count - 1] - to.position).sqrMagnitude > 0.01f)
 		{
 			reason = "Path does not end at destination";
 			return false;
 		}
 
-		CornerCount = count;
-		CornerIndex = 1;
-		UpdateCorner();
 		return true;
 	}
 
