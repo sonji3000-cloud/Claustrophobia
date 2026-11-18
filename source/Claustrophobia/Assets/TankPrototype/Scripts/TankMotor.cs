@@ -23,6 +23,8 @@ public sealed class TankMotor : NetworkBehaviour
 	public bool CanDrive => ground != null && ground.isActiveAndEnabled
 		&& ground.IsGrounded && ground.SlopeAngle <= maxDriveSlope;
 
+	[Networked] private Quaternion HullRotation { get; set; }
+
 	private Rigidbody body;
 	private NetworkObject networkObject;
 	private TankCrewRegistry crewRegistry;
@@ -183,6 +185,8 @@ public sealed class TankMotor : NetworkBehaviour
 
 	public override void Spawned()
 	{
+		if (HasStateAuthority && crewRegistry != null) HullRotation = body.rotation;
+
 		Debug.Log(
 			$"[TANK SPAWNED] " +
 			$"Mode={Runner.GameMode}, " +
@@ -205,6 +209,7 @@ public sealed class TankMotor : NetworkBehaviour
 	public override void FixedUpdateNetwork()
 	{
 		if (!HasStateAuthority || crewRegistry == null) return;
+		HullRotation = body.rotation;
 
 		PlayerRef driver = crewRegistry.DriverPlayer;
 		bool wasNeutral = requestedLeft == 0f && requestedRight == 0f;
@@ -217,5 +222,14 @@ public sealed class TankMotor : NetworkBehaviour
 		if (lastDriver != driver || wasNeutral != isNeutral)
 			Debug.Log($"[DRIVE INPUT] Driver={driver}, Left={requestedLeft:F2}, Right={requestedRight:F2}", this);
 		lastDriver = driver;
+	}
+
+	private void LateUpdate()
+	{
+		if (crewRegistry == null || Object == null || !Object.IsValid || HasStateAuthority) return;
+
+		// Apply the full-precision rotation after Fusion renders the NetworkTransform.
+		var snapshots = new NetworkBehaviourBufferInterpolator(this);
+		if (snapshots.Valid) transform.rotation = snapshots.Quaternion(nameof(HullRotation));
 	}
 }
