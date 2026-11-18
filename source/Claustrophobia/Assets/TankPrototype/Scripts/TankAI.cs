@@ -18,6 +18,7 @@ public sealed class TankAI : NetworkBehaviour
 	[SerializeField] private TankBallistics ballistics;
 	[SerializeField] private TankPath path;
 	[SerializeField] private TankSensor sensor;
+	[SerializeField] private TankCombat combat;
 
 	[Header("Point movement")]
 	[SerializeField, Min(0.05f)] private float stopRadius = 0.5f;
@@ -85,6 +86,7 @@ public sealed class TankAI : NetworkBehaviour
 	public MoveMode Movement => moveMode;
 	public TankPath Path => path;
 	public TankSensor Sensor => sensor;
+	public TankCombat Combat => combat;
 	public uint CommandId { get; private set; }
 	public int RetryCount { get; private set; }
 	public int RetryLimit => retryLimit;
@@ -145,6 +147,7 @@ public sealed class TankAI : NetworkBehaviour
 	public override void Spawned()
 	{
 		if (sensor != null) sensor.ClearState();
+		if (combat != null) combat.ClearState("Spawned");
 		TickCount = 0;
 		CommandId = 0;
 		RetryCount = 0;
@@ -163,6 +166,8 @@ public sealed class TankAI : NetworkBehaviour
 		if (!IsHost)
 		{
 			if (sensor != null) sensor.ClearState();
+			if (combat != null && combat.State != TankCombat.CombatState.Idle)
+				combat.ClearState("Host authority lost");
 			return;
 		}
 
@@ -175,6 +180,8 @@ public sealed class TankAI : NetworkBehaviour
 		}
 		EnsureHostBody();
 
+		if (combat != null && combat.isActiveAndEnabled)
+			combat.Tick(body != null ? body.position : transform.position);
 		if (MoveStatus == MoveState.Moving) UpdateMove();
 
 		motor.SetLeverInputs(leftLever, rightLever);
@@ -721,6 +728,7 @@ public sealed class TankAI : NetworkBehaviour
 	{
 		if (!IsHost) return;
 
+		if (combat != null) combat.ClearState("Actions stopped");
 		CommandId++;
 		ClearMove();
 		ClearAttack();
@@ -738,6 +746,7 @@ public sealed class TankAI : NetworkBehaviour
 	public override void Despawned(NetworkRunner runner, bool hasState)
 	{
 		if (sensor != null) sensor.ClearState();
+		if (combat != null) combat.ClearState("Despawned");
 	}
 
 	private static bool IsFinite(float value)

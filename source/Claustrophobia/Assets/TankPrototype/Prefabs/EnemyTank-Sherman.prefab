@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 7042447960851535041}
   - component: {fileID: 8470313098057557886}
   - component: {fileID: 4807215229821167592}
+  - component: {fileID: 4807215229821167593}
   m_Layer: 0
   m_Name: EnemyTank-Sherman
   m_TagString: enemy_tank
@@ -371,6 +372,7 @@ MonoBehaviour:
   ballistics: {fileID: 2898213130702081218}
   path: {fileID: 2898213130702081219}
   sensor: {fileID: 4807215229821167592}
+  combat: {fileID: 4807215229821167593}
   moveMode: 0
   cornerRadius: 0.25
   sharpAngle: 30
@@ -876,6 +878,20 @@ MonoBehaviour:
   keepAngle: 140
   confirmTime: 0.3
   memoryTime: 10
+--- !u!114 &4807215229821167593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961189211342297997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a16803044994a5a90f6f065c8239e1b, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankCombat
+  owner: {fileID: 2898213130702081217}
+  fireRange: 28
 --- !u!1 &6153834344820703128
 GameObject:
   m_ObjectHideFlags: 0

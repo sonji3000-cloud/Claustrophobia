@@ -12,6 +12,14 @@ public sealed class TankAttackDemoEditor : Editor
 		var demo = (TankAttackDemo)target;
 		TankAI ai = demo.Enemy;
 		EditorGUILayout.Space();
+		if (demo.HasCombatTest)
+		{
+			using (new EditorGUI.DisabledScope(!demo.CanRunTests))
+			{
+				if (GUILayout.Button("순찰 → 원거리 표적 발견")) demo.RunCombatTest(false);
+				if (GUILayout.Button("순찰 → 근거리 표적 발견")) demo.RunCombatTest(true);
+			}
+		}
 		EditorGUILayout.HelpBox("HP 시험 버튼은 적 전차 자신에게 직접 피해를 적용합니다.\n이동 후 공격 버튼은 도착한 뒤 지정 표적을 공격합니다.", MessageType.Info);
 		if (demo.HasPathTests)
 		{
@@ -56,6 +64,20 @@ public sealed class TankAttackDemoEditor : Editor
 		{
 			EditorGUILayout.ObjectField("생성된 적 전차", ai, typeof(TankAI), true);
 			EditorGUILayout.Toggle("호스트 AI 실행", ai.CanAct);
+			TankCombat combat = ai.Combat;
+			if (combat != null && demo.HasCombatTest)
+			{
+				EditorGUILayout.EnumPopup("자율 교전 상태", combat.State);
+				if (combat.PatrolIndex >= 0)
+					EditorGUILayout.IntField("순찰 경유점", combat.PatrolIndex + 1);
+				if (combat.Target != null)
+				{
+					EditorGUILayout.ObjectField("교전 표적", combat.Target, typeof(TankTarget), true);
+					EditorGUILayout.FloatField("발견 거리 (m)", combat.ContactDistance);
+					EditorGUILayout.Vector3Field("교전 시작 위치", combat.EngageOrigin);
+					EditorGUILayout.Vector3Field("마지막 목격 위치", combat.LastSeenPosition);
+				}
+			}
 			EditorGUILayout.EnumPopup("이동 상태", ai.MoveStatus);
 			EditorGUILayout.EnumPopup("이동 방식", ai.Movement);
 			EditorGUILayout.TextField("시험 구역", demo.TestName);

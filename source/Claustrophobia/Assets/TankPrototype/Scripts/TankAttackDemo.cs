@@ -21,6 +21,14 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[SerializeField] private Camera testCamera;
 	[SerializeField] private GameObject stallBlocker;
 
+	[Header("Patrol detection test")]
+	[SerializeField] private NetworkObject combatTargetPrefab;
+	[SerializeField] private Transform combatStart;
+	[SerializeField] private Transform[] patrolPoints;
+	[SerializeField] private Transform farTarget;
+	[SerializeField] private Transform nearTarget;
+
+	private NetworkObject combatTarget;
 	private TankAI.AttackState lastState;
 	private string lastReason;
 	private bool attackOnArrival;
@@ -35,6 +43,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public TankHealth TargetHealth { get; private set; }
 	public bool HasMovePoint => movePoint != null;
 	public bool HasPathTests => usePath && testCases != null;
+	public bool HasCombatTest => combatTargetPrefab != null && combatStart != null && testCamera != null
+		&& patrolPoints != null && patrolPoints.Length > 0 && farTarget != null && nearTarget != null;
 	public bool CanRunTests => isActiveAndEnabled && Application.isPlaying && runner != null && runner.IsRunning && runner.IsServer;
 	public bool HasBlocker => stallBlocker != null;
 	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
@@ -189,6 +199,54 @@ public sealed class TankAttackDemo : MonoBehaviour
 		attackCommand = Enemy.CommandId;
 	}
 
+	public void RunCombatTest(bool near)
+	{
+		if (!CanRunTests || !HasCombatTest) return;
+
+		attackOnArrival = false;
+		IsSensorTest = false;
+		SetBlocker(false);
+		if (!SpawnEnemy(combatStart)) return;
+
+		Transform point = near ? nearTarget : farTarget;
+		try
+		{
+			combatTarget = runner.Spawn(combatTargetPrefab, point.position, point.rotation);
+		}
+		catch (Exception error)
+		{
+			Debug.LogError("[AI COMBAT] Target spawn failed: " + error.Message, this);
+			return;
+		}
+
+		if (combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(patrolPoints))
+		{
+			EndCombatTest();
+			Debug.LogError("[AI COMBAT] Patrol detection test could not start.", this);
+			return;
+		}
+
+		TestName = near ? "Patrol Detection - Near" : "Patrol Detection - Far";
+		Vector3 center = (combatStart.position + point.position) * 0.5f;
+		testCamera.transform.SetPositionAndRotation(center + Vector3.up * 55f,
+			Quaternion.LookRotation(Vector3.down, Vector3.forward));
+		testCamera.orthographic = true;
+		testCamera.orthographicSize = 29f;
+		testCamera.enabled = true;
+	}
+
+	private void EndCombatTest()
+	{
+		if (combatTarget == null) return;
+
+		if (Enemy != null && Enemy.Combat != null && Enemy.Combat.State != TankCombat.CombatState.Idle)
+			Enemy.StopActions();
+		if (combatTarget.IsValid && runner != null && runner.IsRunning
+			&& combatTarget.Runner == runner && combatTarget.HasStateAuthority)
+			runner.Despawn(combatTarget);
+		combatTarget = null;
+	}
+
 	public void RunStallTest()
 	{
 		if (!HasBlocker || !RunPathTest(4)) return;
@@ -215,11 +273,13 @@ public sealed class TankAttackDemo : MonoBehaviour
 
 		attackOnArrival = false;
 		IsSensorTest = false;
+		EndCombatTest();
 		if (!Enemy.MoveTo(point.position)) Debug.LogWarning("[AI PATH] Movement request rejected.", this);
 	}
 
 	private bool SpawnEnemy(Transform start)
 	{
+		EndCombatTest();
 		if (Enemy != null)
 		{
 			Enemy.StopActions();
@@ -284,6 +344,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		if (!Application.isPlaying || Enemy == null) return;
 		IsSensorTest = false;
 		attackOnArrival = false;
+		EndCombatTest();
 		if (!Enemy.Attack(targetPoint)) Debug.LogWarning("[AI ATTACK] Target command rejected.", this);
 	}
 
@@ -291,6 +352,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public void StopAttack()
 	{
 		attackOnArrival = false;
+		EndCombatTest();
 		if (Application.isPlaying && Enemy != null) Enemy.StopAttack();
 	}
 
@@ -301,6 +363,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		IsSensorTest = false;
 		Transform goal = HasPathTests ? testCases.GetChild(testIndex).Find("Goal") : movePoint;
 		if (goal == null) return;
+		EndCombatTest();
 		attackOnArrival = Enemy.MoveTo(goal.position) && Enemy.MoveStatus != TankAI.MoveState.Failed;
 		attackCommand = Enemy.CommandId;
 		if (attackOnArrival) Debug.Log("[AI INTEGRATION] Moving; target attack follows arrival.", this);
@@ -312,6 +375,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 	{
 		attackOnArrival = false;
 		if (Application.isPlaying && Enemy != null) Enemy.StopActions();
+		EndCombatTest();
 	}
 
 	// Explicit test damage uses the production HP entry; it does not simulate a projectile hit.

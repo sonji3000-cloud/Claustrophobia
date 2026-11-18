@@ -1751,6 +1751,7 @@ MonoBehaviour:
   tankControl: {fileID: 1304813856}
   sceneManager: {fileID: 2140000003}
   requireSceneManager: 1
+  localSession: 0
 --- !u!114 &998917135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2608,9 +2609,9 @@ MonoBehaviour:
   - {fileID: 1304813838}
   - {fileID: 1304813834}
   - {fileID: 1304813867}
+  - {fileID: 1304813869}
   - {fileID: 1304813835}
   - {fileID: 1304813868}
-  - {fileID: 1304813869}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1304813847
 MonoBehaviour:
@@ -2707,7 +2708,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 66401fe4b07d0aa4ca092d78ed63d859, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankHealth
 --- !u!4 &1304813870 stripped
 Transform:
