@@ -257,6 +257,12 @@ public sealed class TankInput : MonoBehaviour
 	{
 		if (keyboard == null || !control.CanDrive(interaction)) return;
 
+		if (keyboard.xKey.isPressed)
+		{
+			control.SetLeverInputs(interaction, 0f, 0f);
+			return;
+		}
+
 		bool hasPreset = TryReadPreset(keyboard, out Vector2 preset);
 		float step = leverChangeRate * dt;
 		float left = control.LeftLever;
