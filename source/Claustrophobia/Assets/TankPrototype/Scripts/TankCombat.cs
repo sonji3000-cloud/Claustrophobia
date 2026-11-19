@@ -3,7 +3,10 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class TankCombat : MonoBehaviour
 {
-	public enum CombatState { Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen }
+	public enum CombatState
+	{
+		Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen, CheckSurroundings, ReturnToPatrol
+	}
 
 	private const float MaxSearchTime = 10f;
 
@@ -17,6 +20,8 @@ public sealed class TankCombat : MonoBehaviour
 	[SerializeField, Min(0.1f)] private float approachTimeout = 8f;
 	[SerializeField, Min(0.02f)] private float sightWait = 0.75f;
 	[SerializeField, Min(0.1f)] private float searchMoveTimeout = 6f;
+	[SerializeField, Range(1f, 90f)] private float sweepAngle = 45f;
+	[SerializeField, Min(0.1f)] private float sweepTimeout = 3f;
 
 	private Transform[] patrol;
 	private uint moveCommand;
@@ -25,6 +30,8 @@ public sealed class TankCombat : MonoBehaviour
 	private double nextPlanTime;
 	private double searchStepDeadline;
 	private double searchDeadline;
+	private Vector3 sweepForward;
+	private bool sweepingRight;
 	private bool attackStarted;
 
 	public CombatState State { get; private set; }
@@ -77,14 +84,19 @@ public sealed class TankCombat : MonoBehaviour
 			UpdatePatrol(sensor, position);
 			return;
 		}
-
-		if (Target == null || Target.Version != TargetVersion || !Target.CanTarget)
+		if (State == CombatState.ReturnToPatrol)
 		{
-			StopCombat("Tracked target unavailable");
+			UpdateReturn();
 			return;
 		}
 
-		if (State == CombatState.WaitForSight || State == CombatState.MoveToLastSeen)
+		if (Target == null || Target.Version != TargetVersion || !Target.CanTarget)
+		{
+			BeginReturn("Tracked target unavailable");
+			return;
+		}
+
+		if (State == CombatState.WaitForSight || State == CombatState.MoveToLastSeen || State == CombatState.CheckSurroundings)
 		{
 			UpdateSearch(sensor, position);
 			return;
@@ -158,7 +170,7 @@ public sealed class TankCombat : MonoBehaviour
 		double now = owner.Runner.SimulationTime;
 		if (now >= searchDeadline)
 		{
-			StopCombat("Last sighting expired");
+			BeginReturn("Last sighting expired");
 			return;
 		}
 
@@ -173,15 +185,20 @@ public sealed class TankCombat : MonoBehaviour
 			if (now >= searchStepDeadline) BeginSearchMove(position, now);
 			return;
 		}
+		if (State == CombatState.CheckSurroundings)
+		{
+			UpdateSweep(now);
+			return;
+		}
 
 		if (owner.MoveStatus == TankAI.MoveState.Failed)
-			StopCombat("Search movement failed: " + owner.MoveFailure);
+			BeginReturn("Search movement failed: " + owner.MoveFailure);
 		else if (!IsRouteInRange(position))
-			StopCombat("Search left engagement radius");
+			BeginReturn("Search left engagement radius");
 		else if (owner.MoveStatus == TankAI.MoveState.Arrived)
-			StopCombat("Reached last seen position");
+			BeginSweep(now);
 		else if (now >= searchStepDeadline)
-			StopCombat("Search movement timed out");
+			BeginReturn("Search movement timed out");
 	}
 
 	private void BeginSearchMove(Vector3 position, double now)
@@ -190,29 +207,92 @@ public sealed class TankCombat : MonoBehaviour
 		if (path == null || !IsInEngageRange(LastSeenPosition)
 			|| !path.TryMeasure(position, LastSeenPosition, EngageOrigin, engageRadius, out Vector3 point, out _))
 		{
-			StopCombat("No reachable path to last seen position within engagement radius");
+			BeginReturn("No reachable path to last seen position within engagement radius");
 			return;
 		}
 
 		if (!owner.MoveTo(point))
 		{
-			StopCombat("Search movement order rejected");
+			BeginReturn("Search movement order rejected");
 			return;
 		}
 		moveCommand = owner.CommandId;
 		if (owner.MoveStatus == TankAI.MoveState.Failed)
 		{
-			StopCombat("Search movement failed: " + owner.MoveFailure);
+			BeginReturn("Search movement failed: " + owner.MoveFailure);
 			return;
 		}
 		if (!IsRouteInRange(position))
 		{
-			StopCombat("Search left engagement radius");
+			BeginReturn("Search left engagement radius");
 			return;
 		}
 
 		searchStepDeadline = now + searchMoveTimeout;
 		ChangeState(CombatState.MoveToLastSeen, "Moving to last seen position");
+	}
+
+	private void BeginSweep(double now)
+	{
+		sweepForward = owner.transform.forward;
+		sweepForward.y = 0f;
+		sweepingRight = false;
+		searchStepDeadline = now + sweepTimeout;
+		ChangeState(CombatState.CheckSurroundings, "Reached last seen position");
+		SetSweepDrive(-1f);
+	}
+
+	private void UpdateSweep(double now)
+	{
+		Vector3 forward = owner.transform.forward;
+		forward.y = 0f;
+		float angle = Vector3.SignedAngle(sweepForward, forward, Vector3.up);
+		if (sweepingRight && angle >= sweepAngle)
+		{
+			BeginReturn("Finished checking surroundings");
+			return;
+		}
+		if (now >= searchStepDeadline)
+		{
+			BeginReturn("Surroundings check timed out");
+			return;
+		}
+		if (!sweepingRight && angle <= -sweepAngle)
+		{
+			sweepingRight = true;
+			SetSweepDrive(1f);
+		}
+	}
+
+	private void SetSweepDrive(float turn)
+	{
+		owner.StopMove();
+		if (!owner.SetDrive(turn, -turn))
+		{
+			BeginReturn("Surroundings turn order rejected");
+			return;
+		}
+		moveCommand = owner.CommandId;
+	}
+
+	private void BeginReturn(string reason)
+	{
+		owner.StopMove();
+		ChangeState(CombatState.ReturnToPatrol, reason);
+		if (MovePatrol()) UpdateReturn();
+	}
+
+	private void UpdateReturn()
+	{
+		if (owner.MoveStatus == TankAI.MoveState.Failed)
+		{
+			StopCombat("Patrol return failed: " + owner.MoveFailure);
+			return;
+		}
+		if (owner.MoveStatus != TankAI.MoveState.Arrived) return;
+
+		ClearEngagement();
+		ChangeState(CombatState.Patrol, "Reached patrol waypoint");
 	}
 
 	private void UpdateApproach(Vector3 position)
@@ -364,7 +444,7 @@ public sealed class TankCombat : MonoBehaviour
 		Transform point = patrol[PatrolIndex];
 		if (point == null || !owner.MoveTo(point.position))
 		{
-			StopCombat("Patrol waypoint unavailable");
+			StopCombat(State == CombatState.ReturnToPatrol ? "Patrol return failed: waypoint unavailable" : "Patrol waypoint unavailable");
 			return false;
 		}
 		moveCommand = owner.CommandId;
@@ -382,6 +462,11 @@ public sealed class TankCombat : MonoBehaviour
 		patrol = null;
 		moveCommand = 0;
 		PatrolIndex = -1;
+		ClearEngagement();
+	}
+
+	private void ClearEngagement()
+	{
 		Target = null;
 		TargetVersion = 0;
 		EngageOrigin = LastSeenPosition = default;
@@ -390,6 +475,8 @@ public sealed class TankCombat : MonoBehaviour
 		plannedTarget = default;
 		approachDeadline = nextPlanTime = 0d;
 		searchStepDeadline = searchDeadline = 0d;
+		sweepForward = default;
+		sweepingRight = false;
 		attackStarted = false;
 	}
 
