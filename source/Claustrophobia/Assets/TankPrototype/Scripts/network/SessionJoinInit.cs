@@ -28,6 +28,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	private bool startSucceeded;
 	private bool sceneLoaded;
 	private bool sceneReady;
+	private bool connectedToHost;
 	private uint version;
 	private Task stopTask;
 	private CancellationTokenSource startCancel;
@@ -43,6 +44,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	public bool IsSceneReady => sceneReady && isActiveAndEnabled && runner != null && runner.IsRunning;
 	public string LastError { get; private set; }
 	internal TankInterior Interior => sceneLink != null && sceneLink.IsReady ? sceneLink.Interior : null;
+	private bool IsConnectedGuest => connectedToHost && (CurrentState == State.Starting || CurrentState == State.Running);
 
 	public event Action SceneReady;
 	public event Action Stopped;
@@ -177,12 +179,20 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	{
 		if (CurrentState == State.Stopped || CurrentState == State.Failed) return;
 		version++;
+		connectedToHost = false;
 		sceneReady = false;
 		startSucceeded = false;
 		sceneLoaded = false;
 		LastError = error;
 		CurrentState = error == null ? State.Stopped : State.Failed;
 		Stopped?.Invoke();
+	}
+
+	private void QuitGuest(string reason)
+	{
+		EndSession(reason);
+		Debug.Log($"[HOST DISCONNECTED] Closing the guest game. Reason={reason}", this);
+		Application.Quit();
 	}
 
 	private void Attach()
@@ -235,7 +245,9 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	{
 		if (source != runner) return;
 		crewPlayers.Clear();
-		EndSession(reason == ShutdownReason.Ok ? null : reason.ToString());
+
+		if (IsConnectedGuest) QuitGuest(reason.ToString());
+		else EndSession(reason == ShutdownReason.Ok ? null : reason.ToString());
 	}
 
 	public void OnPlayerJoined(NetworkRunner source, PlayerRef player)
@@ -259,8 +271,16 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 		Debug.Log($"Player {player} left the session.");
 	}
 	public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-	public void OnConnectedToServer(NetworkRunner runner) => Debug.Log("[CONNECTED] Server connected");
-	public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
+	public void OnConnectedToServer(NetworkRunner source)
+	{
+		if (source != runner || !source.IsClient) return;
+		connectedToHost = true;
+		Debug.Log("[CONNECTED] Server connected");
+	}
+	public void OnDisconnectedFromServer(NetworkRunner source, NetDisconnectReason reason)
+	{
+		if (source == runner && IsConnectedGuest) QuitGuest(reason.ToString());
+	}
 	public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
 	public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
 	public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
