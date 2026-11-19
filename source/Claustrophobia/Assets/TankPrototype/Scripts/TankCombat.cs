@@ -3,7 +3,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class TankCombat : MonoBehaviour
 {
-	public enum CombatState { Idle, Patrol, Approach, StopAndFire }
+	public enum CombatState { Idle, Patrol, Approach, StopAndFire, WaitForSight }
 
 	[SerializeField] private TankAI owner;
 	[SerializeField, Min(0f)] private float fireRange = 28f;
@@ -13,12 +13,14 @@ public sealed class TankCombat : MonoBehaviour
 	[SerializeField, Min(0f)] private float replanDistance = 3f;
 	[SerializeField, Min(0.02f)] private float replanInterval = 0.5f;
 	[SerializeField, Min(0.1f)] private float approachTimeout = 8f;
+	[SerializeField, Min(0.02f)] private float sightWait = 0.75f;
 
 	private Transform[] patrol;
 	private uint moveCommand;
 	private Vector3 plannedTarget;
 	private double approachDeadline;
 	private double nextPlanTime;
+	private double sightDeadline;
 	private bool attackStarted;
 
 	public CombatState State { get; private set; }
@@ -72,18 +74,27 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
-		if (Target == null || Target.Version != TargetVersion)
+		if (Target == null || Target.Version != TargetVersion || !Target.CanTarget)
 		{
 			StopCombat("Tracked target unavailable");
 			return;
 		}
-		if (!ReadSighting(sensor, Target))
+
+		bool waiting = State == CombatState.WaitForSight;
+		if (waiting && owner.Runner.SimulationTime >= sightDeadline)
 		{
-			StopCombat(Target.CanTarget ? "Tracked target no longer visible" : "Tracked target unavailable");
+			StopCombat("Sight wait expired");
 			return;
 		}
 
-		if (State == CombatState.Approach) UpdateApproach(position);
+		if (!ReadSighting(sensor, Target))
+		{
+			if (!waiting) BeginSightWait();
+			return;
+		}
+
+		if (waiting) BeginEngagement(position, "Reacquired");
+		else if (State == CombatState.Approach) UpdateApproach(position);
 		else UpdateFire();
 	}
 
@@ -102,18 +113,7 @@ public sealed class TankCombat : MonoBehaviour
 			Target = target;
 			TargetVersion = target.Version;
 			EngageOrigin = position;
-			ContactDistance = Mathf.Sqrt(FlatDistanceSquared(LastSeenPosition, position));
-
-			string reason = $"Detected {target.name} at {ContactDistance:0.0} m, waypoint {PatrolIndex + 1}";
-			if (ContactDistance <= fireRange)
-				BeginFire(reason);
-			else
-			{
-				double now = owner.Runner.SimulationTime;
-				approachDeadline = now + approachTimeout;
-				ChangeState(CombatState.Approach, reason);
-				if (!TryPlanApproach(position, now, false, out string failure)) StopCombat(failure);
-			}
+			BeginEngagement(position, "Detected");
 			return;
 		}
 
@@ -121,6 +121,33 @@ public sealed class TankCombat : MonoBehaviour
 
 		PatrolIndex = (PatrolIndex + 1) % patrol.Length;
 		MovePatrol();
+	}
+
+	private void BeginEngagement(Vector3 position, string eventName)
+	{
+		ContactDistance = Mathf.Sqrt(FlatDistanceSquared(LastSeenPosition, position));
+		string reason = $"{eventName} {Target.name} at {ContactDistance:0.0} m, waypoint {PatrolIndex + 1}";
+		if (ContactDistance <= fireRange)
+		{
+			BeginFire(reason);
+			return;
+		}
+
+		double now = owner.Runner.SimulationTime;
+		approachDeadline = now + approachTimeout;
+		ChangeState(CombatState.Approach, reason);
+		if (!TryPlanApproach(position, now, false, out string failure)) StopCombat(failure);
+	}
+
+	private void BeginSightWait()
+	{
+		owner.StopAttack();
+		owner.StopMove();
+		moveCommand = owner.CommandId;
+		attackStarted = false;
+
+		sightDeadline = owner.Runner.SimulationTime + sightWait;
+		ChangeState(CombatState.WaitForSight, "Tracked target no longer visible");
 	}
 
 	private void UpdateApproach(Vector3 position)
@@ -292,6 +319,7 @@ public sealed class TankCombat : MonoBehaviour
 		ContactDistance = 0f;
 		plannedTarget = default;
 		approachDeadline = nextPlanTime = 0d;
+		sightDeadline = 0d;
 		attackStarted = false;
 	}
 
