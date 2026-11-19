@@ -158,6 +158,11 @@ public sealed class TankAttackDemoEditor : Editor
 			if (GUILayout.Button("사격 중 강제 이동 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ForceMove);
 			if (GUILayout.Button("이동 명령을 퇴각으로 교체 → 도착 후 대기")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Retreat);
 			if (GUILayout.Button("실제 주행 중 명령 취소 → 정지")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.CancelOrder);
+			EditorGUILayout.Space();
+			EditorGUILayout.LabelField("비치명 피격 반응", EditorStyles.boldLabel);
+			if (GUILayout.Button("연속 피격 → 주변 확인 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.HitReturn);
+			if (GUILayout.Button("피격 확인 중 표적 발견 → 교전")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.HitEngage);
+			if (GUILayout.Button("피격 확인 중 퇴각 명령 우선")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.HitOrder);
 		}
 		using (new EditorGUI.DisabledScope(!Application.isPlaying || (check?.IsRunning != true && demo.Enemy == null)))
 		{

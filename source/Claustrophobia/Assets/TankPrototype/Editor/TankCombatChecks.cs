@@ -13,12 +13,12 @@ internal sealed class TankCombatChecks
 	{
 		BriefCover, Reacquire, Return, All, ShotBlock, RepositionFire,
 		NoRepositionPoint, RepositionStalled, RepositionStillBlocked, RepositionReturnUnavailable,
-		ForceMove, Retreat, CancelOrder
+		ForceMove, Retreat, CancelOrder, HitReturn, HitEngage, HitOrder
 	}
 
 	internal const string SuitePath = "Builds/TankCombatIntegration/play-results.txt";
 	internal const string ScenarioPath = "Builds/TankCombatIntegration/last-scenario.txt";
-	internal const int SuiteCount = 23;
+	internal const int SuiteCount = 27;
 	private const string MenuPath = "Tools/Tank/AI Test/Run Combat Checks";
 
 	internal static TankCombatChecks Current { get; private set; }
@@ -112,6 +112,9 @@ internal sealed class TankCombatChecks
 				case Scenario.ForceMove: await RunCase("강제 이동 → 순찰 복귀", ForceMove); break;
 				case Scenario.Retreat: await RunCase("퇴각 → 도착 후 정지", Retreat); break;
 				case Scenario.CancelOrder: await RunCase("이동 중 명령 취소", CancelOrder); break;
+				case Scenario.HitReturn: await RunCase("피격 → 주변 확인 → 순찰 복귀", HitReturn); break;
+				case Scenario.HitEngage: await RunCase("피격 확인 중 표적 발견 → 교전", HitEngage); break;
+				case Scenario.HitOrder: await RunCase("피격 확인 중 퇴각 명령 우선", HitOrder); break;
 				default: await RunAll(); break;
 			}
 			int passed = 0;
@@ -170,6 +173,10 @@ internal sealed class TankCombatChecks
 		await RunCase("21 퇴각 → 도착 후 정지", Retreat);
 		await RunCase("22 이동 중 명령 취소", CancelOrder);
 		await RunCase("23 갈 수 없는 명령 목적지 → 정지", OrderPathFailure);
+		await RunCase("24 연속 피격 → 주변 확인 후 기존 순찰 복귀", HitReturn);
+		await RunCase("25 피격 확인 중 표적 발견 → 교전", HitEngage);
+		await RunCase("26 피격 확인 중 퇴각 명령 우선", HitOrder);
+		await RunCase("27 피격 확인 중 파괴 → 정지", HitDestroyed);
 	}
 
 	private async Task RunCase(string name, Func<Task<string>> test)
@@ -644,6 +651,111 @@ internal sealed class TankCombatChecks
 		return Combat.LastStopReason;
 	}
 
+	private async Task<string> HitReturn()
+	{
+		await StartHiddenPatrol();
+		int index = Combat.PatrolIndex;
+		Vector3 goal = AI.Destination;
+		Vector3 forward = AI.transform.forward;
+		await BeginHitCheck();
+		double started = SimulationTime;
+		await Wait(() => Vector3.SignedAngle(forward, AI.transform.forward, Vector3.up) <= -15f,
+			2f, "피격 후 차체가 실제로 왼쪽을 돌아보지 않았어요.");
+		await Wait(() => SimulationTime - started >= 1.1, 2f, "두 번째 피격 시점까지 진행하지 못했어요.");
+		Require(Combat.State == State.CheckAfterHit, "두 번째 피격 전 주변 확인이 이미 끝났어요.");
+		demo.DamageEnemy();
+		Require(demo.EnemyHealth.DamageHitCount == 2 && !demo.EnemyHealth.Destroyed, "두 번째 비치명 피해가 적용되지 않았어요.");
+
+		await Wait(() => Combat.State == State.ReturnToPatrol, 4f, "표적을 못 찾고도 순찰 복귀가 시작되지 않았어요.");
+		double elapsed = SimulationTime - started;
+		Require(elapsed <= 3.08 && Combat.PatrolIndex == index && AI.Destination == goal
+			&& Combat.Target == null && gun.ShotCount == 0, $"피격 확인 시간, 복귀 경유점 또는 발사가 예상과 달라요. {elapsed:F2}초");
+
+		demo.DamageEnemy();
+		await Wait(() => Combat.State == State.Patrol, 12f, "기존 경유점에 도착해 순찰을 재개하지 않았어요.");
+		double resumed = SimulationTime;
+		await Wait(() =>
+		{
+			Require(Combat.State == State.Patrol && demo.EnemyHealth.DamageHitCount == 3,
+				"복귀 중 피격이 순찰을 재개한 뒤 다시 처리됐어요.");
+			return SimulationTime - resumed >= 0.6;
+		}, 2f, "순찰 재개 이후 관찰 시간이 지나지 않았어요.");
+		return $"연속 피격에도 {elapsed:F2}초에 확인 종료, 기존 {index + 1}번 경유점 복귀, 발사 0발";
+	}
+
+	private async Task<string> HitEngage()
+	{
+		await StartHiddenPatrol();
+		Vector3 forward = AI.transform.forward;
+		await BeginHitCheck();
+		await Wait(() => Vector3.SignedAngle(forward, AI.transform.forward, Vector3.up) < -18f,
+			2f, "표적을 옮기기 전 차체 회전을 확인하지 못했어요.");
+		Vector3 contact = AI.transform.position + Quaternion.AngleAxis(-65f, Vector3.up) * forward * 12f;
+		contact.y = demo.SearchContact.y;
+		TankTarget target = demo.CombatTargetHealth.GetComponent<TankTarget>();
+		Require(demo.MoveCombatTarget(contact), "차체 확인 방향으로 표적을 옮기지 못했어요.");
+		await WaitForAttack(target);
+		await WaitForShot();
+
+		demo.DamageEnemy();
+		double hit = SimulationTime;
+		await Wait(() =>
+		{
+			Require(Combat.State == State.StopAndFire && Combat.Target == target, "교전 중 피격으로 원래 표적을 잃었어요.");
+			return SimulationTime - hit >= 0.4;
+		}, 2f, "교전 중 피격 후 진행하지 못했어요.");
+		return "실제 시야에 들어온 표적에 조준·발사, 교전 중 추가 피격에도 교전 유지";
+	}
+
+	private async Task<string> HitOrder()
+	{
+		await StartHiddenPatrol();
+		await BeginHitCheck();
+		Vector3 point = AI.transform.position + new Vector3(-4f, 0f, 5f);
+		Require(Combat.RetreatTo(point) && Combat.State == State.Retreat, "퇴각이 피격 확인을 중단시키지 못했어요.");
+		demo.DamageEnemy();
+		await Wait(() =>
+		{
+			CheckQuiet(0);
+			Require(AI.Destination == point && Combat.State is State.Retreat or State.Idle, "퇴각 도중 다른 행동이 시작됐어요.");
+			return Combat.State == State.Idle;
+		}, 15f, "피격 후 퇴각 지점에 도착하지 않았어요.");
+		Require(Combat.LastStopReason == "Retreat completed" && demo.EnemyHealth.DamageHitCount == 2,
+			"퇴각 또는 두 번째 피격을 확인하지 못했어요. " + Combat.LastStopReason);
+		return "피격 확인 중 새 퇴각 명령으로 전환, 다시 맞아도 목적지까지 이동";
+	}
+
+	private async Task<string> HitDestroyed()
+	{
+		await StartHiddenPatrol();
+		await BeginHitCheck();
+		demo.DestroyEnemy();
+		await Wait(() => !AI.CanAct && Combat.State == State.Idle, 2f, "파괴 후에도 피격 확인이 끝나지 않았어요.");
+		Require(Combat.LastStopReason == "Self destroyed" && !Combat.ForceMove(AI.transform.position)
+			&& AI.MoveStatus == TankAI.MoveState.Idle && AI.LeftDriveInput == 0f && AI.RightDriveInput == 0f,
+			"파괴 후 주행 입력이 남았거나 새 명령을 받았어요.");
+		return "파괴 즉시 회전과 이동 중단, 새 이동 명령 거절";
+	}
+
+	private async Task StartHiddenPatrol()
+	{
+		StartSearch(hidden: true, frameContact: true);
+		Vector3 start = AI.transform.position;
+		await Wait(() => Combat.State == State.Patrol && AI.MoveStatus == TankAI.MoveState.Moving
+			&& !AI.Sensor.IsVisible && FlatDistance(start, AI.transform.position) >= 0.7f,
+			8f, "표적을 보지 못한 상태로 실제 순찰 주행을 시작하지 않았어요.");
+	}
+
+	private async Task BeginHitCheck()
+	{
+		demo.DamageEnemy();
+		await Wait(() => Combat.State == State.CheckAfterHit, 2f, "비치명 피해 직후 주변 확인으로 전환하지 않았어요.");
+		Require(!demo.EnemyHealth.Destroyed && demo.EnemyHealth.DamageHitCount == 1
+			&& Combat.Target == null && Combat.LastSeenTime < 0 && AI.MoveStatus == TankAI.MoveState.Idle,
+			"피격 후 순찰 이동이 남았거나 시야 없이 표적을 얻었어요.");
+		CheckQuiet(0);
+	}
+
 	private void CheckQuiet(int shots)
 	{
 		Require(gun.ShotCount == shots && AI.AttackStatus == TankAI.AttackState.Idle,
@@ -800,6 +912,8 @@ internal sealed class TankCombatChecks
 			Timeline.Add($"+{SimulationTime - startTime:F2}초  {Label(lastState)}  |  경유점 {waypointText}  |  발사 {gun.ShotCount}발");
 			if (lastState == State.Reposition)
 				Timeline.Add($"위치 변경 {Combat.RepositionCount}회 | 이동 목적지 {AI.Destination:F2}");
+			else if (lastState == State.CheckAfterHit)
+				Timeline.Add($"HP {demo.EnemyHealth.CurrentHP:F0} | 피격 {demo.EnemyHealth.DamageHitCount}회");
 			else if (lastState is State.MoveToLastSeen or State.ReturnToPatrol or State.ForcedMove or State.Retreat)
 				Timeline.Add($"이동 목적지 {AI.Destination:F2}");
 			if (lastState == State.Idle && !string.IsNullOrEmpty(Combat.LastStopReason))
@@ -845,6 +959,7 @@ internal sealed class TankCombatChecks
 		State.Reposition => "위치 변경 시작",
 		State.ForcedMove => "강제 이동",
 		State.Retreat => "퇴각",
+		State.CheckAfterHit => "피격 후 주변 확인",
 		_ => "정지"
 	};
 }

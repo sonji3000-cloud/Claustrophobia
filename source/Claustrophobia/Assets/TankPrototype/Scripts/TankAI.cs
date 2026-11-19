@@ -88,6 +88,7 @@ public sealed class TankAI : NetworkBehaviour
 	public TankPath Path => path;
 	public TankSensor Sensor => sensor;
 	public TankCombat Combat => combat;
+	internal int DamageHitCount => health.DamageHitCount;
 	public uint CommandId { get; private set; }
 	public int RetryCount { get; private set; }
 	public int RetryLimit => retryLimit;

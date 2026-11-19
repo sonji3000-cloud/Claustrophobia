@@ -7,10 +7,11 @@ public sealed class TankCombat : MonoBehaviour
 	public enum CombatState
 	{
 		Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen, CheckSurroundings, ReturnToPatrol, Reposition,
-		ForcedMove, Retreat
+		ForcedMove, Retreat, CheckAfterHit
 	}
 
 	private const float MaxSearchTime = 10f;
+	private const float HitCheckTime = 3f;
 
 	[SerializeField] private TankAI owner;
 	[SerializeField, Min(0f)] private float fireRange = 28f;
@@ -31,6 +32,7 @@ public sealed class TankCombat : MonoBehaviour
 	private Transform[] patrol;
 	private readonly List<(TankTarget Target, uint Version)> suppressedTargets = new(2);
 	private int suppressionScan;
+	private int damageHits;
 	private uint moveCommand;
 	private Vector3 plannedTarget;
 	private double approachDeadline;
@@ -69,6 +71,7 @@ public sealed class TankCombat : MonoBehaviour
 
 		patrol = points;
 		PatrolIndex = 0;
+		damageHits = owner.DamageHitCount;
 		moveCommand = owner.CommandId;
 		LastStopReason = "";
 		LastRepositionFailure = "";
@@ -108,6 +111,10 @@ public sealed class TankCombat : MonoBehaviour
 
 	internal void Tick(Vector3 position)
 	{
+		int hits = owner.DamageHitCount;
+		bool wasHit = hits > damageHits;
+		damageHits = hits;
+
 		if (State == CombatState.Idle) return;
 		if (owner.CommandId != moveCommand)
 		{
@@ -131,12 +138,20 @@ public sealed class TankCombat : MonoBehaviour
 		UpdateSuppression(sensor);
 		if (State == CombatState.Patrol)
 		{
-			UpdatePatrol(sensor, position);
+			UpdatePatrol(sensor, position, wasHit);
 			return;
 		}
 		if (State == CombatState.ReturnToPatrol)
 		{
 			UpdateReturn();
+			return;
+		}
+
+		if (State == CombatState.CheckAfterHit)
+		{
+			double now = owner.Runner.SimulationTime;
+			if (now >= searchStepDeadline || !TryEngage(sensor, position, "Detected while checking after hit"))
+				UpdateSweep(now);
 			return;
 		}
 
@@ -178,7 +193,7 @@ public sealed class TankCombat : MonoBehaviour
 		else BeginReturn("Forced move completed");
 	}
 
-	private void UpdatePatrol(TankSensor sensor, Vector3 position)
+	private void UpdatePatrol(TankSensor sensor, Vector3 position, bool wasHit)
 	{
 		if (owner.MoveStatus == TankAI.MoveState.Idle && !MovePatrol()) return;
 		if (owner.MoveStatus == TankAI.MoveState.Failed)
@@ -187,13 +202,11 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
-		TankTarget target = SelectPatrolTarget(sensor);
-		if (target != null && ReadSighting(sensor, target))
+		if (TryEngage(sensor, position, "Detected")) return;
+
+		if (wasHit && sensor.CanObserve && !sensor.IsVisible)
 		{
-			Target = target;
-			TargetVersion = target.Version;
-			EngageOrigin = position;
-			BeginEngagement(position, "Detected");
+			BeginSweep(owner.Runner.SimulationTime, CombatState.CheckAfterHit, "Hit during patrol");
 			return;
 		}
 
@@ -201,6 +214,18 @@ public sealed class TankCombat : MonoBehaviour
 
 		PatrolIndex = (PatrolIndex + 1) % patrol.Length;
 		MovePatrol();
+	}
+
+	private bool TryEngage(TankSensor sensor, Vector3 position, string reason)
+	{
+		TankTarget target = SelectPatrolTarget(sensor);
+		if (target == null || !ReadSighting(sensor, target)) return false;
+
+		Target = target;
+		TargetVersion = target.Version;
+		EngageOrigin = position;
+		BeginEngagement(position, reason);
+		return true;
 	}
 
 	private TankTarget SelectPatrolTarget(TankSensor sensor)
@@ -303,7 +328,7 @@ public sealed class TankCombat : MonoBehaviour
 		else if (!IsRouteInRange(position))
 			BeginReturn("Search left engagement radius");
 		else if (owner.MoveStatus == TankAI.MoveState.Arrived)
-			BeginSweep(now);
+			BeginSweep(now, CombatState.CheckSurroundings, "Reached last seen position");
 		else if (now >= searchStepDeadline)
 			BeginReturn("Search movement timed out");
 	}
@@ -339,13 +364,13 @@ public sealed class TankCombat : MonoBehaviour
 		ChangeState(CombatState.MoveToLastSeen, "Moving to last seen position");
 	}
 
-	private void BeginSweep(double now)
+	private void BeginSweep(double now, CombatState state, string reason)
 	{
 		sweepForward = owner.transform.forward;
 		sweepForward.y = 0f;
 		sweepingRight = false;
-		searchStepDeadline = now + sweepTimeout;
-		ChangeState(CombatState.CheckSurroundings, "Reached last seen position");
+		searchStepDeadline = now + (state == CombatState.CheckAfterHit ? HitCheckTime : sweepTimeout);
+		ChangeState(state, reason);
 		SetSweepDrive(-1f);
 	}
 
