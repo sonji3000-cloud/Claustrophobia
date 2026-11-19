@@ -185,6 +185,10 @@ public sealed class TankAttackDemoEditor : Editor
 		{
 			EditorGUILayout.LabelField("표적", ai.Sensor != null && ai.Sensor.IsVisible ? "보임" : "미확인");
 			EditorGUILayout.LabelField("공격 상태 / 차단 사유", $"{ai.AttackStatus} / {ai.AttackBlockReason}");
+			if (combat.State == TankCombat.CombatState.Reposition)
+				EditorGUILayout.LabelField("위치 변경 시작 / 차단 시간", $"{combat.RepositionBlockSeconds:F2}초");
+			else if (ai.IsShotBlocked)
+				EditorGUILayout.LabelField("사선 차단 시간", $"{ai.ShotBlockedSeconds:F2}초");
 		}
 		if (ai.TryGetComponent(out TankGun gun)) EditorGUILayout.LabelField("실제 발사 수", $"{gun.ShotCount}발");
 		using (new EditorGUI.DisabledScope(true))

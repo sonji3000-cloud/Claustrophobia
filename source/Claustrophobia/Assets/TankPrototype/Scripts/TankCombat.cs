@@ -5,7 +5,7 @@ public sealed class TankCombat : MonoBehaviour
 {
 	public enum CombatState
 	{
-		Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen, CheckSurroundings, ReturnToPatrol
+		Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen, CheckSurroundings, ReturnToPatrol, Reposition
 	}
 
 	private const float MaxSearchTime = 10f;
@@ -18,6 +18,7 @@ public sealed class TankCombat : MonoBehaviour
 	[SerializeField, Min(0f)] private float replanDistance = 3f;
 	[SerializeField, Min(0.02f)] private float replanInterval = 0.5f;
 	[SerializeField, Min(0.1f)] private float approachTimeout = 8f;
+	[SerializeField, Min(0.02f)] private float shotBlockWait = 0.3f;
 	[SerializeField, Min(0.02f)] private float sightWait = 0.75f;
 	[SerializeField, Min(0.1f)] private float searchMoveTimeout = 6f;
 	[SerializeField, Range(1f, 90f)] private float sweepAngle = 45f;
@@ -42,6 +43,7 @@ public sealed class TankCombat : MonoBehaviour
 	public Vector3 LastSeenPosition { get; private set; }
 	public double LastSeenTime { get; private set; } = -1d;
 	public float ContactDistance { get; private set; }
+	public float RepositionBlockSeconds { get; private set; }
 	public string LastStopReason { get; private set; } = "";
 
 	public bool StartPatrol(Transform[] points)
@@ -109,7 +111,7 @@ public sealed class TankCombat : MonoBehaviour
 		}
 
 		if (State == CombatState.Approach) UpdateApproach(position);
-		else UpdateFire();
+		else if (State == CombatState.StopAndFire) UpdateFire();
 	}
 
 	private void UpdatePatrol(TankSensor sensor, Vector3 position)
@@ -401,6 +403,8 @@ public sealed class TankCombat : MonoBehaviour
 		if (attackStarted)
 		{
 			if (owner.AttackStatus == TankAI.AttackState.Idle) StopCombat("Attack target unavailable");
+			else if (RepositionBlockSeconds == 0f && owner.IsShotBlocked
+				&& owner.ShotBlockedSeconds + 0.0001f >= shotBlockWait) BeginReposition();
 			return;
 		}
 
@@ -413,6 +417,15 @@ public sealed class TankCombat : MonoBehaviour
 		}
 		attackStarted = true;
 		moveCommand = owner.CommandId;
+	}
+
+	private void BeginReposition()
+	{
+		RepositionBlockSeconds = owner.ShotBlockedSeconds;
+		owner.StopAttack();
+		moveCommand = owner.CommandId;
+		attackStarted = false;
+		ChangeState(CombatState.Reposition, $"Shot path blocked for {RepositionBlockSeconds:F2}s");
 	}
 
 	private static float FlatDistanceSquared(Vector3 from, Vector3 to)
@@ -472,6 +485,7 @@ public sealed class TankCombat : MonoBehaviour
 		EngageOrigin = LastSeenPosition = default;
 		LastSeenTime = -1d;
 		ContactDistance = 0f;
+		RepositionBlockSeconds = 0f;
 		plannedTarget = default;
 		approachDeadline = nextPlanTime = 0d;
 		searchStepDeadline = searchDeadline = 0d;

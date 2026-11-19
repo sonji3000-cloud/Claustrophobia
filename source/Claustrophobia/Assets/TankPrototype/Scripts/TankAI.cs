@@ -58,6 +58,7 @@ public sealed class TankAI : NetworkBehaviour
 	private Transform attackTarget;
 	private TankHealth targetHealth;
 	private float shotCheckLeft;
+	private double shotBlockedSince = -1d;
 	private bool alignPath;
 	private int watchIndex = -1;
 	private float bestDistance;
@@ -117,6 +118,8 @@ public sealed class TankAI : NetworkBehaviour
 	public TankHealth TargetHealth => targetHealth;
 	public AttackState AttackStatus { get; private set; }
 	public string AttackBlockReason { get; private set; } = "";
+	public bool IsShotBlocked => shotBlockedSince >= 0d;
+	public float ShotBlockedSeconds { get; private set; }
 	internal bool HasLiveTarget => IsHost && attackTarget != null && attackTarget.gameObject.activeInHierarchy
 		&& targetHealth != null && attackTarget.IsChildOf(targetHealth.transform)
 		&& targetHealth.isActiveAndEnabled && !targetHealth.Destroyed;
@@ -165,6 +168,7 @@ public sealed class TankAI : NetworkBehaviour
 	{
 		if (!IsHost)
 		{
+			ClearShotBlock();
 			if (sensor != null) sensor.ClearState();
 			if (combat != null && combat.State != TankCombat.CombatState.Idle)
 				combat.ClearState("Host authority lost");
@@ -624,6 +628,7 @@ public sealed class TankAI : NetworkBehaviour
 		targetHealth = null;
 		aimInput = Vector2.zero;
 		shotCheckLeft = 0f;
+		ClearShotBlock();
 		AttackStatus = AttackState.Idle;
 		AttackBlockReason = "";
 		if (gun != null) gun.ClearAIRequest();
@@ -641,6 +646,7 @@ public sealed class TankAI : NetworkBehaviour
 		}
 		if (targetHealth.Destroyed)
 		{
+			ClearShotBlock();
 			aimInput = Vector2.zero;
 			gun.ClearAIRequest();
 			AttackStatus = AttackState.TargetDown;
@@ -680,6 +686,7 @@ public sealed class TankAI : NetworkBehaviour
 			case TankGun.ChamberState.LoadedOpen:
 				QueueLoad(TankInputButton.Close); return;
 			case TankGun.ChamberState.Recovering:
+				ClearShotBlock();
 				AttackStatus = AttackState.Reloading;
 				AttackBlockReason = "";
 				return;
@@ -688,6 +695,7 @@ public sealed class TankAI : NetworkBehaviour
 		// Muzzle position changes with the pivots. Recheck the actual pose after applying aim.
 		if (!TryGetDirection(out direction) || Vector3.Angle(gun.Muzzle.forward, direction) > aimTolerance)
 		{
+			ClearShotBlock();
 			AttackStatus = AttackState.Aiming;
 			AttackBlockReason = "";
 			return;
@@ -706,11 +714,14 @@ public sealed class TankAI : NetworkBehaviour
 		}
 
 		TankPrediction prediction = ballistics.Predict(conditions, gun.OwnerColliders);
-		if (!prediction.HasHit || prediction.Collider == null || prediction.Collider.GetComponentInParent<TankHealth>() != targetHealth)
+		bool hasHit = prediction.HasHit && prediction.Collider != null;
+		if (!hasHit || prediction.Collider.GetComponentInParent<TankHealth>() != targetHealth)
 		{
-			BlockAttack(prediction.HasHit ? "Shot path obstructed" : "No target hit predicted");
+			BlockAttack(hasHit ? "Shot path obstructed" : "No target hit predicted", shotObstructed: hasHit);
 			return;
 		}
+
+		ClearShotBlock();
 		AttackBlockReason = "";
 		if (gun.RequestAI(TankInputButton.Fire, true)) AttackStatus = AttackState.Attacking;
 	}
@@ -723,17 +734,32 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void QueueLoad(TankInputButton action)
 	{
+		ClearShotBlock();
 		AttackStatus = AttackState.Reloading;
 		AttackBlockReason = "";
 		gun.RequestAI(action, true);
 	}
 
-	private void BlockAttack(string reason)
+	private void BlockAttack(string reason, bool shotObstructed = false)
 	{
+		if (shotObstructed)
+		{
+			double now = Runner.SimulationTime;
+			if (!IsShotBlocked) shotBlockedSince = now;
+			ShotBlockedSeconds = (float)(now - shotBlockedSince);
+		}
+		else ClearShotBlock();
+
 		aimInput = Vector2.zero;
 		gun.ClearAIRequest();
 		AttackStatus = AttackState.Blocked;
 		AttackBlockReason = reason;
+	}
+
+	private void ClearShotBlock()
+	{
+		shotBlockedSince = -1d;
+		ShotBlockedSeconds = 0f;
 	}
 
 	public void StopActions() => StopActions("Actions stopped");
@@ -758,6 +784,7 @@ public sealed class TankAI : NetworkBehaviour
 
 	public override void Despawned(NetworkRunner runner, bool hasState)
 	{
+		ClearShotBlock();
 		if (sensor != null) sensor.ClearState();
 		if (combat != null) combat.ClearState("Despawned");
 	}

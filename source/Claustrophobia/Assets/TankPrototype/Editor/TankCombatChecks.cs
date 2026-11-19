@@ -13,7 +13,7 @@ internal sealed class TankCombatChecks
 
 	internal const string SuitePath = "Builds/TankCombatIntegration/play-results.txt";
 	internal const string ScenarioPath = "Builds/TankCombatIntegration/last-scenario.txt";
-	internal const int SuiteCount = 12;
+	internal const int SuiteCount = 14;
 	private const string MenuPath = "Tools/Tank/AI Test/Run Combat Checks";
 
 	internal static TankCombatChecks Current { get; private set; }
@@ -146,6 +146,8 @@ internal sealed class TankCombatChecks
 		await RunCase("10 접근 경로 없음 → 정지", NoApproachPath);
 		await RunCase("11 주변 확인 중 재발견", SweepReacquire);
 		await RunCase("12 목격 지점 이동 시간 초과 → 복귀", SearchTimeout);
+		await RunCase("13 사선 차단 → 위치 변경 시작", ShotBlock);
+		await RunCase("14 짧은 사선 차단 뒤 예상 명중 없음", ShotBlockClears);
 	}
 
 	private async Task RunCase(string name, Func<Task<string>> test)
@@ -184,7 +186,8 @@ internal sealed class TankCombatChecks
 		await Wait(() => SimulationTime - loss >= 0.15, 1f, "가림 대기를 확인하지 못했어요.");
 		demo.SetCombatCover(false);
 		await WaitForAttack(target);
-		Require(!visited.Contains(State.MoveToLastSeen) && Combat.PatrolIndex == waypoint, "짧은 가림에서 수색을 시작했거나 경유점이 바뀌었어요.");
+		Require(!visited.Contains(State.MoveToLastSeen) && !visited.Contains(State.Reposition)
+			&& Combat.PatrolIndex == waypoint, "짧은 가림에서 수색·위치 변경을 시작했거나 경유점이 바뀌었어요.");
 		if (scenario == Scenario.BriefCover)
 		{
 			demo.SetCombatCover(true);
@@ -195,31 +198,73 @@ internal sealed class TankCombatChecks
 
 	private async Task<string> ShotBlock()
 	{
+		TankBallistics ballistics = await BeginShotBlock();
+		Require(gun.TryGetShotConditions(out TankShotConditions conditions, out string reason), reason);
+		TankPrediction hit = ballistics.Predict(conditions, gun.OwnerColliders);
+		Require(hit.HasHit && hit.Collider != null && hit.Collider.gameObject == demo.ShotBlockWall,
+			$"포탄 경로의 첫 충돌체가 낮은 벽이어야 해요. 실제 결과 {hit.Collider?.name ?? hit.Reason}");
+		Timeline.Add($"표적 보임 / 사선 차단 ({hit.Collider.name}) / 실제 발사 {gun.ShotCount}발");
+
+		uint attack = AI.CommandId;
+		int patrolIndex = Combat.PatrolIndex;
+		await Wait(() =>
+		{
+			Require(AI.Sensor.IsVisible && gun.ShotCount == 0, "사선 차단 중 시야가 끊겼거나 포탄이 발사됐어요.");
+			return Combat.State == State.Reposition;
+		}, 2f, "차단이 이어져도 위치 변경을 시작하지 않았어요.");
+		float delay = Combat.RepositionBlockSeconds;
+		Require(delay >= 0.29f && delay <= 0.45f, $"사선 차단 확인 시간이 약 0.3초여야 해요. 실제 {delay:F2}초");
+
+		double started = SimulationTime;
+		await Wait(() =>
+		{
+			Require(Combat.State == State.Reposition && Combat.PatrolIndex == patrolIndex && AI.CommandId == attack + 1
+				&& AI.AttackStatus == TankAI.AttackState.Idle && !AI.IsShotBlocked && gun.ShotCount == 0,
+				"위치 변경 준비 중에 새 명령이 나갔거나 사격이 재개됐어요.");
+			return SimulationTime - started >= 0.35;
+		}, 2f, "위치 변경이 한 번만 시작됐는지 확인하지 못했어요.");
+
+		keepScene = scenario == Scenario.ShotBlock;
+		return $"표적 보임 / 사선 차단 {delay:F2}초 / 위치 변경 시작 1회 / 실제 발사 {gun.ShotCount}발";
+	}
+
+	private async Task<string> ShotBlockClears()
+	{
+		TankBallistics ballistics = await BeginShotBlock();
+		await Wait(() => AI.ShotBlockedSeconds >= 0.08f, 2f, "짧은 사선 차단 시간이 쌓이지 않았어요.");
+		Require(Combat.State == State.StopAndFire && AI.ShotBlockedSeconds < 0.3f,
+			"시험 중 사선 차단이 0.3초를 넘기기 전에 끊기지 않았어요.");
+
+		float predictionTime = ballistics.MaxPredictionTime;
+		ballistics.MaxPredictionTime = 0f;
+		try
+		{
+			await Wait(() => AI.AttackStatus == TankAI.AttackState.Blocked && AI.AttackBlockReason == "No target hit predicted",
+				2f, "예상 명중 없음 상태를 확인하지 못했어요.");
+			double missed = SimulationTime;
+			await Wait(() =>
+			{
+				Require(Combat.State == State.StopAndFire && AI.Sensor.IsVisible && !AI.IsShotBlocked
+					&& AI.ShotBlockedSeconds == 0f && gun.ShotCount == 0,
+					"예상 명중 없음 상태에서 기존 사선 차단 시간이 남았거나 위치 변경을 시작했어요.");
+				return SimulationTime - missed >= 0.35;
+			}, 2f, "예상 명중 없음 상태를 계속 확인하지 못했어요.");
+		}
+		finally { ballistics.MaxPredictionTime = predictionTime; }
+
+		return "사선 차단 시간이 0초로 초기화되고, 예상 명중 없음이 이어져도 위치 변경 0회";
+	}
+
+	private async Task<TankBallistics> BeginShotBlock()
+	{
 		Require(demo.RunShotBlockTest(ActiveCase), "사선 차단 시험을 시작하지 못했어요.");
 		await Wait(() => Combat.State == State.WaitForSight || AI.AttackStatus == TankAI.AttackState.Blocked
 			|| gun.ShotCount > 0, 8f, "조준 후 포탄 경로 차단을 확인하지 못했어요.");
 		Require(Combat.State == State.StopAndFire && AI.Sensor.IsVisible && Combat.Target == AI.Sensor.SelectedTarget,
 			"낮은 벽 앞에서 표적이 보이지 않아요.");
-		Require(gun.ShotCount == 0 && AI.AttackBlockReason == "Shot path obstructed",
+		Require(gun.ShotCount == 0 && AI.IsShotBlocked,
 			$"실제 발사 {gun.ShotCount}발 · 차단 사유 {AI.AttackBlockReason}");
-
-		Require(gun.TryGetShotConditions(out TankShotConditions conditions, out string reason), reason);
-		TankPrediction hit = AI.GetComponent<TankBallistics>().Predict(conditions, gun.OwnerColliders);
-		Require(hit.HasHit && hit.Collider != null && hit.Collider.gameObject == demo.ShotBlockWall,
-			$"포탄 경로의 첫 충돌체가 낮은 벽이어야 해요. 실제 결과 {hit.Collider?.name ?? hit.Reason}");
-
-		double blocked = SimulationTime;
-		await Wait(() =>
-		{
-			Require(Combat.State == State.StopAndFire && AI.Sensor.IsVisible && gun.ShotCount == 0,
-				"사선이 막힌 뒤에 시야가 끊겼거나 포탄이 발사됐어요.");
-			return SimulationTime - blocked >= 0.35 && AI.AttackBlockReason == "Shot path obstructed";
-		}, 2f, "사선 차단이 유지되는지 확인하지 못했어요.");
-
-		string result = $"표적 보임 / 사선 차단 ({hit.Collider.name}) / 실제 발사 {gun.ShotCount}발";
-		Timeline.Add(result);
-		keepScene = true;
-		return result;
+		return AI.GetComponent<TankBallistics>();
 	}
 
 	private async Task<string> Reacquire()
@@ -504,6 +549,7 @@ internal sealed class TankCombatChecks
 		State.MoveToLastSeen => "목격 지점 이동",
 		State.CheckSurroundings => "주변 확인",
 		State.ReturnToPatrol => "순찰 복귀",
+		State.Reposition => "위치 변경 시작",
 		_ => "정지"
 	};
 }
