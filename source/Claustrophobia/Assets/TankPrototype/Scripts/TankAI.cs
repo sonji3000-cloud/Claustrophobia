@@ -70,6 +70,7 @@ public sealed class TankAI : NetworkBehaviour
 	private float airSeconds;
 	private float stopSeconds;
 	private bool stopping;
+	private bool hadHost;
 	private float stopRange;
 	private Vector3 stopPos;
 	private Vector3 stopForward;
@@ -157,32 +158,31 @@ public sealed class TankAI : NetworkBehaviour
 		RetryCount = 0;
 		leftLever = rightLever = 0f;
 		aimInput = Vector2.zero;
-		if (body != null) body.isKinematic = !IsHost;
+		hadHost = IsHost;
+		if (body != null) body.isKinematic = !hadHost;
 		MoveStatus = MoveState.Idle;
 		ClearPath();
 		Destination = body != null ? body.position : transform.position;
 
-		if (IsHost) StopActions();
+		if (hadHost) StopActions();
 	}
 
 	public override void FixedUpdateNetwork()
 	{
 		if (!IsHost)
 		{
-			ClearShotBlock();
-			if (sensor != null) sensor.ClearState();
-			if (combat != null && combat.State != TankCombat.CombatState.Idle)
-				combat.ClearState("Host authority lost");
+			if (hadHost) ClearSession("Host authority lost");
 			return;
 		}
 
-		if (sensor != null) sensor.Tick();
+		hadHost = true;
 		TickCount++;
 		if (!CanAct)
 		{
 			StopActions();
 			return;
 		}
+		if (sensor != null) sensor.Tick();
 		EnsureHostBody();
 
 		if (combat != null && combat.isActiveAndEnabled)
@@ -262,13 +262,13 @@ public sealed class TankAI : NetworkBehaviour
 		ClearMove();
 	}
 
-	private void ClearMove()
+	private void ClearMove(bool stopMotor = true)
 	{
 		MoveStatus = MoveState.Idle;
 		ClearPath();
 		RetryCount = 0;
 		leftLever = rightLever = 0f;
-		if (motor != null) motor.Stop();
+		if (stopMotor && motor != null) motor.Stop();
 	}
 
 	private void ClearPath()
@@ -784,13 +784,20 @@ public sealed class TankAI : NetworkBehaviour
 		if (sensor != null) sensor.ClearState();
 		if (health != null) health.Died -= OnDied;
 		if (IsHost) StopActions();
+		else if (hadHost) ClearSession("Host authority lost");
 	}
 
 	public override void Despawned(NetworkRunner runner, bool hasState)
+		=> ClearSession("Despawned");
+
+	private void ClearSession(string reason)
 	{
-		ClearShotBlock();
+		hadHost = false;
+		CommandId++;
+		ClearAttack();
+		ClearMove(stopMotor: false);
 		if (sensor != null) sensor.ClearState();
-		if (combat != null) combat.ClearState("Despawned");
+		if (combat != null) combat.ClearState(reason);
 	}
 
 	private static bool IsFinite(float value)

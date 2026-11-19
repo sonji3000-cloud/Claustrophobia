@@ -70,6 +70,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		&& shotReturnPoints[0] != null && shotReturnPoints[1] != null && repositionBlocker != null && repositionShotWall != null;
 	public Vector3 SearchContact => searchContact.position;
 	public Vector3 SearchHideout => searchHideout.position;
+	public Vector3 FirstWaypoint => patrolPoints[0].position;
 	public Vector3 SecondWaypoint => patrolPoints[1].position;
 	public bool IsCombatCoverOn => combatWall != null && combatWall.activeSelf;
 	public GameObject ShotBlockWall => shotBlockWall;
@@ -264,6 +265,15 @@ public sealed class TankAttackDemo : MonoBehaviour
 		return true;
 	}
 
+	public bool RunManualPatrol(string name)
+	{
+		if (!CanRunTests || !HasSearchTests || !StartCombatTest(combatStart, null, patrolPoints)) return false;
+
+		TestName = name;
+		ShowCombatArea(combatStart.position, SecondWaypoint);
+		return true;
+	}
+
 	public bool RunShotBlockTest(string name, bool testReturn = false)
 	{
 		if (!CanRunTests || !HasShotBlockTest || (testReturn && !HasRepositionFailureTests)
@@ -329,24 +339,27 @@ public sealed class TankAttackDemo : MonoBehaviour
 		SetBlocker(false);
 		if (!SpawnEnemy(start)) return false;
 
-		try
+		if (point != null)
 		{
-			combatTarget = runner.Spawn(combatTargetPrefab, point.position, point.rotation);
-		}
-		catch (Exception error)
-		{
-			Debug.LogError("[AI COMBAT] Target spawn failed: " + error.Message, this);
-			return false;
+			try
+			{
+				combatTarget = runner.Spawn(combatTargetPrefab, point.position, point.rotation);
+			}
+			catch (Exception error)
+			{
+				Debug.LogError("[AI COMBAT] Target spawn failed: " + error.Message, this);
+				return false;
+			}
 		}
 
-		if (combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(route))
+		if (point != null && combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(route))
 		{
 			EndCombatTest();
 			Debug.LogError("[AI COMBAT] Patrol detection test could not start.", this);
 			return false;
 		}
 
-		CombatTargetHealth = combatTarget.GetComponent<TankHealth>();
+		CombatTargetHealth = combatTarget != null ? combatTarget.GetComponent<TankHealth>() : null;
 		return true;
 	}
 
@@ -543,14 +556,25 @@ public sealed class TankAttackDemo : MonoBehaviour
 		accepted |= Enemy.Attack(targetPoint);
 		accepted |= Enemy.RequestWeapon(TankInputButton.Fire);
 		Rigidbody body = Enemy.GetComponent<Rigidbody>();
+		TankMotor motor = Enemy.GetComponent<TankMotor>();
 		TankAim aim = Enemy.GetComponent<TankAim>();
 		TankGun gun = Enemy.GetComponent<TankGun>();
-		bool stopped = !Enemy.CanAct && !accepted && !gun.CanFire && Enemy.MoveStatus == TankAI.MoveState.Idle
-			&& Enemy.AttackStatus == TankAI.AttackState.Idle && EnemyHealth.DestructionCount == 1
-			&& aim.TurretInput == 0f && aim.GunInput == 0f && body != null
-			&& new Vector2(body.linearVelocity.x, body.linearVelocity.z).sqrMagnitude < 0.0001f
-			&& body.angularVelocity.sqrMagnitude < 0.0001f;
-		DestructionCheck = stopped ? "PASS: stopped; new commands rejected" : "FAIL: inspect AI/body/weapon state";
+		bool driveStopped = motor != null && Enemy.LeftDriveInput == 0f && Enemy.RightDriveInput == 0f
+			&& motor.LeftInput == 0f && motor.RightInput == 0f && motor.AppliedForwardSpeed == 0f && motor.AppliedTurnSpeed == 0f;
+		bool bodyStopped = body != null && motor != null;
+		if (bodyStopped && motor.CanDrive)
+		{
+			Vector3 normal = motor.Ground.GroundNormal;
+			// The motor stops ground travel and yaw while preserving terrain alignment and gravity.
+			bodyStopped = Vector3.ProjectOnPlane(body.linearVelocity, normal).sqrMagnitude < 0.0001f
+				&& Mathf.Abs(Vector3.Dot(body.angularVelocity, normal)) < 0.01f;
+		}
+		bool aiStopped = !Enemy.CanAct && Enemy.MoveStatus == TankAI.MoveState.Idle
+			&& Enemy.AttackStatus == TankAI.AttackState.Idle && EnemyHealth.DestructionCount == 1;
+		bool gunStopped = !gun.CanFire && aim.TurretInput == 0f && aim.GunInput == 0f;
+		bool stopped = aiStopped && !accepted && driveStopped && bodyStopped && gunStopped;
+		DestructionCheck = stopped ? "PASS: stopped; new commands rejected"
+			: $"FAIL: AI stopped={aiStopped}, command accepted={accepted}, drive stopped={driveStopped}, ground motion stopped={bodyStopped}, weapon stopped={gunStopped}";
 		if (stopped) Debug.Log("[AI CHECK] " + DestructionCheck, this);
 		else Debug.LogError("[AI CHECK] " + DestructionCheck, this);
 	}

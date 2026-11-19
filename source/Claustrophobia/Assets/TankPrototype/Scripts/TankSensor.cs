@@ -101,6 +101,7 @@ public sealed class TankSensor : MonoBehaviour
 	}
 
 	public Reading ReadCandidate(int index) => readings[index];
+	internal bool CanTrack(TankTarget target) => CanObserve && CheckCandidate(target) == SightState.Visible;
 
 	public void SetLocalTargets(bool allow)
 	{
@@ -135,7 +136,7 @@ public sealed class TankSensor : MonoBehaviour
 
 		pos = default;
 		time = -1d;
-		if (target == SelectedTarget || !CanObserve || CheckCandidate(target) != SightState.Visible) return false;
+		if (target == SelectedTarget || !CanTrack(target)) return false;
 
 		TankHealth health = target.Health;
 		NetworkObject obj = health.Object;

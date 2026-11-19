@@ -5,6 +5,10 @@ using UnityEngine;
 public sealed class TankAttackDemoEditor : Editor
 {
 	private bool showLegacy;
+	private bool showIndividual;
+	private TankCombatChecks viewedCheck;
+	private int selectedResult;
+	private string[] resultOptions;
 
 	public override bool RequiresConstantRepaint() => Application.isPlaying;
 
@@ -128,18 +132,54 @@ public sealed class TankAttackDemoEditor : Editor
 		}
 	}
 
-	private static void DrawSearchTests(TankAttackDemo demo)
+	private void DrawSearchTests(TankAttackDemo demo)
 	{
 		TankCombatChecks check = TankCombatChecks.Current;
 		if (check != null && !check.IsFor(demo)) check = null;
 		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("자율 교전 · 수색 · 순찰 복귀", EditorStyles.boldLabel);
-		EditorGUILayout.HelpBox(
-			"Play 후 아래 버튼을 누르세요. 버튼이 AI 모드를 켜고 시험을 시작합니다. Game 화면에서 전차를 보고, 아래에서 판정과 상태 전이를 확인하세요.",
-			MessageType.Info);
+		EditorGUILayout.LabelField("전차 AI 시험", EditorStyles.boldLabel);
+		if (!Application.isPlaying)
+			EditorGUILayout.HelpBox("Play를 누르면 전체 검사와 수동 시험을 시작할 수 있습니다.", MessageType.Info);
+		if (check != null) DrawCheckStatus(demo, check);
 		using (new EditorGUI.DisabledScope(!Application.isPlaying || TankCombatChecks.Current?.IsRunning == true))
 		{
 			if (GUILayout.Button($"전체 자동 검사 ({TankCombatChecks.SuiteCount}개)")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.All);
+			if (GUILayout.Button("수동 시험 · 순찰 시작 / 초기화")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Manual);
+		}
+		if (check?.IsRunning == true && GUILayout.Button("진행 중인 검사 중지")) check.Cancel();
+		DrawManualControls(demo, check);
+		showIndividual = EditorGUILayout.Foldout(showIndividual, "개별 자동 검사", true);
+		if (showIndividual) DrawIndividual(demo);
+		if (check != null) DrawResults(check);
+	}
+
+	private static void DrawManualControls(TankAttackDemo demo, TankCombatChecks check)
+	{
+		if (check?.ManualReady != true) return;
+
+		using (new EditorGUI.DisabledScope(!demo.Enemy.CanAct))
+		{
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				if (GUILayout.Button("퇴각 A")) check.OrderManual(retreat: true);
+				if (GUILayout.Button("목적지 B")) check.OrderManual(retreat: false);
+				if (GUILayout.Button("전체 정지")) check.StopManual();
+			}
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				using (new EditorGUI.DisabledScope(demo.EnemyHealth.CurrentHP <= 25f))
+				{
+					if (GUILayout.Button("비치명 피격 · HP -25")) check.DamageManual(lethal: false);
+				}
+				if (GUILayout.Button("자기 전차 파괴")) check.DamageManual(lethal: true);
+			}
+		}
+	}
+
+	private static void DrawIndividual(TankAttackDemo demo)
+	{
+		using (new EditorGUI.DisabledScope(!Application.isPlaying || TankCombatChecks.Current?.IsRunning == true))
+		{
 			if (GUILayout.Button("01 짧은 가림")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BriefCover);
 			if (GUILayout.Button("02 수색 중 재발견")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Reacquire);
 			if (GUILayout.Button("03 끝까지 못 찾음 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Return);
@@ -158,33 +198,70 @@ public sealed class TankAttackDemoEditor : Editor
 			if (GUILayout.Button("사격 중 강제 이동 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ForceMove);
 			if (GUILayout.Button("이동 명령을 퇴각으로 교체 → 도착 후 대기")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Retreat);
 			if (GUILayout.Button("실제 주행 중 명령 취소 → 정지")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.CancelOrder);
+			if (GUILayout.Button("퇴각 A → 목적지 B → 정지")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ReplaceOrder);
 			EditorGUILayout.Space();
 			EditorGUILayout.LabelField("비치명 피격 반응", EditorStyles.boldLabel);
 			if (GUILayout.Button("연속 피격 → 주변 확인 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.HitReturn);
 			if (GUILayout.Button("피격 확인 중 표적 발견 → 교전")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.HitEngage);
 			if (GUILayout.Button("피격 확인 중 퇴각 명령 우선")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.HitOrder);
+			EditorGUILayout.Space();
+			EditorGUILayout.LabelField("종료 우선순위 · 재접근", EditorStyles.boldLabel);
+			if (GUILayout.Button("32m 이탈 시간에 따른 재접근")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Reapproach);
+			if (GUILayout.Button("거리 초과 중 시야 상실 → 수색")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RangeSight);
+			if (GUILayout.Button("재접근 경로 없음 → 정지")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RangeNoPath);
 		}
-		using (new EditorGUI.DisabledScope(!Application.isPlaying || (check?.IsRunning != true && demo.Enemy == null)))
-		{
-			if (GUILayout.Button("전체 중지"))
-			{
-				if (check?.IsRunning == true) check.Cancel();
-				else demo.StopAllActions();
-			}
-		}
-		if (check == null) return;
+	}
 
-		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("검사 상태", check.Status, EditorStyles.boldLabel);
-		if (check.IsRunning) DrawLiveSearch(demo);
-		foreach (string result in check.Results)
-			EditorGUILayout.HelpBox(result, result.StartsWith("PASS", System.StringComparison.Ordinal) ? MessageType.Info : MessageType.Error);
-		if (check.Timeline.Count > 0)
+	private static void DrawCheckStatus(TankAttackDemo demo, TankCombatChecks check)
+	{
+		EditorGUILayout.LabelField(check.Status, EditorStyles.boldLabel);
+		if (!check.IsManual)
 		{
-			EditorGUILayout.LabelField(check.ActiveCase + " · 상태 전이", EditorStyles.boldLabel);
-			foreach (string entry in check.Timeline) EditorGUILayout.LabelField(entry, EditorStyles.wordWrappedLabel);
+			int done = check.Results.Count;
+			Rect rect = EditorGUILayout.GetControlRect();
+			EditorGUI.ProgressBar(rect, (float)done / check.ExpectedCount, $"{done}/{check.ExpectedCount} · 통과 {check.PassedCount} · 실패 {done - check.PassedCount}");
+			if (check.IsRunning && !string.IsNullOrEmpty(check.ActiveCase))
+				EditorGUILayout.LabelField("진행 중", check.ActiveCase);
 		}
-		if (!check.IsRunning)
+		if (check.IsRunning || check.ManualReady) DrawLiveSearch(demo, check);
+	}
+
+	private void DrawResults(TankCombatChecks check)
+	{
+		if (viewedCheck != check)
+		{
+			viewedCheck = check;
+			selectedResult = 0;
+			resultOptions = null;
+		}
+		EditorGUILayout.Space();
+		int count = check.Results.Count;
+		if (count > 0)
+		{
+			if (resultOptions == null || resultOptions.Length != count + 1)
+			{
+				resultOptions = new string[count + 1];
+				resultOptions[0] = "현재 / 마지막 시험";
+				for (int i = 0; i < count; i++)
+				{
+					TankCombatChecks.Result result = check.Results[i];
+					resultOptions[i + 1] = $"{(result.Passed ? "PASS" : "FAIL")} · {result.Name}";
+				}
+			}
+			selectedResult = EditorGUILayout.Popup("결과 선택", selectedResult, resultOptions);
+		}
+		int index = selectedResult - 1;
+		if (index < 0 && !check.IsRunning && count > 0 && check.Status.StartsWith("완료")) index = count - 1;
+		if (index >= 0)
+		{
+			TankCombatChecks.Result result = check.Results[index];
+			EditorGUILayout.HelpBox($"{resultOptions[index + 1]}\n{result.Detail}", result.Passed ? MessageType.Info : MessageType.Error);
+			EditorGUILayout.LabelField(result.FinalState, EditorStyles.wordWrappedLabel);
+			DrawTimeline(result.Timeline);
+		}
+		else DrawTimeline(check.Timeline);
+
+		if (!check.IsManual && !check.IsRunning)
 		{
 			EditorGUILayout.LabelField(check.ReportPath, EditorStyles.wordWrappedLabel);
 			if (System.IO.File.Exists(check.ReportPath) && GUILayout.Button("결과 파일 보기"))
@@ -192,7 +269,14 @@ public sealed class TankAttackDemoEditor : Editor
 		}
 	}
 
-	private static void DrawLiveSearch(TankAttackDemo demo)
+	private static void DrawTimeline(System.Collections.Generic.IReadOnlyList<string> timeline)
+	{
+		if (timeline.Count == 0) return;
+		EditorGUILayout.LabelField("상태 전이", EditorStyles.boldLabel);
+		foreach (string entry in timeline) EditorGUILayout.LabelField(entry, EditorStyles.wordWrappedLabel);
+	}
+
+	private static void DrawLiveSearch(TankAttackDemo demo, TankCombatChecks check)
 	{
 		TankAI ai = demo.Enemy;
 		TankCombat combat = ai != null ? ai.Combat : null;
@@ -200,9 +284,13 @@ public sealed class TankAttackDemoEditor : Editor
 		string waypoint = combat.PatrolIndex >= 0 ? (combat.PatrolIndex + 1).ToString() : "—";
 		EditorGUILayout.LabelField("현재 상태", TankCombatChecks.Label(combat.State));
 		EditorGUILayout.LabelField("경유점 / 가림 벽", $"{waypoint}번 / {(demo.IsCombatCoverOn ? "켜짐" : "꺼짐")}");
+		EditorGUILayout.LabelField("센서 표적", ai.Sensor != null && ai.Sensor.IsVisible ? "보임" : "미확인");
+		if (demo.EnemyHealth != null)
+			EditorGUILayout.LabelField("자기 전차 HP / 피격", $"{demo.EnemyHealth.CurrentHP:F0} / {demo.EnemyHealth.DamageHitCount}회");
+		if (!string.IsNullOrEmpty(combat.LastStopReason))
+			EditorGUILayout.LabelField("종료 사유", combat.LastStopReason);
 		if (demo.ShotBlockWall != null && demo.ShotBlockWall.activeSelf)
 		{
-			EditorGUILayout.LabelField("표적", ai.Sensor != null && ai.Sensor.IsVisible ? "보임" : "미확인");
 			EditorGUILayout.LabelField("공격 상태 / 차단 사유", $"{ai.AttackStatus} / {ai.AttackBlockReason}");
 			if (combat.State == TankCombat.CombatState.Reposition)
 				EditorGUILayout.LabelField("이동 전 사선 차단 시간", $"{combat.RepositionBlockSeconds:F2}초");
@@ -210,6 +298,8 @@ public sealed class TankAttackDemoEditor : Editor
 				EditorGUILayout.LabelField("사선 차단 시간", $"{ai.ShotBlockedSeconds:F2}초");
 		}
 		if (ai.TryGetComponent(out TankGun gun)) EditorGUILayout.LabelField("실제 발사 수", $"{gun.ShotCount}발");
+		if (combat.OutOfRangeSeconds > 0f)
+			EditorGUILayout.LabelField("32m 초과 · 발사 보류", $"{combat.OutOfRangeSeconds:F2} / 0.50초");
 		if (combat.RepositionCount > 0) EditorGUILayout.LabelField("위치 변경", $"{combat.RepositionCount}회");
 		if (!string.IsNullOrEmpty(combat.LastRepositionFailure)) EditorGUILayout.LabelField("위치 변경 실패", combat.LastRepositionFailure);
 		if (combat.SuppressedTargetCount > 0) EditorGUILayout.LabelField("재교전 대기 중인 표적", $"{combat.SuppressedTargetCount}대");
@@ -217,6 +307,7 @@ public sealed class TankAttackDemoEditor : Editor
 		{
 			if (combat.LastSeenTime >= 0d) EditorGUILayout.Vector3Field("마지막 목격 위치", combat.LastSeenPosition);
 			if (ai.MoveStatus == TankAI.MoveState.Moving) EditorGUILayout.Vector3Field("이동 목적지", ai.Destination);
+			else if (check.LastDestination.HasValue) EditorGUILayout.Vector3Field("마지막 목적지", check.LastDestination.Value);
 		}
 	}
 }

@@ -12,6 +12,8 @@ public sealed class TankCombat : MonoBehaviour
 
 	private const float MaxSearchTime = 10f;
 	private const float HitCheckTime = 3f;
+	private const float ReapproachRange = 32f;
+	private const double ReapproachDelay = 0.5d;
 
 	[SerializeField] private TankAI owner;
 	[SerializeField, Min(0f)] private float fireRange = 28f;
@@ -37,6 +39,7 @@ public sealed class TankCombat : MonoBehaviour
 	private Vector3 plannedTarget;
 	private double approachDeadline;
 	private double nextPlanTime;
+	private double outOfRangeSince = -1d;
 	private double repositionDeadline;
 	private double searchStepDeadline;
 	private double searchDeadline;
@@ -52,6 +55,8 @@ public sealed class TankCombat : MonoBehaviour
 	public Vector3 LastSeenPosition { get; private set; }
 	public double LastSeenTime { get; private set; } = -1d;
 	public float ContactDistance { get; private set; }
+	public float OutOfRangeSeconds => outOfRangeSince >= 0d && owner.IsHost
+		? (float)(owner.Runner.SimulationTime - outOfRangeSince) : 0f;
 	public float RepositionBlockSeconds { get; private set; }
 	public int RepositionCount { get; private set; }
 	public int SuppressedTargetCount => suppressedTargets.Count;
@@ -155,7 +160,7 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
-		if (Target == null || Target.Version != TargetVersion || !Target.CanTarget)
+		if (Target == null || Target.Version != TargetVersion || !sensor.CanTrack(Target))
 		{
 			BeginReturn("Tracked target unavailable");
 			return;
@@ -279,6 +284,11 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
+		BeginApproach(position, reason);
+	}
+
+	private void BeginApproach(Vector3 position, string reason)
+	{
 		double now = owner.Runner.SimulationTime;
 		approachDeadline = now + approachTimeout;
 		ChangeState(CombatState.Approach, reason);
@@ -409,6 +419,7 @@ public sealed class TankCombat : MonoBehaviour
 
 	private void BeginReturn(string reason)
 	{
+		owner.StopAttack();
 		owner.StopMove();
 		ChangeState(CombatState.ReturnToPatrol, reason);
 		if (MovePatrol()) UpdateReturn();
@@ -441,18 +452,18 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
+		double now = owner.Runner.SimulationTime;
+		if (now >= approachDeadline)
+		{
+			StopCombat("Approach timed out");
+			return;
+		}
+
 		bool arrived = owner.MoveStatus == TankAI.MoveState.Arrived;
 		float range = arrived ? fireRange : approachRange;
 		if (FlatDistanceSquared(position, LastSeenPosition) <= range * range)
 		{
 			BeginFire(arrived ? "Approach arrived in range" : "Target within approach distance");
-			return;
-		}
-
-		double now = owner.Runner.SimulationTime;
-		if (now >= approachDeadline)
-		{
-			StopCombat("Approach timed out");
 			return;
 		}
 
@@ -530,6 +541,13 @@ public sealed class TankCombat : MonoBehaviour
 
 	private void UpdateFire(Vector3 position)
 	{
+		if (FlatDistanceSquared(position, LastSeenPosition) > ReapproachRange * ReapproachRange)
+		{
+			WaitToApproach(position);
+			return;
+		}
+		outOfRangeSince = -1d;
+
 		if (attackStarted)
 		{
 			if (owner.AttackStatus == TankAI.AttackState.Idle) StopCombat("Attack target unavailable");
@@ -550,6 +568,24 @@ public sealed class TankCombat : MonoBehaviour
 		}
 		attackStarted = true;
 		moveCommand = owner.CommandId;
+	}
+
+	private void WaitToApproach(Vector3 position)
+	{
+		double now = owner.Runner.SimulationTime;
+		if (outOfRangeSince < 0d)
+		{
+			outOfRangeSince = now;
+			if (attackStarted)
+			{
+				owner.StopAttack();
+				moveCommand = owner.CommandId;
+				attackStarted = false;
+			}
+		}
+
+		if (now - outOfRangeSince >= ReapproachDelay)
+			BeginApproach(position, "Visible target stayed beyond 32 m for 0.5 s");
 	}
 
 	private void BeginReposition(Vector3 position)
@@ -705,6 +741,7 @@ public sealed class TankCombat : MonoBehaviour
 		if (next == State) return;
 
 		CombatState previous = State;
+		if (previous == CombatState.StopAndFire) outOfRangeSince = -1d;
 		State = next;
 		Debug.Log($"[AI COMBAT] {previous} -> {State}: {reason}", this);
 	}
