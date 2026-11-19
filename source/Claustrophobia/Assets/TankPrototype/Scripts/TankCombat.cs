@@ -6,7 +6,8 @@ public sealed class TankCombat : MonoBehaviour
 {
 	public enum CombatState
 	{
-		Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen, CheckSurroundings, ReturnToPatrol, Reposition
+		Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen, CheckSurroundings, ReturnToPatrol, Reposition,
+		ForcedMove, Retreat
 	}
 
 	private const float MaxSearchTime = 10f;
@@ -75,12 +76,48 @@ public sealed class TankCombat : MonoBehaviour
 		return true;
 	}
 
+	// Like MoveTo, true means the order was accepted. Path failures are reported in LastStopReason.
+	public bool ForceMove(Vector3 point) => StartOrder(CombatState.ForcedMove, point);
+	public bool RetreatTo(Vector3 point) => StartOrder(CombatState.Retreat, point);
+
+	public bool CancelOrder()
+	{
+		if (!isActiveAndEnabled || owner == null || !owner.CanAct || State == CombatState.Idle
+			|| owner.CommandId != moveCommand) return false;
+
+		StopCombat("Order cancelled");
+		return true;
+	}
+
+	private bool StartOrder(CombatState state, Vector3 point)
+	{
+		if (!isActiveAndEnabled || owner == null) return false;
+
+		bool replaced = State != CombatState.Idle && owner.CommandId != moveCommand;
+		if (!owner.TryMove(point, TankAI.MoveMode.NavMesh)) return false;
+
+		if (replaced) ClearState("Command replaced");
+		else ClearEngagement();
+		moveCommand = owner.CommandId;
+		LastStopReason = "";
+		LastRepositionFailure = "";
+		ChangeState(state, $"Ordered to {point:F2}");
+		if (owner.MoveStatus == TankAI.MoveState.Failed) UpdateOrder();
+		return true;
+	}
+
 	internal void Tick(Vector3 position)
 	{
 		if (State == CombatState.Idle) return;
 		if (owner.CommandId != moveCommand)
 		{
 			ClearState("Command replaced");
+			return;
+		}
+
+		if (State == CombatState.ForcedMove || State == CombatState.Retreat)
+		{
+			UpdateOrder();
 			return;
 		}
 
@@ -124,6 +161,21 @@ public sealed class TankCombat : MonoBehaviour
 		if (State == CombatState.Approach) UpdateApproach(position);
 		else if (State == CombatState.StopAndFire) UpdateFire(position);
 		else if (State == CombatState.Reposition) UpdateReposition(position);
+	}
+
+	private void UpdateOrder()
+	{
+		bool retreating = State == CombatState.Retreat;
+		string order = retreating ? "Retreat" : "Forced move";
+		if (owner.MoveStatus == TankAI.MoveState.Failed)
+		{
+			StopCombat(order + " failed: " + owner.MoveFailure);
+			return;
+		}
+		if (owner.MoveStatus != TankAI.MoveState.Arrived) return;
+
+		if (retreating || patrol == null) StopCombat(order + " completed");
+		else BeginReturn("Forced move completed");
 	}
 
 	private void UpdatePatrol(TankSensor sensor, Vector3 position)

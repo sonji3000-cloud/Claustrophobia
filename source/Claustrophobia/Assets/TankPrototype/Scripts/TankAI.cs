@@ -208,7 +208,9 @@ public sealed class TankAI : NetworkBehaviour
 	}
 
 	// Invalid requests preserve the previous destination and command.
-	public bool MoveTo(Vector3 point)
+	public bool MoveTo(Vector3 point) => TryMove(point, moveMode);
+
+	internal bool TryMove(Vector3 point, MoveMode mode)
 	{
 		if (!CanAct || !IsFinite(point.x) || !IsFinite(point.y) || !IsFinite(point.z)) return false;
 		EnsureHostBody();
@@ -218,6 +220,7 @@ public sealed class TankAI : NetworkBehaviour
 		if (!IsFinite(offset.sqrMagnitude)) return false;
 
 		CommandId++;
+		moveMode = mode;
 		ClearAttack();
 		ClearPath();
 		RetryCount = 0;

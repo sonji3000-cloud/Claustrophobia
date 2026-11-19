@@ -12,12 +12,13 @@ internal sealed class TankCombatChecks
 	internal enum Scenario
 	{
 		BriefCover, Reacquire, Return, All, ShotBlock, RepositionFire,
-		NoRepositionPoint, RepositionStalled, RepositionStillBlocked, RepositionReturnUnavailable
+		NoRepositionPoint, RepositionStalled, RepositionStillBlocked, RepositionReturnUnavailable,
+		ForceMove, Retreat, CancelOrder
 	}
 
 	internal const string SuitePath = "Builds/TankCombatIntegration/play-results.txt";
 	internal const string ScenarioPath = "Builds/TankCombatIntegration/last-scenario.txt";
-	internal const int SuiteCount = 19;
+	internal const int SuiteCount = 23;
 	private const string MenuPath = "Tools/Tank/AI Test/Run Combat Checks";
 
 	internal static TankCombatChecks Current { get; private set; }
@@ -108,6 +109,9 @@ internal sealed class TankCombatChecks
 				case Scenario.RepositionStalled: await RunCase("이동 중 막힘 → 순찰 복귀", RepositionStalled); break;
 				case Scenario.RepositionStillBlocked: await RunCase("옮긴 뒤에도 사선 차단 → 순찰 복귀", RepositionStillBlocked); break;
 				case Scenario.RepositionReturnUnavailable: await RunCase("복귀 경로도 없음 → 정지", RepositionReturnUnavailable); break;
+				case Scenario.ForceMove: await RunCase("강제 이동 → 순찰 복귀", ForceMove); break;
+				case Scenario.Retreat: await RunCase("퇴각 → 도착 후 정지", Retreat); break;
+				case Scenario.CancelOrder: await RunCase("이동 중 명령 취소", CancelOrder); break;
 				default: await RunAll(); break;
 			}
 			int passed = 0;
@@ -162,6 +166,10 @@ internal sealed class TankCombatChecks
 		await RunCase("17 이동 중 막힘 → 순찰 복귀", RepositionStalled);
 		await RunCase("18 옮긴 뒤에도 사선 차단 → 순찰 복귀", RepositionStillBlocked);
 		await RunCase("19 복귀 경로도 없음 → 정지", RepositionReturnUnavailable);
+		await RunCase("20 강제 이동 → 순찰 복귀", ForceMove);
+		await RunCase("21 퇴각 → 도착 후 정지", Retreat);
+		await RunCase("22 이동 중 명령 취소", CancelOrder);
+		await RunCase("23 갈 수 없는 명령 목적지 → 정지", OrderPathFailure);
 	}
 
 	private async Task RunCase(string name, Func<Task<string>> test)
@@ -548,6 +556,114 @@ internal sealed class TankCombatChecks
 		return "수색 이동 중지, 이후 1초간 새 명령·발사 없음";
 	}
 
+	private async Task<string> ForceMove()
+	{
+		StartSearch(frameContact: true);
+		await WaitForShot();
+		int shots = gun.ShotCount;
+		int index = Combat.PatrolIndex;
+		int scan = AI.Sensor.ScanCount;
+		Vector3 point = AI.transform.position + new Vector3(-4f, 0f, 5f);
+		Require(Combat.ForceMove(point) && Combat.State == State.ForcedMove && AI.Destination == point,
+			"강제 이동 명령이 사격을 넘겨받지 못했어요.");
+
+		bool sawTarget = false;
+		await Wait(() =>
+		{
+			CheckQuiet(shots);
+			if (Combat.State == State.ForcedMove && AI.Sensor.ScanCount > scan && AI.Sensor.IsVisible) sawTarget = true;
+			return Combat.State == State.ReturnToPatrol;
+		}, 14f, "강제 이동을 마치고 순찰 복귀를 시작하지 못했어요.");
+		Require(sawTarget && Combat.Target == null && Combat.PatrolIndex == index
+			&& FlatDistance(AI.transform.position, point) <= AI.StopRadius + 0.5f,
+			"표적이 보이는 동안의 이동, 목적지 도착 또는 기존 경유점을 확인하지 못했어요.");
+		await Wait(() => Combat.State == State.Patrol, 12f, "기존 경유점에 도착한 뒤 순찰이 재개되지 않았어요.");
+		return $"표적이 보이는 동안 추가 발사 0발, 기존 {index + 1}번 경유점 복귀";
+	}
+
+	private async Task<string> Retreat()
+	{
+		StartSearch(frameContact: true);
+		await WaitForShot();
+		int shots = gun.ShotCount;
+		Vector3 start = AI.transform.position;
+		Require(Combat.ForceMove(start + new Vector3(-4f, 0f, 5f)), "교체할 강제 이동 명령이 들어가지 않았어요.");
+		await Wait(() => FlatDistance(start, AI.transform.position) >= 2.5f, 8f, "퇴각 전 실제 이동을 확인하지 못했어요.");
+		Require(Combat.State == State.ForcedMove && Combat.RetreatTo(start)
+			&& Combat.State == State.Retreat && AI.Destination == start,
+			"퇴각이 기존 이동 목적지를 교체하지 못했어요. " + Combat.LastStopReason);
+
+		await Wait(() =>
+		{
+			CheckQuiet(shots);
+			return Combat.State == State.Idle;
+		}, 15f, "퇴각 후 정지하지 않았어요.");
+		Require(Combat.LastStopReason == "Retreat completed"
+			&& FlatDistance(AI.transform.position, start) <= AI.StopRadius + 0.5f,
+			"지정한 퇴각 지점에 도착하지 않았어요. " + Combat.LastStopReason);
+
+		Vector3 contact = AI.transform.position + AI.transform.forward * 10f;
+		contact.y = demo.SearchContact.y;
+		int scan = AI.Sensor.ScanCount;
+		Require(demo.MoveCombatTarget(contact), "퇴각 지점 앞으로 표적을 옮기지 못했어요.");
+		await Wait(() => AI.Sensor.ScanCount > scan && AI.Sensor.IsVisible, 3f, "퇴각 후 전방의 표적이 센서에 잡히지 않았어요.");
+		await CheckOrderStopped(shots);
+		return "강제 이동을 교체해 지정 지점 도착, 표적을 다시 봐도 대기";
+	}
+
+	private async Task<string> CancelOrder()
+	{
+		StartSearch(frameContact: true);
+		await WaitForShot();
+		int shots = gun.ShotCount;
+		Vector3 start = AI.transform.position;
+		Vector3 point = start + new Vector3(-4f, 0f, 5f);
+		Require(Combat.ForceMove(point), "취소 시험용 강제 이동을 시작하지 못했어요.");
+		await Wait(() => FlatDistance(start, AI.transform.position) >= 1f, 8f, "취소 전 실제 이동을 확인하지 못했어요.");
+		Require(Combat.State == State.ForcedMove && Combat.CancelOrder() && Combat.LastStopReason == "Order cancelled",
+			"주행 중인 명령을 취소하지 못했어요.");
+		Vector3 stopped = AI.transform.position;
+		await CheckOrderStopped(shots);
+		Require(FlatDistance(stopped, AI.transform.position) < 0.5f && FlatDistance(point, AI.transform.position) > AI.StopRadius,
+			"취소 이후에도 차체가 목적지로 이동했어요.");
+		return "실제 주행 중 취소, 1초간 추가 주행 명령·발사 없음";
+	}
+
+	private async Task<string> OrderPathFailure()
+	{
+		StartSearch(frameContact: true);
+		await WaitForShot();
+		int shots = gun.ShotCount;
+		uint command = AI.CommandId;
+		Require(!Combat.ForceMove(new Vector3(float.NaN, 0f, 0f)) && AI.CommandId == command && Combat.State == State.StopAndFire,
+			"잘못된 좌표가 기존 교전 명령을 변경했어요.");
+		Require(Combat.RetreatTo(AI.transform.position + Vector3.up * 1000f)
+			&& Combat.LastStopReason.StartsWith("Retreat failed:", StringComparison.Ordinal),
+			"도달 불가능한 퇴각 목적지가 실패로 처리되지 않았어요.");
+		await CheckOrderStopped(shots);
+		return Combat.LastStopReason;
+	}
+
+	private void CheckQuiet(int shots)
+	{
+		Require(gun.ShotCount == shots && AI.AttackStatus == TankAI.AttackState.Idle,
+			"명령 이동 또는 정지 중에 공격이 재개됐어요.");
+	}
+
+	private Task CheckOrderStopped(int shots)
+	{
+		uint command = AI.CommandId;
+		double stopped = SimulationTime;
+		return Wait(() =>
+		{
+			CheckQuiet(shots);
+			Require(Combat.State == State.Idle && AI.MoveStatus == TankAI.MoveState.Idle && AI.CommandId == command
+				&& !AI.IsRetrying && !AI.Path.HasPath && AI.LeftDriveInput == 0f && AI.RightDriveInput == 0f,
+				"정지 이후 경로, 이동 입력 또는 새 명령이 남아 있어요.");
+			return SimulationTime - stopped >= 1.0;
+		}, 4f, "정지 후 관찰 시간이 지나지 않았어요.");
+	}
+
 	private async Task<string> CheckShot(TankAttackDemo.CombatCase test, bool approach)
 	{
 		StartCombatCase(test);
@@ -684,7 +800,7 @@ internal sealed class TankCombatChecks
 			Timeline.Add($"+{SimulationTime - startTime:F2}초  {Label(lastState)}  |  경유점 {waypointText}  |  발사 {gun.ShotCount}발");
 			if (lastState == State.Reposition)
 				Timeline.Add($"위치 변경 {Combat.RepositionCount}회 | 이동 목적지 {AI.Destination:F2}");
-			else if (lastState == State.MoveToLastSeen || lastState == State.ReturnToPatrol)
+			else if (lastState is State.MoveToLastSeen or State.ReturnToPatrol or State.ForcedMove or State.Retreat)
 				Timeline.Add($"이동 목적지 {AI.Destination:F2}");
 			if (lastState == State.Idle && !string.IsNullOrEmpty(Combat.LastStopReason))
 				Timeline.Add(Combat.LastStopReason);
@@ -727,6 +843,8 @@ internal sealed class TankCombatChecks
 		State.CheckSurroundings => "주변 확인",
 		State.ReturnToPatrol => "순찰 복귀",
 		State.Reposition => "위치 변경 시작",
+		State.ForcedMove => "강제 이동",
+		State.Retreat => "퇴각",
 		_ => "정지"
 	};
 }
