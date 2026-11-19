@@ -29,6 +29,7 @@ public sealed class TankCombat : MonoBehaviour
 	public Vector3 LastSeenPosition { get; private set; }
 	public double LastSeenTime { get; private set; } = -1d;
 	public float ContactDistance { get; private set; }
+	public string LastStopReason { get; private set; } = "";
 
 	public bool StartPatrol(Transform[] points)
 	{
@@ -44,6 +45,7 @@ public sealed class TankCombat : MonoBehaviour
 		patrol = points;
 		PatrolIndex = 0;
 		moveCommand = owner.CommandId;
+		LastStopReason = "";
 		ChangeState(CombatState.Patrol, "Patrol started");
 		return true;
 	}
@@ -70,9 +72,14 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
-		if (Target == null || Target.Version != TargetVersion || !ReadSighting(sensor, Target))
+		if (Target == null || Target.Version != TargetVersion)
 		{
-			StopCombat("Tracked target lost");
+			StopCombat("Tracked target unavailable");
+			return;
+		}
+		if (!ReadSighting(sensor, Target))
+		{
+			StopCombat(Target.CanTarget ? "Tracked target no longer visible" : "Tracked target unavailable");
 			return;
 		}
 
@@ -105,7 +112,7 @@ public sealed class TankCombat : MonoBehaviour
 				double now = owner.Runner.SimulationTime;
 				approachDeadline = now + approachTimeout;
 				ChangeState(CombatState.Approach, reason);
-				if (!TryPlanApproach(position, now, false)) StopCombat("No reachable approach point");
+				if (!TryPlanApproach(position, now, false, out string failure)) StopCombat(failure);
 			}
 			return;
 		}
@@ -150,23 +157,31 @@ public sealed class TankCombat : MonoBehaviour
 		if (now < nextPlanTime || owner.IsRetrying
 			|| !arrived && FlatDistanceSquared(plannedTarget, LastSeenPosition) < replanDistance * replanDistance) return;
 
-		if (!TryPlanApproach(position, now, !arrived) && arrived) StopCombat("No closer approach point");
+		if (!TryPlanApproach(position, now, !arrived, out string failure)
+			&& (arrived || owner.MoveStatus == TankAI.MoveState.Failed)) StopCombat(failure);
 	}
 
-	private bool TryPlanApproach(Vector3 position, double now, bool keepRoute)
+	private bool TryPlanApproach(Vector3 position, double now, bool keepRoute, out string failure)
 	{
 		plannedTarget = LastSeenPosition;
 		nextPlanTime = now + replanInterval;
+		failure = "No reachable approach point";
 		if (!TryFindApproach(position, out Vector3 point)) return false;
+		failure = "";
 
 		float stopRadius = owner.StopRadius;
 		if (keepRoute && owner.MoveStatus == TankAI.MoveState.Moving && owner.Path.HasPath
 			&& FlatDistanceSquared(point, owner.Destination) <= stopRadius * stopRadius
 			&& Mathf.Abs(point.y - owner.Destination.y) <= stopRadius) return true;
 
-		if (!owner.MoveTo(point)) return false;
+		if (!owner.MoveTo(point))
+		{
+			failure = string.IsNullOrEmpty(owner.MoveBlockReason) ? "Approach order rejected" : owner.MoveBlockReason;
+			return false;
+		}
 		moveCommand = owner.CommandId;
-		return true;
+		failure = owner.MoveFailure;
+		return owner.MoveStatus != TankAI.MoveState.Failed;
 	}
 
 	private bool TryFindApproach(Vector3 position, out Vector3 point)
@@ -259,14 +274,13 @@ public sealed class TankCombat : MonoBehaviour
 		return true;
 	}
 
-	private void StopCombat(string reason)
-	{
-		ClearState(reason);
-		owner.StopActions();
-	}
+	private void StopCombat(string reason) => owner.StopActions(reason);
 
 	internal void ClearState(string reason)
 	{
+		if (State == CombatState.Idle) return;
+
+		LastStopReason = reason;
 		ChangeState(CombatState.Idle, reason);
 		patrol = null;
 		moveCommand = 0;

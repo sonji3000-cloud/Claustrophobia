@@ -141,7 +141,7 @@ public sealed class TankAI : NetworkBehaviour
 	private void OnDied()
 	{
 		if (sensor != null) sensor.ClearState();
-		StopActions();
+		StopActions("Self destroyed");
 	}
 
 	public override void Spawned()
@@ -736,16 +736,17 @@ public sealed class TankAI : NetworkBehaviour
 		AttackBlockReason = reason;
 	}
 
-	public void StopActions()
+	public void StopActions() => StopActions("Actions stopped");
+
+	internal void StopActions(string reason)
 	{
 		if (!IsHost) return;
 
-		if (combat != null) combat.ClearState("Actions stopped");
+		if (combat != null) combat.ClearState(reason);
 		CommandId++;
-		ClearMove();
 		ClearAttack();
+		ClearMove();
 		if (aim != null) aim.ApplyHostInput(0f, 0f);
-		if (gun != null) gun.ClearAIRequest();
 	}
 
 	private void OnDisable()

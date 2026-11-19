@@ -6,6 +6,8 @@ using UnityEngine;
 // Standalone local test; the same TankAI command is used by the real host.
 public sealed class TankAttackDemo : MonoBehaviour
 {
+	public enum CombatCase { Far, Near, Occluded, NoPath }
+
 	[SerializeField] private NetworkRunner runner;
 	[SerializeField] private NetworkSceneManagerDefault sceneManager;
 	[SerializeField] private NetworkObject enemyPrefab;
@@ -27,8 +29,13 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[SerializeField] private Transform[] patrolPoints;
 	[SerializeField] private Transform farTarget;
 	[SerializeField] private Transform nearTarget;
+	[SerializeField] private GameObject combatWall;
+	[SerializeField] private Transform noPathStart;
+	[SerializeField] private Transform[] noPathPatrol;
+	[SerializeField] private Transform noPathTarget;
 
 	private NetworkObject combatTarget;
+	private bool hideOnAttack;
 	private TankAI.AttackState lastState;
 	private string lastReason;
 	private bool attackOnArrival;
@@ -47,6 +54,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public bool HasPathTests => usePath && testCases != null;
 	public bool HasCombatTest => combatTargetPrefab != null && combatStart != null && testCamera != null
 		&& patrolPoints != null && patrolPoints.Length > 0 && farTarget != null && nearTarget != null;
+	public bool HasCombatFailureTests => HasCombatTest && combatWall != null && noPathStart != null
+		&& noPathPatrol != null && noPathPatrol.Length > 0 && noPathTarget != null;
 	public bool CanRunTests => isActiveAndEnabled && Application.isPlaying && runner != null && runner.IsRunning && runner.IsServer;
 	public bool HasBlocker => stallBlocker != null;
 	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
@@ -131,6 +140,12 @@ public sealed class TankAttackDemo : MonoBehaviour
 	private void Update()
 	{
 		if (Enemy == null) return;
+		if (hideOnAttack && Enemy.AttackStatus != TankAI.AttackState.Idle)
+		{
+			hideOnAttack = false;
+			combatWall.SetActive(true);
+			Physics.SyncTransforms();
+		}
 		if (attackOnArrival)
 		{
 			if (!Enemy.CanAct || Enemy.CommandId != attackCommand
@@ -201,16 +216,19 @@ public sealed class TankAttackDemo : MonoBehaviour
 		attackCommand = Enemy.CommandId;
 	}
 
-	public void RunCombatTest(bool near)
+	public void RunCombatTest(CombatCase test)
 	{
 		if (!CanRunTests || !HasCombatTest) return;
+		if ((test == CombatCase.Occluded || test == CombatCase.NoPath) && !HasCombatFailureTests) return;
 
+		bool noPath = test == CombatCase.NoPath;
+		Transform start = noPath ? noPathStart : combatStart;
+		Transform point = test == CombatCase.Far ? farTarget : noPath ? noPathTarget : nearTarget;
 		attackOnArrival = false;
 		IsSensorTest = false;
 		SetBlocker(false);
-		if (!SpawnEnemy(combatStart)) return;
+		if (!SpawnEnemy(start)) return;
 
-		Transform point = near ? nearTarget : farTarget;
 		try
 		{
 			combatTarget = runner.Spawn(combatTargetPrefab, point.position, point.rotation);
@@ -221,7 +239,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 			return;
 		}
 
-		if (combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(patrolPoints))
+		if (combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(noPath ? noPathPatrol : patrolPoints))
 		{
 			EndCombatTest();
 			Debug.LogError("[AI COMBAT] Patrol detection test could not start.", this);
@@ -229,8 +247,15 @@ public sealed class TankAttackDemo : MonoBehaviour
 		}
 
 		CombatTargetHealth = combatTarget.GetComponent<TankHealth>();
-		TestName = near ? "Autonomous Fire - Near" : "Autonomous Approach - Far";
-		Vector3 center = (combatStart.position + point.position) * 0.5f;
+		hideOnAttack = test == CombatCase.Occluded;
+		TestName = test switch
+		{
+			CombatCase.Far => "원거리 접근 사격",
+			CombatCase.Near => "근거리 정지 사격",
+			CombatCase.Occluded => "표적 가림으로 사격 중단",
+			_ => "접근 경로 없음"
+		};
+		Vector3 center = (start.position + point.position) * 0.5f;
 		testCamera.transform.SetPositionAndRotation(center + Vector3.up * 55f,
 			Quaternion.LookRotation(Vector3.down, Vector3.forward));
 		testCamera.orthographic = true;
@@ -240,6 +265,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 
 	private void EndCombatTest()
 	{
+		hideOnAttack = false;
+		if (combatWall != null) combatWall.SetActive(false);
 		CombatTargetHealth = null;
 		if (combatTarget == null) return;
 

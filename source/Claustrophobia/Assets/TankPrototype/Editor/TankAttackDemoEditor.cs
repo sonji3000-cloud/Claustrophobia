@@ -16,8 +16,13 @@ public sealed class TankAttackDemoEditor : Editor
 		{
 			using (new EditorGUI.DisabledScope(!demo.CanRunTests))
 			{
-				if (GUILayout.Button("원거리 발견 → 접근 후 사격")) demo.RunCombatTest(false);
-				if (GUILayout.Button("근거리 발견 → 정지 사격")) demo.RunCombatTest(true);
+				if (GUILayout.Button("원거리 발견 → 접근 후 사격")) demo.RunCombatTest(TankAttackDemo.CombatCase.Far);
+				if (GUILayout.Button("근거리 발견 → 정지 사격")) demo.RunCombatTest(TankAttackDemo.CombatCase.Near);
+				if (demo.HasCombatFailureTests)
+				{
+					if (GUILayout.Button("표적 가림 → 사격 중단")) demo.RunCombatTest(TankAttackDemo.CombatCase.Occluded);
+					if (GUILayout.Button("접근 경로 없음 → 정지")) demo.RunCombatTest(TankAttackDemo.CombatCase.NoPath);
+				}
 			}
 		}
 		EditorGUILayout.HelpBox("HP 시험 버튼은 적 전차 자신에게 직접 피해를 적용합니다.\n이동 후 공격 버튼은 도착한 뒤 지정 표적을 공격합니다.", MessageType.Info);
@@ -68,6 +73,8 @@ public sealed class TankAttackDemoEditor : Editor
 			if (combat != null && demo.HasCombatTest)
 			{
 				EditorGUILayout.EnumPopup("자율 교전 상태", combat.State);
+				if (!string.IsNullOrEmpty(combat.LastStopReason))
+					EditorGUILayout.TextField("자율 교전 종료 사유", combat.LastStopReason);
 				if (combat.PatrolIndex >= 0)
 					EditorGUILayout.IntField("순찰 경유점", combat.PatrolIndex + 1);
 				if (combat.State == TankCombat.CombatState.Approach)
