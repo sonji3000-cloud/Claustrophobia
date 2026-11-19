@@ -146,6 +146,13 @@ public sealed class TankAttackDemoEditor : Editor
 			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 확인")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ShotBlock);
 			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 → 위치 변경 → 사격"))
 				TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RepositionFire);
+			if (demo.HasRepositionFailureTests)
+			{
+				if (GUILayout.Button("옆으로 갈 곳 없음 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.NoRepositionPoint);
+				if (GUILayout.Button("이동 중 막힘 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RepositionStalled);
+				if (GUILayout.Button("옮긴 뒤에도 사선 차단 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RepositionStillBlocked);
+				if (GUILayout.Button("복귀 경로도 없음 → 정지")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RepositionReturnUnavailable);
+			}
 		}
 		using (new EditorGUI.DisabledScope(!Application.isPlaying || (check?.IsRunning != true && demo.Enemy == null)))
 		{
@@ -194,6 +201,8 @@ public sealed class TankAttackDemoEditor : Editor
 		}
 		if (ai.TryGetComponent(out TankGun gun)) EditorGUILayout.LabelField("실제 발사 수", $"{gun.ShotCount}발");
 		if (combat.RepositionCount > 0) EditorGUILayout.LabelField("위치 변경", $"{combat.RepositionCount}회");
+		if (!string.IsNullOrEmpty(combat.LastRepositionFailure)) EditorGUILayout.LabelField("위치 변경 실패", combat.LastRepositionFailure);
+		if (combat.SuppressedTargetCount > 0) EditorGUILayout.LabelField("재교전 대기 중인 표적", $"{combat.SuppressedTargetCount}대");
 		using (new EditorGUI.DisabledScope(true))
 		{
 			if (combat.LastSeenTime >= 0d) EditorGUILayout.Vector3Field("마지막 목격 위치", combat.LastSeenPosition);

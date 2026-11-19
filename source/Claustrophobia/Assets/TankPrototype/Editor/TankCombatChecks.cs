@@ -9,11 +9,15 @@ using State = TankCombat.CombatState;
 
 internal sealed class TankCombatChecks
 {
-	internal enum Scenario { BriefCover, Reacquire, Return, All, ShotBlock, RepositionFire }
+	internal enum Scenario
+	{
+		BriefCover, Reacquire, Return, All, ShotBlock, RepositionFire,
+		NoRepositionPoint, RepositionStalled, RepositionStillBlocked, RepositionReturnUnavailable
+	}
 
 	internal const string SuitePath = "Builds/TankCombatIntegration/play-results.txt";
 	internal const string ScenarioPath = "Builds/TankCombatIntegration/last-scenario.txt";
-	internal const int SuiteCount = 15;
+	internal const int SuiteCount = 19;
 	private const string MenuPath = "Tools/Tank/AI Test/Run Combat Checks";
 
 	internal static TankCombatChecks Current { get; private set; }
@@ -100,6 +104,10 @@ internal sealed class TankCombatChecks
 				case Scenario.Return: await RunCase("끝까지 못 찾음 → 순찰 복귀", Return); break;
 				case Scenario.ShotBlock: await RunCase("사선 차단 확인", ShotBlock); break;
 				case Scenario.RepositionFire: await RunCase("사선 차단 → 위치 변경 → 사격", RepositionFire); break;
+				case Scenario.NoRepositionPoint: await RunCase("옆으로 갈 곳 없음 → 순찰 복귀", NoRepositionPoint); break;
+				case Scenario.RepositionStalled: await RunCase("이동 중 막힘 → 순찰 복귀", RepositionStalled); break;
+				case Scenario.RepositionStillBlocked: await RunCase("옮긴 뒤에도 사선 차단 → 순찰 복귀", RepositionStillBlocked); break;
+				case Scenario.RepositionReturnUnavailable: await RunCase("복귀 경로도 없음 → 정지", RepositionReturnUnavailable); break;
 				default: await RunAll(); break;
 			}
 			int passed = 0;
@@ -150,6 +158,10 @@ internal sealed class TankCombatChecks
 		await RunCase("13 사선 차단 → 위치 변경 시작", ShotBlock);
 		await RunCase("14 짧은 사선 차단 뒤 예상 명중 없음", ShotBlockClears);
 		await RunCase("15 위치 변경 후 정지 사격", RepositionFire);
+		await RunCase("16 옆으로 갈 곳 없음 → 순찰 복귀", NoRepositionPoint);
+		await RunCase("17 이동 중 막힘 → 순찰 복귀", RepositionStalled);
+		await RunCase("18 옮긴 뒤에도 사선 차단 → 순찰 복귀", RepositionStillBlocked);
+		await RunCase("19 복귀 경로도 없음 → 정지", RepositionReturnUnavailable);
 	}
 
 	private async Task RunCase(string name, Func<Task<string>> test)
@@ -248,9 +260,120 @@ internal sealed class TankCombatChecks
 		return $"옆으로 {sideDistance:F1}m / 위치 변경 1회 / 이동 전·중 0발 / 정지 후 {gun.ShotCount}발";
 	}
 
-	private async Task<Vector3> BeginReposition()
+	private async Task<string> NoRepositionPoint()
 	{
-		TankBallistics ballistics = await BeginShotBlock();
+		Require(demo.RunShotBlockTest(ActiveCase, testReturn: true), "복귀 시험을 시작하지 못했어요.");
+		using (var settings = new SerializedObject(Combat))
+		{
+			settings.FindProperty("engageRadius").floatValue = 3f;
+			settings.ApplyModifiedPropertiesWithoutUndo();
+		}
+
+		await WaitForShotBlock();
+		int patrolIndex = Combat.PatrolIndex;
+		TankTarget target = Combat.Target;
+		await CheckRepositionReturn(patrolIndex, 0, "No reachable reposition point");
+
+		double returned = SimulationTime;
+		await Wait(() =>
+		{
+			Require(Combat.State == State.Patrol && Combat.Target == null && Combat.SuppressedTargetCount == 1
+				&& AI.Sensor.IsVisible && AI.Sensor.SelectedTarget == target && gun.ShotCount == 0,
+				"복귀 직후 계속 보이는 같은 표적에 재교전했거나 시야가 끊겼어요.");
+			return SimulationTime - returned >= 0.4;
+		}, 2f, "복귀 직후 재교전 대기를 확인하지 못했어요.");
+		Timeline.Add("같은 표적 계속 보임 / 재교전 없음 / 발사 0발");
+
+		Require(demo.MoveCombatTarget(demo.SearchHideout), "표적을 시야 밖으로 옮기지 못했어요.");
+		await Wait(() => !AI.Sensor.IsVisible && Combat.SuppressedTargetCount == 0, 2f, "시야 상실 뒤 재교전 대기가 풀리지 않았어요.");
+		Require(demo.MoveCombatTarget(demo.ShotBlockPoint), "같은 표적을 다시 보여주지 못했어요.");
+		await WaitForAttack(target);
+		Require(gun.ShotCount == 0, "다시 보인 표적을 상대로 사선이 막혀 있는데 발사했어요.");
+		Timeline.Add("시야 상실 → 같은 표적 재발견 → 공격 시도 허용 / 발사 0발");
+
+		keepScene = scenario == Scenario.NoRepositionPoint;
+		return $"{patrolIndex + 1}번 경유점 복귀 / 계속 보이면 재교전 대기 / 재발견 후 재교전 허용 / 발사 0발";
+	}
+
+	private async Task<string> RepositionStalled()
+	{
+		await BeginReposition(testReturn: true);
+		int patrolIndex = Combat.PatrolIndex;
+		Require(demo.BlockRepositionRoute(), "움직이기 시작한 전차 앞에 장애물을 놓지 못했어요.");
+		Timeline.Add("이동 명령을 보낸 뒤 전차 앞에 주행 장애물 배치");
+
+		await CheckRepositionReturn(patrolIndex, 1, "Reposition ");
+		string reason = Combat.LastRepositionFailure;
+		Require(reason == "Reposition timed out" || reason.StartsWith("Reposition failed: ", StringComparison.Ordinal),
+			"장애물에 막힌 이동 실패 또는 시간 초과가 기록되어야 해요.");
+		keepScene = scenario == Scenario.RepositionStalled;
+		return $"{reason} / {patrolIndex + 1}번 경유점 복귀 / 발사 0발";
+	}
+
+	private async Task<string> RepositionStillBlocked()
+	{
+		await BeginReposition(testReturn: true);
+		int patrolIndex = Combat.PatrolIndex;
+		await Wait(() =>
+		{
+			Require(gun.ShotCount == 0, "이동을 마치기 전에 포탄이 발사됐어요.");
+			return Combat.State != State.Reposition;
+		}, 10f, "두 번째 벽을 켜기 전에 위치 변경을 끝내지 못했어요.");
+		Require(Combat.State == State.StopAndFire && AI.Sensor.IsVisible, "위치를 옮긴 뒤 표적을 계속 봐야 해요.");
+		Require(demo.ShowRepositionShotWall(), "위치를 옮긴 뒤에도 사선을 막는 낮은 벽을 켜지 못했어요.");
+		Timeline.Add("위치 변경 완료 뒤 두 번째 낮은 벽 켜짐 / 실제 발사 0발");
+
+		await CheckRepositionReturn(patrolIndex, 1, "Shot path still blocked after reposition");
+		keepScene = scenario == Scenario.RepositionStillBlocked;
+		return $"옮긴 뒤에도 사선 차단 / 위치 변경 1회 / {patrolIndex + 1}번 경유점 복귀 / 발사 0발";
+	}
+
+	private async Task<string> RepositionReturnUnavailable()
+	{
+		await BeginReposition(testReturn: true);
+		TankPath path = AI.Path;
+		path.enabled = false;
+		try
+		{
+			await Wait(() => Combat.State == State.Idle, 3f, "위치 변경과 복귀가 모두 막힌 뒤 정지하지 않았어요.");
+			Require(Combat.LastRepositionFailure.StartsWith("Reposition failed:", StringComparison.Ordinal)
+				&& Combat.LastStopReason.StartsWith("Patrol return failed:", StringComparison.Ordinal)
+				&& AI.MoveStatus == TankAI.MoveState.Idle && AI.AttackStatus == TankAI.AttackState.Idle
+				&& AI.LeftDriveInput == 0f && AI.RightDriveInput == 0f && gun.ShotCount == 0,
+				"복귀 실패 뒤 전차가 완전히 정지했는지 확인하지 못했어요.");
+			keepScene = scenario == Scenario.RepositionReturnUnavailable;
+			return $"{Combat.LastStopReason} / 정지 / 발사 0발";
+		}
+		finally { if (path != null) path.enabled = true; }
+	}
+
+	private async Task CheckRepositionReturn(int patrolIndex, int moves, string reason)
+	{
+		await Wait(() =>
+		{
+			Require(gun.ShotCount == 0, "복귀하기 전에 포탄이 발사됐어요.");
+			Require(Combat.State != State.WaitForSight, "시험 중 낮은 벽에 표적 시야까지 가려졌어요.");
+			return Combat.State == State.ReturnToPatrol || Combat.State == State.Idle;
+		}, 12f, $"위치 변경 실패 뒤 순찰로 복귀하지 않았어요. 현재 {Label(Combat.State)}");
+		Vector3 goal = demo.GetShotReturnPoint(patrolIndex);
+		Require(Combat.State == State.ReturnToPatrol && Combat.PatrolIndex == patrolIndex && AI.Destination == goal
+			&& Combat.RepositionCount == moves && AI.AttackStatus == TankAI.AttackState.Idle
+			&& Combat.LastRepositionFailure.StartsWith(reason, StringComparison.Ordinal),
+			$"복귀 경유점 또는 실패 사유가 달라요. {Combat.PatrolIndex + 1}번 / {Combat.LastRepositionFailure}");
+		Timeline.Add($"{Combat.LastRepositionFailure} / 복귀 경유점 {patrolIndex + 1}번 / 발사 0발");
+
+		await Wait(() =>
+		{
+			Require(gun.ShotCount == 0, "순찰 복귀 중 포탄이 발사됐어요.");
+			return Combat.State == State.Patrol || Combat.State == State.Idle;
+		}, 12f, "원래 경유점에 도착해 순찰을 재개하지 않았어요.");
+		Require(Combat.State == State.Patrol && FlatDistance(AI.transform.position, goal) <= 1f,
+			$"원래 {patrolIndex + 1}번 경유점에서 순찰을 재개해야 해요. {Combat.LastStopReason}");
+	}
+
+	private async Task<Vector3> BeginReposition(bool testReturn = false)
+	{
+		TankBallistics ballistics = await BeginShotBlock(testReturn);
 		Require(gun.TryGetShotConditions(out TankShotConditions conditions, out string reason), reason);
 		TankPrediction hit = ballistics.Predict(conditions, gun.OwnerColliders);
 		Require(hit.HasHit && hit.Collider != null && hit.Collider.gameObject == demo.ShotBlockWall,
@@ -300,9 +423,14 @@ internal sealed class TankCombatChecks
 		return "사선 차단 시간이 0초로 초기화되고, 예상 명중 없음이 이어져도 위치 변경 0회";
 	}
 
-	private async Task<TankBallistics> BeginShotBlock()
+	private Task<TankBallistics> BeginShotBlock(bool testReturn = false)
 	{
-		Require(demo.RunShotBlockTest(ActiveCase), "사선 차단 시험을 시작하지 못했어요.");
+		Require(demo.RunShotBlockTest(ActiveCase, testReturn), "사선 차단 시험을 시작하지 못했어요.");
+		return WaitForShotBlock();
+	}
+
+	private async Task<TankBallistics> WaitForShotBlock()
+	{
 		await Wait(() => Combat.State == State.WaitForSight || AI.AttackStatus == TankAI.AttackState.Blocked
 			|| gun.ShotCount > 0, 8f, "조준 후 포탄 경로 차단을 확인하지 못했어요.");
 		Require(Combat.State == State.StopAndFire && AI.Sensor.IsVisible && Combat.Target == AI.Sensor.SelectedTarget,
@@ -560,6 +688,8 @@ internal sealed class TankCombatChecks
 				Timeline.Add($"이동 목적지 {AI.Destination:F2}");
 			if (lastState == State.Idle && !string.IsNullOrEmpty(Combat.LastStopReason))
 				Timeline.Add(Combat.LastStopReason);
+			if (lastState == State.Idle && !string.IsNullOrEmpty(Combat.LastRepositionFailure))
+				Timeline.Add(Combat.LastRepositionFailure);
 		}
 		CheckHidden();
 	}

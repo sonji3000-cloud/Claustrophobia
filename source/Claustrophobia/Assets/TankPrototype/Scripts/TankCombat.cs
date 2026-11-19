@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -27,6 +28,8 @@ public sealed class TankCombat : MonoBehaviour
 	[SerializeField, Min(0.1f)] private float sweepTimeout = 3f;
 
 	private Transform[] patrol;
+	private readonly List<(TankTarget Target, uint Version)> suppressedTargets = new(2);
+	private int suppressionScan;
 	private uint moveCommand;
 	private Vector3 plannedTarget;
 	private double approachDeadline;
@@ -48,6 +51,8 @@ public sealed class TankCombat : MonoBehaviour
 	public float ContactDistance { get; private set; }
 	public float RepositionBlockSeconds { get; private set; }
 	public int RepositionCount { get; private set; }
+	public int SuppressedTargetCount => suppressedTargets.Count;
+	public string LastRepositionFailure { get; private set; } = "";
 	public string LastStopReason { get; private set; } = "";
 
 	public bool StartPatrol(Transform[] points)
@@ -65,6 +70,7 @@ public sealed class TankCombat : MonoBehaviour
 		PatrolIndex = 0;
 		moveCommand = owner.CommandId;
 		LastStopReason = "";
+		LastRepositionFailure = "";
 		ChangeState(CombatState.Patrol, "Patrol started");
 		return true;
 	}
@@ -85,6 +91,7 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
+		UpdateSuppression(sensor);
 		if (State == CombatState.Patrol)
 		{
 			UpdatePatrol(sensor, position);
@@ -128,7 +135,7 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
-		TankTarget target = sensor.SelectedTarget;
+		TankTarget target = SelectPatrolTarget(sensor);
 		if (target != null && ReadSighting(sensor, target))
 		{
 			Target = target;
@@ -142,6 +149,47 @@ public sealed class TankCombat : MonoBehaviour
 
 		PatrolIndex = (PatrolIndex + 1) % patrol.Length;
 		MovePatrol();
+	}
+
+	private TankTarget SelectPatrolTarget(TankSensor sensor)
+	{
+		TankTarget target = sensor.SelectedTarget;
+		if (!IsSuppressed(target)) return target;
+
+		TankTarget nearest = null;
+		float distance = float.PositiveInfinity;
+		for (int i = 0; i < sensor.CandidateCount; i++)
+		{
+			TankSensor.Reading reading = sensor.ReadCandidate(i);
+			if (reading.State != TankSensor.SightState.Visible || reading.Target == null
+				|| reading.Distance >= distance || IsSuppressed(reading.Target)) continue;
+
+			nearest = reading.Target;
+			distance = reading.Distance;
+		}
+		return nearest;
+	}
+
+	private bool IsSuppressed(TankTarget target)
+	{
+		if (target == null) return false;
+
+		for (int i = 0; i < suppressedTargets.Count; i++)
+			if (suppressedTargets[i].Target == target && suppressedTargets[i].Version == target.Version) return true;
+		return false;
+	}
+
+	private void UpdateSuppression(TankSensor sensor)
+	{
+		if (suppressedTargets.Count == 0 || !sensor.CanObserve || suppressionScan == sensor.ScanCount) return;
+
+		suppressionScan = sensor.ScanCount;
+		for (int i = suppressedTargets.Count - 1; i >= 0; i--)
+		{
+			(TankTarget target, uint version) = suppressedTargets[i];
+			if (target == null || target.Version != version || !sensor.TryGetSighting(target, out _, out _))
+				suppressedTargets.RemoveAt(i);
+		}
 	}
 
 	private void BeginEngagement(Vector3 position, string eventName)
@@ -411,7 +459,7 @@ public sealed class TankCombat : MonoBehaviour
 			else if (owner.IsShotBlocked && owner.ShotBlockedSeconds + 0.0001f >= shotBlockWait)
 			{
 				if (RepositionCount == 0) BeginReposition(position);
-				else BeginReturn("Shot path still blocked after reposition");
+				else FailReposition("Shot path still blocked after reposition");
 			}
 			return;
 		}
@@ -429,15 +477,16 @@ public sealed class TankCombat : MonoBehaviour
 
 	private void BeginReposition(Vector3 position)
 	{
+		LastRepositionFailure = "";
 		RepositionBlockSeconds = owner.ShotBlockedSeconds;
 		if (!TryFindReposition(position, out Vector3 point))
 		{
-			BeginReturn("No reachable reposition point");
+			FailReposition("No reachable reposition point");
 			return;
 		}
 		if (!owner.MoveTo(point))
 		{
-			BeginReturn("Reposition order rejected");
+			FailReposition("Reposition order rejected");
 			return;
 		}
 
@@ -445,7 +494,7 @@ public sealed class TankCombat : MonoBehaviour
 		attackStarted = false;
 		if (owner.MoveStatus == TankAI.MoveState.Failed)
 		{
-			BeginReturn("Reposition failed: " + owner.MoveFailure);
+			FailReposition("Reposition failed: " + owner.MoveFailure);
 			return;
 		}
 
@@ -484,17 +533,25 @@ public sealed class TankCombat : MonoBehaviour
 	private void UpdateReposition(Vector3 position)
 	{
 		if (owner.MoveStatus == TankAI.MoveState.Failed)
-			BeginReturn("Reposition failed: " + owner.MoveFailure);
+			FailReposition("Reposition failed: " + owner.MoveFailure);
 		else if (!IsRouteInRange(position))
-			BeginReturn("Reposition left engagement radius");
+			FailReposition("Reposition left engagement radius");
 		else if (owner.MoveStatus == TankAI.MoveState.Arrived)
 		{
 			if (FlatDistanceSquared(position, LastSeenPosition) <= fireRange * fireRange)
 				BeginFire("Reposition arrived, retrying fire");
-			else BeginReturn("Target outside fire range after reposition");
+			else FailReposition("Target outside fire range after reposition");
 		}
 		else if (owner.Runner.SimulationTime >= repositionDeadline)
-			BeginReturn("Reposition timed out");
+			FailReposition("Reposition timed out");
+	}
+
+	private void FailReposition(string reason)
+	{
+		LastRepositionFailure = reason;
+		suppressedTargets.Add((Target, TargetVersion));
+		suppressionScan = owner.Sensor.ScanCount;
+		BeginReturn(reason);
 	}
 
 	private static float FlatDistanceSquared(Vector3 from, Vector3 to)
@@ -544,6 +601,7 @@ public sealed class TankCombat : MonoBehaviour
 		patrol = null;
 		moveCommand = 0;
 		PatrolIndex = -1;
+		suppressedTargets.Clear();
 		ClearEngagement();
 	}
 

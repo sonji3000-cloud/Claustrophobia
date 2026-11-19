@@ -37,6 +37,9 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[SerializeField] private Transform searchHideout;
 	[SerializeField] private Transform shotBlockTarget;
 	[SerializeField] private GameObject shotBlockWall;
+	[SerializeField] private Transform[] shotReturnPoints;
+	[SerializeField] private GameObject repositionBlocker;
+	[SerializeField] private GameObject repositionShotWall;
 
 	private NetworkObject combatTarget;
 	private bool hideOnAttack;
@@ -63,11 +66,14 @@ public sealed class TankAttackDemo : MonoBehaviour
 	public bool HasSearchTests => HasCombatTest && combatWall != null && searchContact != null && searchHideout != null
 		&& patrolPoints.Length > 1 && patrolPoints[1] != null;
 	public bool HasShotBlockTest => HasCombatTest && shotBlockTarget != null && shotBlockWall != null;
+	public bool HasRepositionFailureTests => HasShotBlockTest && shotReturnPoints != null && shotReturnPoints.Length > 1
+		&& shotReturnPoints[0] != null && shotReturnPoints[1] != null && repositionBlocker != null && repositionShotWall != null;
 	public Vector3 SearchContact => searchContact.position;
 	public Vector3 SearchHideout => searchHideout.position;
 	public Vector3 SecondWaypoint => patrolPoints[1].position;
 	public bool IsCombatCoverOn => combatWall != null && combatWall.activeSelf;
 	public GameObject ShotBlockWall => shotBlockWall;
+	public Vector3 ShotBlockPoint => shotBlockTarget.position;
 	public bool CanRunTests => isActiveAndEnabled && Application.isPlaying && runner != null && runner.IsRunning && runner.IsServer;
 	public bool HasBlocker => stallBlocker != null;
 	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
@@ -258,14 +264,45 @@ public sealed class TankAttackDemo : MonoBehaviour
 		return true;
 	}
 
-	public bool RunShotBlockTest(string name)
+	public bool RunShotBlockTest(string name, bool testReturn = false)
 	{
-		if (!CanRunTests || !HasShotBlockTest || !StartCombatTest(combatStart, shotBlockTarget, patrolPoints)) return false;
+		if (!CanRunTests || !HasShotBlockTest || (testReturn && !HasRepositionFailureTests)
+			|| !StartCombatTest(combatStart, shotBlockTarget, testReturn ? shotReturnPoints : patrolPoints)) return false;
 
 		shotBlockWall.SetActive(true);
 		Physics.SyncTransforms();
 		TestName = name;
 		ShowCombatArea(combatStart.position, shotBlockTarget.position);
+		return true;
+	}
+
+	public Vector3 GetShotReturnPoint(int index) => shotReturnPoints[index].position;
+
+	public bool BlockRepositionRoute()
+	{
+		if (!CanRunTests || repositionBlocker == null || Enemy == null || Enemy.MoveStatus != TankAI.MoveState.Moving) return false;
+
+		Vector3 goal = Enemy.Destination;
+		Vector3 direction = goal - Enemy.transform.position;
+		direction.y = 0f;
+		if (direction.sqrMagnitude <= 0.01f) return false;
+
+		direction.Normalize();
+		Transform wall = repositionBlocker.transform;
+		Vector3 position = goal + direction * 0.8f;
+		position.y += wall.lossyScale.y * 0.5f;
+		wall.SetPositionAndRotation(position, Quaternion.LookRotation(direction));
+		repositionBlocker.SetActive(true);
+		Physics.SyncTransforms();
+		return true;
+	}
+
+	public bool ShowRepositionShotWall()
+	{
+		if (!CanRunTests || repositionShotWall == null) return false;
+
+		repositionShotWall.SetActive(true);
+		Physics.SyncTransforms();
 		return true;
 	}
 
@@ -332,6 +369,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 		hideOnAttack = false;
 		if (combatWall != null) combatWall.SetActive(false);
 		if (shotBlockWall != null) shotBlockWall.SetActive(false);
+		if (repositionBlocker != null) repositionBlocker.SetActive(false);
+		if (repositionShotWall != null) repositionShotWall.SetActive(false);
 		CombatTargetHealth = null;
 		if (combatTarget == null) return;
 
