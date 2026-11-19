@@ -144,6 +144,8 @@ public sealed class TankAttackDemoEditor : Editor
 			if (GUILayout.Button("02 수색 중 재발견")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Reacquire);
 			if (GUILayout.Button("03 끝까지 못 찾음 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Return);
 			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 확인")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ShotBlock);
+			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 → 위치 변경 → 사격"))
+				TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RepositionFire);
 		}
 		using (new EditorGUI.DisabledScope(!Application.isPlaying || (check?.IsRunning != true && demo.Enemy == null)))
 		{
@@ -186,11 +188,12 @@ public sealed class TankAttackDemoEditor : Editor
 			EditorGUILayout.LabelField("표적", ai.Sensor != null && ai.Sensor.IsVisible ? "보임" : "미확인");
 			EditorGUILayout.LabelField("공격 상태 / 차단 사유", $"{ai.AttackStatus} / {ai.AttackBlockReason}");
 			if (combat.State == TankCombat.CombatState.Reposition)
-				EditorGUILayout.LabelField("위치 변경 시작 / 차단 시간", $"{combat.RepositionBlockSeconds:F2}초");
+				EditorGUILayout.LabelField("이동 전 사선 차단 시간", $"{combat.RepositionBlockSeconds:F2}초");
 			else if (ai.IsShotBlocked)
 				EditorGUILayout.LabelField("사선 차단 시간", $"{ai.ShotBlockedSeconds:F2}초");
 		}
 		if (ai.TryGetComponent(out TankGun gun)) EditorGUILayout.LabelField("실제 발사 수", $"{gun.ShotCount}발");
+		if (combat.RepositionCount > 0) EditorGUILayout.LabelField("위치 변경", $"{combat.RepositionCount}회");
 		using (new EditorGUI.DisabledScope(true))
 		{
 			if (combat.LastSeenTime >= 0d) EditorGUILayout.Vector3Field("마지막 목격 위치", combat.LastSeenPosition);

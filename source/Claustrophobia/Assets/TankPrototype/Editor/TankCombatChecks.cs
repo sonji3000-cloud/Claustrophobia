@@ -9,11 +9,11 @@ using State = TankCombat.CombatState;
 
 internal sealed class TankCombatChecks
 {
-	internal enum Scenario { BriefCover, Reacquire, Return, All, ShotBlock }
+	internal enum Scenario { BriefCover, Reacquire, Return, All, ShotBlock, RepositionFire }
 
 	internal const string SuitePath = "Builds/TankCombatIntegration/play-results.txt";
 	internal const string ScenarioPath = "Builds/TankCombatIntegration/last-scenario.txt";
-	internal const int SuiteCount = 14;
+	internal const int SuiteCount = 15;
 	private const string MenuPath = "Tools/Tank/AI Test/Run Combat Checks";
 
 	internal static TankCombatChecks Current { get; private set; }
@@ -99,6 +99,7 @@ internal sealed class TankCombatChecks
 				case Scenario.Reacquire: await RunCase("수색 중 재발견", Reacquire); break;
 				case Scenario.Return: await RunCase("끝까지 못 찾음 → 순찰 복귀", Return); break;
 				case Scenario.ShotBlock: await RunCase("사선 차단 확인", ShotBlock); break;
+				case Scenario.RepositionFire: await RunCase("사선 차단 → 위치 변경 → 사격", RepositionFire); break;
 				default: await RunAll(); break;
 			}
 			int passed = 0;
@@ -148,6 +149,7 @@ internal sealed class TankCombatChecks
 		await RunCase("12 목격 지점 이동 시간 초과 → 복귀", SearchTimeout);
 		await RunCase("13 사선 차단 → 위치 변경 시작", ShotBlock);
 		await RunCase("14 짧은 사선 차단 뒤 예상 명중 없음", ShotBlockClears);
+		await RunCase("15 위치 변경 후 정지 사격", RepositionFire);
 	}
 
 	private async Task RunCase(string name, Func<Task<string>> test)
@@ -198,6 +200,56 @@ internal sealed class TankCombatChecks
 
 	private async Task<string> ShotBlock()
 	{
+		await BeginReposition();
+		keepScene = scenario == Scenario.ShotBlock;
+		return $"표적 보임 / 사선 차단 {Combat.RepositionBlockSeconds:F2}초 / 위치 변경 {Combat.RepositionCount}회 / 실제 발사 {gun.ShotCount}발";
+	}
+
+	private async Task<string> RepositionFire()
+	{
+		Vector3 start = await BeginReposition();
+		Vector3 goal = AI.Destination;
+		Vector3 forward = Combat.LastSeenPosition - start;
+		Vector3 side = new Vector3(forward.z, 0f, -forward.x).normalized;
+		TankTarget target = Combat.Target;
+		int patrolIndex = Combat.PatrolIndex;
+		uint move = AI.CommandId;
+
+		await Wait(() =>
+		{
+			Require(gun.ShotCount == 0, "차체가 이동을 마치기 전에 포탄이 발사됐어요.");
+			if (Combat.State != State.Reposition) return true;
+			Require(AI.AttackStatus == TankAI.AttackState.Idle && AI.CommandId == move && AI.Destination == goal,
+				"이동 중 공격 요청이 들어갔거나 이동 목적지가 바뀌었어요.");
+			return false;
+		}, 10f, "위치 변경 이동을 마치지 못했어요.");
+		float sideDistance = Mathf.Abs(Vector3.Dot(AI.transform.position - start, side));
+		if (Combat.State == State.WaitForSight)
+		{
+			TankSensor sensor = AI.Sensor;
+			for (int i = 0; i < sensor.CandidateCount; i++)
+			{
+				TankSensor.Reading reading = sensor.ReadCandidate(i);
+				if (reading.Target != target) continue;
+				Timeline.Add($"이동 중 시야 상실: {reading.State} / 가림 물체 {reading.Blocker?.name ?? "—"}");
+				break;
+			}
+		}
+		Require(Combat.State == State.StopAndFire && FlatDistance(AI.transform.position, goal) <= 1f && sideDistance >= 2f
+			&& AI.LeftDriveInput == 0f && AI.RightDriveInput == 0f,
+			$"목적지에 차체를 세우고 사격을 재시도해야 해요. 현재 {Label(Combat.State)} / 옆으로 {sideDistance:F1}m");
+		Timeline.Add($"이동 완료 / 옆으로 {sideDistance:F1}m / 실제 발사 {gun.ShotCount}발");
+
+		await WaitForShot(8f);
+		Require(Combat.RepositionCount == 1 && Combat.Target == target && Combat.PatrolIndex == patrolIndex && AI.CommandId == move + 1,
+			"위치를 한 번만 바꾸고 같은 표적에 사격을 재개해야 해요.");
+		Timeline.Add($"사격 재개 / 위치 변경 {Combat.RepositionCount}회 / 실제 발사 {gun.ShotCount}발");
+		keepScene = scenario == Scenario.RepositionFire;
+		return $"옆으로 {sideDistance:F1}m / 위치 변경 1회 / 이동 전·중 0발 / 정지 후 {gun.ShotCount}발";
+	}
+
+	private async Task<Vector3> BeginReposition()
+	{
 		TankBallistics ballistics = await BeginShotBlock();
 		Require(gun.TryGetShotConditions(out TankShotConditions conditions, out string reason), reason);
 		TankPrediction hit = ballistics.Predict(conditions, gun.OwnerColliders);
@@ -205,6 +257,7 @@ internal sealed class TankCombatChecks
 			$"포탄 경로의 첫 충돌체가 낮은 벽이어야 해요. 실제 결과 {hit.Collider?.name ?? hit.Reason}");
 		Timeline.Add($"표적 보임 / 사선 차단 ({hit.Collider.name}) / 실제 발사 {gun.ShotCount}발");
 
+		Vector3 start = AI.transform.position;
 		uint attack = AI.CommandId;
 		int patrolIndex = Combat.PatrolIndex;
 		await Wait(() =>
@@ -214,18 +267,10 @@ internal sealed class TankCombatChecks
 		}, 2f, "차단이 이어져도 위치 변경을 시작하지 않았어요.");
 		float delay = Combat.RepositionBlockSeconds;
 		Require(delay >= 0.29f && delay <= 0.45f, $"사선 차단 확인 시간이 약 0.3초여야 해요. 실제 {delay:F2}초");
-
-		double started = SimulationTime;
-		await Wait(() =>
-		{
-			Require(Combat.State == State.Reposition && Combat.PatrolIndex == patrolIndex && AI.CommandId == attack + 1
-				&& AI.AttackStatus == TankAI.AttackState.Idle && !AI.IsShotBlocked && gun.ShotCount == 0,
-				"위치 변경 준비 중에 새 명령이 나갔거나 사격이 재개됐어요.");
-			return SimulationTime - started >= 0.35;
-		}, 2f, "위치 변경이 한 번만 시작됐는지 확인하지 못했어요.");
-
-		keepScene = scenario == Scenario.ShotBlock;
-		return $"표적 보임 / 사선 차단 {delay:F2}초 / 위치 변경 시작 1회 / 실제 발사 {gun.ShotCount}발";
+		Require(Combat.RepositionCount == 1 && Combat.PatrolIndex == patrolIndex && AI.CommandId == attack + 1
+			&& AI.MoveStatus == TankAI.MoveState.Moving && AI.Path.HasPath && AI.AttackStatus == TankAI.AttackState.Idle
+			&& !AI.IsShotBlocked && gun.ShotCount == 0, "위치 변경 경로 한 개를 받고 공격을 해제해야 해요.");
+		return start;
 	}
 
 	private async Task<string> ShotBlockClears()
@@ -509,7 +554,9 @@ internal sealed class TankCombatChecks
 			visited.Add(lastState);
 			string waypointText = Combat.PatrolIndex >= 0 ? (Combat.PatrolIndex + 1).ToString() : "—";
 			Timeline.Add($"+{SimulationTime - startTime:F2}초  {Label(lastState)}  |  경유점 {waypointText}  |  발사 {gun.ShotCount}발");
-			if (lastState == State.MoveToLastSeen || lastState == State.ReturnToPatrol)
+			if (lastState == State.Reposition)
+				Timeline.Add($"위치 변경 {Combat.RepositionCount}회 | 이동 목적지 {AI.Destination:F2}");
+			else if (lastState == State.MoveToLastSeen || lastState == State.ReturnToPatrol)
 				Timeline.Add($"이동 목적지 {AI.Destination:F2}");
 			if (lastState == State.Idle && !string.IsNullOrEmpty(Combat.LastStopReason))
 				Timeline.Add(Combat.LastStopReason);
