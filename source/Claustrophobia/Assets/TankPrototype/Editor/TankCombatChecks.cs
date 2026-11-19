@@ -9,7 +9,7 @@ using State = TankCombat.CombatState;
 
 internal sealed class TankCombatChecks
 {
-	internal enum Scenario { BriefCover, Reacquire, Return, All }
+	internal enum Scenario { BriefCover, Reacquire, Return, All, ShotBlock }
 
 	internal const string SuitePath = "Builds/TankCombatIntegration/play-results.txt";
 	internal const string ScenarioPath = "Builds/TankCombatIntegration/last-scenario.txt";
@@ -32,6 +32,7 @@ internal sealed class TankCombatChecks
 	private int waypoint;
 	private bool cancelled;
 	private bool hostReady;
+	private bool keepScene;
 
 	internal readonly List<string> Results = new List<string>();
 	internal readonly List<string> Timeline = new List<string>();
@@ -97,6 +98,7 @@ internal sealed class TankCombatChecks
 				case Scenario.BriefCover: await RunCase("짧은 가림", BriefCover); break;
 				case Scenario.Reacquire: await RunCase("수색 중 재발견", Reacquire); break;
 				case Scenario.Return: await RunCase("끝까지 못 찾음 → 순찰 복귀", Return); break;
+				case Scenario.ShotBlock: await RunCase("사선 차단 확인", ShotBlock); break;
 				default: await RunAll(); break;
 			}
 			int passed = 0;
@@ -114,7 +116,11 @@ internal sealed class TankCombatChecks
 		}
 		finally
 		{
-			if (demo != null && Application.isPlaying && !cancelled) demo.StopAllActions();
+			if (demo != null && Application.isPlaying && !cancelled)
+			{
+				if (keepScene) AI.StopActions();
+				else demo.StopAllActions();
+			}
 			IsRunning = false;
 			try
 			{
@@ -171,13 +177,49 @@ internal sealed class TankCombatChecks
 
 	private async Task<string> BriefCover()
 	{
-		TankTarget target = await BeginCover();
+		TankTarget target = await BeginCover(frameContact: true);
+		Require(demo.IsCombatCoverOn, "시야 상실 때 가림 벽이 켜져 있어야 해요.");
+		Timeline.Add($"가림 벽 켜짐 | {Label(Combat.State)} | 발사 {gun.ShotCount}발");
 		double loss = SimulationTime;
 		await Wait(() => SimulationTime - loss >= 0.15, 1f, "가림 대기를 확인하지 못했어요.");
 		demo.SetCombatCover(false);
 		await WaitForAttack(target);
 		Require(!visited.Contains(State.MoveToLastSeen) && Combat.PatrolIndex == waypoint, "짧은 가림에서 수색을 시작했거나 경유점이 바뀌었어요.");
+		if (scenario == Scenario.BriefCover)
+		{
+			demo.SetCombatCover(true);
+			keepScene = true;
+		}
 		return "발사 중단, 수색 이동 없이 같은 표적과 재교전";
+	}
+
+	private async Task<string> ShotBlock()
+	{
+		Require(demo.RunShotBlockTest(ActiveCase), "사선 차단 시험을 시작하지 못했어요.");
+		await Wait(() => Combat.State == State.WaitForSight || AI.AttackStatus == TankAI.AttackState.Blocked
+			|| gun.ShotCount > 0, 8f, "조준 후 포탄 경로 차단을 확인하지 못했어요.");
+		Require(Combat.State == State.StopAndFire && AI.Sensor.IsVisible && Combat.Target == AI.Sensor.SelectedTarget,
+			"낮은 벽 앞에서 표적이 보이지 않아요.");
+		Require(gun.ShotCount == 0 && AI.AttackBlockReason == "Shot path obstructed",
+			$"실제 발사 {gun.ShotCount}발 · 차단 사유 {AI.AttackBlockReason}");
+
+		Require(gun.TryGetShotConditions(out TankShotConditions conditions, out string reason), reason);
+		TankPrediction hit = AI.GetComponent<TankBallistics>().Predict(conditions, gun.OwnerColliders);
+		Require(hit.HasHit && hit.Collider != null && hit.Collider.gameObject == demo.ShotBlockWall,
+			$"포탄 경로의 첫 충돌체가 낮은 벽이어야 해요. 실제 결과 {hit.Collider?.name ?? hit.Reason}");
+
+		double blocked = SimulationTime;
+		await Wait(() =>
+		{
+			Require(Combat.State == State.StopAndFire && AI.Sensor.IsVisible && gun.ShotCount == 0,
+				"사선이 막힌 뒤에 시야가 끊겼거나 포탄이 발사됐어요.");
+			return SimulationTime - blocked >= 0.35 && AI.AttackBlockReason == "Shot path obstructed";
+		}, 2f, "사선 차단이 유지되는지 확인하지 못했어요.");
+
+		string result = $"표적 보임 / 사선 차단 ({hit.Collider.name}) / 실제 발사 {gun.ShotCount}발";
+		Timeline.Add(result);
+		keepScene = true;
+		return result;
 	}
 
 	private async Task<string> Reacquire()
@@ -334,9 +376,9 @@ internal sealed class TankCombatChecks
 		return $"벽에 막힌 주행을 {duration:F2}초에 중단하고 기존 경유점으로 복귀";
 	}
 
-	private void StartSearch(bool hidden = false)
+	private void StartSearch(bool hidden = false, bool frameContact = false)
 	{
-		Require(demo.RunSearchTest(ActiveCase, hidden), "시험용 전차 또는 순찰을 시작하지 못했어요.");
+		Require(demo.RunSearchTest(ActiveCase, hidden, frameContact), "시험용 전차 또는 순찰을 시작하지 못했어요.");
 	}
 
 	private void SendToHideout()
@@ -352,9 +394,9 @@ internal sealed class TankCombatChecks
 		Require(AI != null && AI != previous && demo.CombatTargetHealth != null, "시험용 전차 또는 표적을 생성하지 못했어요.");
 	}
 
-	private async Task<TankTarget> BeginCover()
+	private async Task<TankTarget> BeginCover(bool frameContact = false)
 	{
-		StartSearch();
+		StartSearch(frameContact: frameContact);
 		await WaitForShot();
 		TankTarget target = Combat.Target;
 		demo.SetCombatCover(true);

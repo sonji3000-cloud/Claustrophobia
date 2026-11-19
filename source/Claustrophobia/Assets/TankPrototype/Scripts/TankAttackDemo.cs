@@ -35,6 +35,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[SerializeField] private Transform noPathTarget;
 	[SerializeField] private Transform searchContact;
 	[SerializeField] private Transform searchHideout;
+	[SerializeField] private Transform shotBlockTarget;
+	[SerializeField] private GameObject shotBlockWall;
 
 	private NetworkObject combatTarget;
 	private bool hideOnAttack;
@@ -60,10 +62,12 @@ public sealed class TankAttackDemo : MonoBehaviour
 		&& noPathPatrol != null && noPathPatrol.Length > 0 && noPathTarget != null;
 	public bool HasSearchTests => HasCombatTest && combatWall != null && searchContact != null && searchHideout != null
 		&& patrolPoints.Length > 1 && patrolPoints[1] != null;
+	public bool HasShotBlockTest => HasCombatTest && shotBlockTarget != null && shotBlockWall != null;
 	public Vector3 SearchContact => searchContact.position;
 	public Vector3 SearchHideout => searchHideout.position;
 	public Vector3 SecondWaypoint => patrolPoints[1].position;
 	public bool IsCombatCoverOn => combatWall != null && combatWall.activeSelf;
+	public GameObject ShotBlockWall => shotBlockWall;
 	public bool CanRunTests => isActiveAndEnabled && Application.isPlaying && runner != null && runner.IsRunning && runner.IsServer;
 	public bool HasBlocker => stallBlocker != null;
 	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
@@ -243,13 +247,25 @@ public sealed class TankAttackDemo : MonoBehaviour
 		ShowCombatArea(start.position, point.position);
 	}
 
-	public bool RunSearchTest(string name, bool startHidden)
+	public bool RunSearchTest(string name, bool startHidden, bool frameContact = false)
 	{
 		if (!CanRunTests || !HasSearchTests
 			|| !StartCombatTest(combatStart, startHidden ? searchHideout : searchContact, patrolPoints)) return false;
 
 		TestName = name;
-		ShowCombatArea(searchHideout.position, SecondWaypoint);
+		if (frameContact) ShowCombatArea(combatStart.position, searchContact.position);
+		else ShowCombatArea(searchHideout.position, SecondWaypoint);
+		return true;
+	}
+
+	public bool RunShotBlockTest(string name)
+	{
+		if (!CanRunTests || !HasShotBlockTest || !StartCombatTest(combatStart, shotBlockTarget, patrolPoints)) return false;
+
+		shotBlockWall.SetActive(true);
+		Physics.SyncTransforms();
+		TestName = name;
+		ShowCombatArea(combatStart.position, shotBlockTarget.position);
 		return true;
 	}
 
@@ -300,10 +316,14 @@ public sealed class TankAttackDemo : MonoBehaviour
 	private void ShowCombatArea(Vector3 start, Vector3 goal)
 	{
 		Vector3 center = (start + goal) * 0.5f;
-		testCamera.transform.SetPositionAndRotation(center + Vector3.up * 55f,
-			Quaternion.LookRotation(Vector3.down, Vector3.forward));
+		Vector3 view = new Vector3(30f, 48f, -36f);
+		Quaternion rotation = Quaternion.LookRotation(-view);
+		float size = Mathf.Max(10f, Vector3.Distance(start, goal) * 0.5f + 3f);
+		// Leave room for the AI test controls on the left of the Game view.
+		Vector3 menuOffset = rotation * Vector3.right * (size * testCamera.aspect * 0.2f);
+		testCamera.transform.SetPositionAndRotation(center + view - menuOffset, rotation);
 		testCamera.orthographic = true;
-		testCamera.orthographicSize = 29f;
+		testCamera.orthographicSize = size;
 		testCamera.enabled = true;
 	}
 
@@ -311,6 +331,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 	{
 		hideOnAttack = false;
 		if (combatWall != null) combatWall.SetActive(false);
+		if (shotBlockWall != null) shotBlockWall.SetActive(false);
 		CombatTargetHealth = null;
 		if (combatTarget == null) return;
 

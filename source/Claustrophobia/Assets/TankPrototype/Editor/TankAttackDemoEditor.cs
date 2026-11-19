@@ -143,6 +143,7 @@ public sealed class TankAttackDemoEditor : Editor
 			if (GUILayout.Button("01 짧은 가림")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BriefCover);
 			if (GUILayout.Button("02 수색 중 재발견")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Reacquire);
 			if (GUILayout.Button("03 끝까지 못 찾음 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Return);
+			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 확인")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ShotBlock);
 		}
 		using (new EditorGUI.DisabledScope(!Application.isPlaying || (check?.IsRunning != true && demo.Enemy == null)))
 		{
@@ -180,6 +181,11 @@ public sealed class TankAttackDemoEditor : Editor
 		string waypoint = combat.PatrolIndex >= 0 ? (combat.PatrolIndex + 1).ToString() : "—";
 		EditorGUILayout.LabelField("현재 상태", TankCombatChecks.Label(combat.State));
 		EditorGUILayout.LabelField("경유점 / 가림 벽", $"{waypoint}번 / {(demo.IsCombatCoverOn ? "켜짐" : "꺼짐")}");
+		if (demo.ShotBlockWall != null && demo.ShotBlockWall.activeSelf)
+		{
+			EditorGUILayout.LabelField("표적", ai.Sensor != null && ai.Sensor.IsVisible ? "보임" : "미확인");
+			EditorGUILayout.LabelField("공격 상태 / 차단 사유", $"{ai.AttackStatus} / {ai.AttackBlockReason}");
+		}
 		if (ai.TryGetComponent(out TankGun gun)) EditorGUILayout.LabelField("실제 발사 수", $"{gun.ShotCount}발");
 		using (new EditorGUI.DisabledScope(true))
 		{
