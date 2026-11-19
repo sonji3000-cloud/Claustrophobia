@@ -4,12 +4,21 @@ using UnityEngine;
 [CustomEditor(typeof(TankAttackDemo))]
 public sealed class TankAttackDemoEditor : Editor
 {
+	private bool showLegacy;
+
 	public override bool RequiresConstantRepaint() => Application.isPlaying;
 
 	public override void OnInspectorGUI()
 	{
-		DrawDefaultInspector();
 		var demo = (TankAttackDemo)target;
+		if (demo.HasSearchTests)
+		{
+			DrawSearchTests(demo);
+			if (TankCombatChecks.Current?.IsRunning == true) return;
+			showLegacy = EditorGUILayout.Foldout(showLegacy, "기존 이동·공격 시험 및 상세 설정", true);
+			if (!showLegacy) return;
+		}
+		DrawDefaultInspector();
 		TankAI ai = demo.Enemy;
 		EditorGUILayout.Space();
 		if (demo.HasCombatTest)
@@ -116,6 +125,66 @@ public sealed class TankAttackDemoEditor : Editor
 			if (targetHealth != null)
 				EditorGUILayout.FloatField("공격받는 표적 HP", targetHealth.CurrentHP);
 			EditorGUILayout.TextField("파괴 후 중단 검사", demo.DestructionCheck);
+		}
+	}
+
+	private static void DrawSearchTests(TankAttackDemo demo)
+	{
+		TankCombatChecks check = TankCombatChecks.Current;
+		if (check != null && !check.IsFor(demo)) check = null;
+		EditorGUILayout.Space();
+		EditorGUILayout.LabelField("자율 교전 · 수색 · 순찰 복귀", EditorStyles.boldLabel);
+		EditorGUILayout.HelpBox(
+			"Play 후 아래 버튼을 누르세요. 버튼이 AI 모드를 켜고 시험을 시작합니다. Game 화면에서 전차를 보고, 아래에서 판정과 상태 전이를 확인하세요.",
+			MessageType.Info);
+		using (new EditorGUI.DisabledScope(!Application.isPlaying || TankCombatChecks.Current?.IsRunning == true))
+		{
+			if (GUILayout.Button($"전체 자동 검사 ({TankCombatChecks.SuiteCount}개)")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.All);
+			if (GUILayout.Button("01 짧은 가림")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BriefCover);
+			if (GUILayout.Button("02 수색 중 재발견")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Reacquire);
+			if (GUILayout.Button("03 끝까지 못 찾음 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Return);
+		}
+		using (new EditorGUI.DisabledScope(!Application.isPlaying || (check?.IsRunning != true && demo.Enemy == null)))
+		{
+			if (GUILayout.Button("전체 중지"))
+			{
+				if (check?.IsRunning == true) check.Cancel();
+				else demo.StopAllActions();
+			}
+		}
+		if (check == null) return;
+
+		EditorGUILayout.Space();
+		EditorGUILayout.LabelField("검사 상태", check.Status, EditorStyles.boldLabel);
+		if (check.IsRunning) DrawLiveSearch(demo);
+		foreach (string result in check.Results)
+			EditorGUILayout.HelpBox(result, result.StartsWith("PASS", System.StringComparison.Ordinal) ? MessageType.Info : MessageType.Error);
+		if (check.Timeline.Count > 0)
+		{
+			EditorGUILayout.LabelField(check.ActiveCase + " · 상태 전이", EditorStyles.boldLabel);
+			foreach (string entry in check.Timeline) EditorGUILayout.LabelField(entry, EditorStyles.wordWrappedLabel);
+		}
+		if (!check.IsRunning)
+		{
+			EditorGUILayout.LabelField(check.ReportPath, EditorStyles.wordWrappedLabel);
+			if (System.IO.File.Exists(check.ReportPath) && GUILayout.Button("결과 파일 보기"))
+				EditorUtility.RevealInFinder(System.IO.Path.GetFullPath(check.ReportPath));
+		}
+	}
+
+	private static void DrawLiveSearch(TankAttackDemo demo)
+	{
+		TankAI ai = demo.Enemy;
+		TankCombat combat = ai != null ? ai.Combat : null;
+		if (combat == null) return;
+		string waypoint = combat.PatrolIndex >= 0 ? (combat.PatrolIndex + 1).ToString() : "—";
+		EditorGUILayout.LabelField("현재 상태", TankCombatChecks.Label(combat.State));
+		EditorGUILayout.LabelField("경유점 / 가림 벽", $"{waypoint}번 / {(demo.IsCombatCoverOn ? "켜짐" : "꺼짐")}");
+		if (ai.TryGetComponent(out TankGun gun)) EditorGUILayout.LabelField("실제 발사 수", $"{gun.ShotCount}발");
+		using (new EditorGUI.DisabledScope(true))
+		{
+			if (combat.LastSeenTime >= 0d) EditorGUILayout.Vector3Field("마지막 목격 위치", combat.LastSeenPosition);
+			if (ai.MoveStatus == TankAI.MoveState.Moving) EditorGUILayout.Vector3Field("이동 목적지", ai.Destination);
 		}
 	}
 }

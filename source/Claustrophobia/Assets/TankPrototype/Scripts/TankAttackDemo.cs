@@ -33,6 +33,8 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[SerializeField] private Transform noPathStart;
 	[SerializeField] private Transform[] noPathPatrol;
 	[SerializeField] private Transform noPathTarget;
+	[SerializeField] private Transform searchContact;
+	[SerializeField] private Transform searchHideout;
 
 	private NetworkObject combatTarget;
 	private bool hideOnAttack;
@@ -56,6 +58,12 @@ public sealed class TankAttackDemo : MonoBehaviour
 		&& patrolPoints != null && patrolPoints.Length > 0 && farTarget != null && nearTarget != null;
 	public bool HasCombatFailureTests => HasCombatTest && combatWall != null && noPathStart != null
 		&& noPathPatrol != null && noPathPatrol.Length > 0 && noPathTarget != null;
+	public bool HasSearchTests => HasCombatTest && combatWall != null && searchContact != null && searchHideout != null
+		&& patrolPoints.Length > 1 && patrolPoints[1] != null;
+	public Vector3 SearchContact => searchContact.position;
+	public Vector3 SearchHideout => searchHideout.position;
+	public Vector3 SecondWaypoint => patrolPoints[1].position;
+	public bool IsCombatCoverOn => combatWall != null && combatWall.activeSelf;
 	public bool CanRunTests => isActiveAndEnabled && Application.isPlaying && runner != null && runner.IsRunning && runner.IsServer;
 	public bool HasBlocker => stallBlocker != null;
 	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
@@ -143,8 +151,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		if (hideOnAttack && Enemy.AttackStatus != TankAI.AttackState.Idle)
 		{
 			hideOnAttack = false;
-			combatWall.SetActive(true);
-			Physics.SyncTransforms();
+			SetCombatCover(true);
 		}
 		if (attackOnArrival)
 		{
@@ -224,29 +231,7 @@ public sealed class TankAttackDemo : MonoBehaviour
 		bool noPath = test == CombatCase.NoPath;
 		Transform start = noPath ? noPathStart : combatStart;
 		Transform point = test == CombatCase.Far ? farTarget : noPath ? noPathTarget : nearTarget;
-		attackOnArrival = false;
-		IsSensorTest = false;
-		SetBlocker(false);
-		if (!SpawnEnemy(start)) return;
-
-		try
-		{
-			combatTarget = runner.Spawn(combatTargetPrefab, point.position, point.rotation);
-		}
-		catch (Exception error)
-		{
-			Debug.LogError("[AI COMBAT] Target spawn failed: " + error.Message, this);
-			return;
-		}
-
-		if (combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(noPath ? noPathPatrol : patrolPoints))
-		{
-			EndCombatTest();
-			Debug.LogError("[AI COMBAT] Patrol detection test could not start.", this);
-			return;
-		}
-
-		CombatTargetHealth = combatTarget.GetComponent<TankHealth>();
+		if (!StartCombatTest(start, point, noPath ? noPathPatrol : patrolPoints)) return;
 		hideOnAttack = test == CombatCase.Occluded;
 		TestName = test switch
 		{
@@ -255,7 +240,66 @@ public sealed class TankAttackDemo : MonoBehaviour
 			CombatCase.Occluded => "표적 가림으로 사격 중단",
 			_ => "접근 경로 없음"
 		};
-		Vector3 center = (start.position + point.position) * 0.5f;
+		ShowCombatArea(start.position, point.position);
+	}
+
+	public bool RunSearchTest(string name, bool startHidden)
+	{
+		if (!CanRunTests || !HasSearchTests
+			|| !StartCombatTest(combatStart, startHidden ? searchHideout : searchContact, patrolPoints)) return false;
+
+		TestName = name;
+		ShowCombatArea(searchHideout.position, SecondWaypoint);
+		return true;
+	}
+
+	public void SetCombatCover(bool active)
+	{
+		if (!Application.isPlaying || combatWall == null) return;
+		combatWall.SetActive(active);
+		Physics.SyncTransforms();
+	}
+
+	public bool MoveCombatTarget(Vector3 position)
+	{
+		if (!CanRunTests || combatTarget == null || !combatTarget.TryGetComponent(out NetworkTransform motion)) return false;
+
+		motion.Teleport(position, motion.transform.rotation);
+		Physics.SyncTransforms();
+		return true;
+	}
+
+	private bool StartCombatTest(Transform start, Transform point, Transform[] route)
+	{
+		attackOnArrival = false;
+		IsSensorTest = false;
+		SetBlocker(false);
+		if (!SpawnEnemy(start)) return false;
+
+		try
+		{
+			combatTarget = runner.Spawn(combatTargetPrefab, point.position, point.rotation);
+		}
+		catch (Exception error)
+		{
+			Debug.LogError("[AI COMBAT] Target spawn failed: " + error.Message, this);
+			return false;
+		}
+
+		if (combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(route))
+		{
+			EndCombatTest();
+			Debug.LogError("[AI COMBAT] Patrol detection test could not start.", this);
+			return false;
+		}
+
+		CombatTargetHealth = combatTarget.GetComponent<TankHealth>();
+		return true;
+	}
+
+	private void ShowCombatArea(Vector3 start, Vector3 goal)
+	{
+		Vector3 center = (start + goal) * 0.5f;
 		testCamera.transform.SetPositionAndRotation(center + Vector3.up * 55f,
 			Quaternion.LookRotation(Vector3.down, Vector3.forward));
 		testCamera.orthographic = true;
