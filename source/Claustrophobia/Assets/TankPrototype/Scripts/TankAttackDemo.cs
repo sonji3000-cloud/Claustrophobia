@@ -316,6 +316,13 @@ public sealed class TankAttackDemo : MonoBehaviour
 		return true;
 	}
 
+	public void ClearShotWalls()
+	{
+		if (shotBlockWall != null) shotBlockWall.SetActive(false);
+		if (repositionShotWall != null) repositionShotWall.SetActive(false);
+		Physics.SyncTransforms();
+	}
+
 	public void SetCombatCover(bool active)
 	{
 		if (!Application.isPlaying || combatWall == null) return;

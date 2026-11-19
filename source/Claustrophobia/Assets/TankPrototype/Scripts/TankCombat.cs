@@ -63,6 +63,10 @@ public sealed class TankCombat : MonoBehaviour
 	public string LastRepositionFailure { get; private set; } = "";
 	public string LastStopReason { get; private set; } = "";
 
+	// Read after Tick, which handles sight loss and command replacement.
+	internal Transform MoveAimPoint => State is (CombatState.Approach or CombatState.Reposition) && Target != null
+		? Target.AimPoint : null;
+
 	public bool StartPatrol(Transform[] points)
 	{
 		if (!isActiveAndEnabled || owner == null || !owner.CanAct || owner.Sensor == null

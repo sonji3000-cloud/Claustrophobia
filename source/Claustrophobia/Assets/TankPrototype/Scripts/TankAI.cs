@@ -185,12 +185,21 @@ public sealed class TankAI : NetworkBehaviour
 		if (sensor != null) sensor.Tick();
 		EnsureHostBody();
 
+		Transform moveAimPoint = null;
 		if (combat != null && combat.isActiveAndEnabled)
+		{
 			combat.Tick(body != null ? body.position : transform.position);
+			moveAimPoint = combat.MoveAimPoint;
+		}
 		if (MoveStatus == MoveState.Moving) UpdateMove();
 
 		motor.SetLeverInputs(leftLever, rightLever);
 		if (AttackStatus != AttackState.Idle) UpdateAttack();
+		else if (moveAimPoint != null && moveAimPoint.gameObject.activeInHierarchy && MoveStatus == MoveState.Moving)
+		{
+			TryGetAimInput(moveAimPoint.position, out Vector2 input, out _);
+			aim.ApplyHostInput(input.x, input.y);
+		}
 		else aim.ApplyHostInput(aimInput.x, aimInput.y);
 	}
 
@@ -659,27 +668,13 @@ public sealed class TankAI : NetworkBehaviour
 		}
 
 		shotCheckLeft = Mathf.Max(0f, shotCheckLeft - Runner.DeltaTime);
-		if (ballistics == null || !ballistics.isActiveAndEnabled || gun.Muzzle == null || gun.ProjectilePrefab == null
-			|| !IsFinite(aim.YawSpeed) || !IsFinite(aim.PitchSpeed)
-			|| aim.YawSpeed <= 0f || aim.PitchSpeed <= 0f || !IsFinite(Runner.DeltaTime) || Runner.DeltaTime <= 0f)
+		if (!TryGetAimInput(attackTarget.position, out Vector2 input, out string aimFailure))
 		{
-			BlockAttack("Aim or weapon unavailable");
-			return;
-		}
-		if (!TryGetDirection(out Vector3 direction))
-		{
-			BlockAttack("Target outside ballistic range");
-			return;
-		}
-		if (!aim.TryGetAim(direction, out Vector2 angles))
-		{
-			BlockAttack("Target outside gun elevation limits");
+			BlockAttack(aimFailure);
 			return;
 		}
 
-		aimInput.x = Mathf.Clamp(Mathf.DeltaAngle(aim.CurrentYaw, angles.x) / (aim.YawSpeed * Runner.DeltaTime), -1f, 1f);
-		aimInput.y = Mathf.Clamp((angles.y - aim.CurrentPitch) / (aim.PitchSpeed * Runner.DeltaTime), -1f, 1f);
-		aim.ApplyHostInput(aimInput.x, aimInput.y);
+		aim.ApplyHostInput(input.x, input.y);
 
 		switch (gun.State)
 		{
@@ -697,7 +692,7 @@ public sealed class TankAI : NetworkBehaviour
 		}
 
 		// Muzzle position changes with the pivots. Recheck the actual pose after applying aim.
-		if (!TryGetDirection(out direction) || Vector3.Angle(gun.Muzzle.forward, direction) > aimTolerance)
+		if (!TryGetDirection(attackTarget.position, out Vector3 direction) || Vector3.Angle(gun.Muzzle.forward, direction) > aimTolerance)
 		{
 			ClearShotBlock();
 			AttackStatus = AttackState.Aiming;
@@ -730,9 +725,37 @@ public sealed class TankAI : NetworkBehaviour
 		if (gun.RequestAI(TankInputButton.Fire, true)) AttackStatus = AttackState.Attacking;
 	}
 
-	private bool TryGetDirection(out Vector3 direction)
+	private bool TryGetAimInput(Vector3 point, out Vector2 input, out string reason)
 	{
-		return TankAimSolver.TrySolve(attackTarget.position - gun.Muzzle.position, Physics.gravity,
+		input = Vector2.zero;
+		reason = "";
+		float dt = Runner.DeltaTime;
+		if (ballistics == null || !ballistics.isActiveAndEnabled || gun.Muzzle == null || gun.ProjectilePrefab == null
+			|| !IsFinite(aim.YawSpeed) || !IsFinite(aim.PitchSpeed)
+			|| aim.YawSpeed <= 0f || aim.PitchSpeed <= 0f || !IsFinite(dt) || dt <= 0f)
+		{
+			reason = "Aim or weapon unavailable";
+			return false;
+		}
+		if (!TryGetDirection(point, out Vector3 direction))
+		{
+			reason = "Target outside ballistic range";
+			return false;
+		}
+		if (!aim.TryGetAim(direction, out Vector2 angles))
+		{
+			reason = "Target outside gun elevation limits";
+			return false;
+		}
+
+		input.x = Mathf.Clamp(Mathf.DeltaAngle(aim.CurrentYaw, angles.x) / (aim.YawSpeed * dt), -1f, 1f);
+		input.y = Mathf.Clamp((angles.y - aim.CurrentPitch) / (aim.PitchSpeed * dt), -1f, 1f);
+		return true;
+	}
+
+	private bool TryGetDirection(Vector3 point, out Vector3 direction)
+	{
+		return TankAimSolver.TrySolve(point - gun.Muzzle.position, Physics.gravity,
 			gun.ProjectileSpeed, Time.fixedDeltaTime, gun.ProjectilePrefab.Lifetime, out direction, out _);
 	}
 

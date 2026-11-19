@@ -183,6 +183,7 @@ public sealed class TankAttackDemoEditor : Editor
 			if (GUILayout.Button("01 짧은 가림")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BriefCover);
 			if (GUILayout.Button("02 수색 중 재발견")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Reacquire);
 			if (GUILayout.Button("03 끝까지 못 찾음 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Return);
+			if (GUILayout.Button("이동 중 포탑 추적 → 정지 사격")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ApproachTracking);
 			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 확인")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ShotBlock);
 			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 → 위치 변경 → 사격"))
 				TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RepositionFire);
