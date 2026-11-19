@@ -22,6 +22,7 @@ public sealed class TankSensor : MonoBehaviour
 		public float ConfirmSeconds;
 		public int VisibleMask;
 		public Collider Blocker;
+		internal Vector3 SeenPosition;
 		internal double VisibleSince;
 		internal uint Version;
 		internal TankHealth Health;
@@ -47,6 +48,7 @@ public sealed class TankSensor : MonoBehaviour
 	private readonly RaycastHit[] extraHits = new RaycastHit[256];
 	private readonly Collider[] overlaps = new Collider[32];
 	private double nextScan;
+	private double scanTime;
 	private bool allowLocalTargets;
 	private PhysicsScene physicsScene;
 	private SightState originState;
@@ -113,6 +115,7 @@ public sealed class TankSensor : MonoBehaviour
 		readings.Clear();
 		ClearMemory();
 		nextScan = 0;
+		scanTime = -1d;
 		ScanCount = RayCount = 0;
 		QueryOverflow = false;
 	}
@@ -124,6 +127,30 @@ public sealed class TankSensor : MonoBehaviour
 		pos = valid ? lastSeenPos : default;
 		time = valid ? lastSeenTime : -1;
 		return valid;
+	}
+
+	internal bool TryGetSighting(TankTarget target, out Vector3 pos, out double time)
+	{
+		if (target == SelectedTarget && visible) return TryGetLastSeen(out pos, out time);
+
+		pos = default;
+		time = -1d;
+		if (target == SelectedTarget || !CanObserve || CheckCandidate(target) != SightState.Visible) return false;
+
+		TankHealth health = target.Health;
+		NetworkObject obj = health.Object;
+		for (int i = 0; i < readings.Count; i++)
+		{
+			Reading reading = readings[i];
+			if (reading.Target != target || reading.State != SightState.Visible) continue;
+			if (reading.Version != target.Version || reading.Health != health || reading.Object != obj
+				|| obj != null && reading.Id != obj.Id) return false;
+
+			pos = reading.SeenPosition;
+			time = scanTime;
+			return true;
+		}
+		return false;
 	}
 
 	private bool IsKnownTarget()
@@ -230,6 +257,7 @@ public sealed class TankSensor : MonoBehaviour
 			Remember(now);
 		}
 		else ValidateMemory(now);
+		scanTime = now;
 		ScanCount++;
 	}
 
@@ -286,7 +314,8 @@ public sealed class TankSensor : MonoBehaviour
 			Reject(ref reading, SightState.Invalid);
 		}
 
-		Vector3 groundOffset = reading.Target.GroundPoint.position - transform.position;
+		Vector3 groundPos = reading.Target.GroundPoint.position;
+		Vector3 groundOffset = groundPos - transform.position;
 		groundOffset.y = 0f;
 		reading.Distance = groundOffset.magnitude;
 		bool maintaining = reading.Target == SelectedTarget && HasMemory;
@@ -324,6 +353,7 @@ public sealed class TankSensor : MonoBehaviour
 		reading.ConfirmSeconds = (float)(now - reading.VisibleSince);
 		reading.State = maintaining || now - reading.VisibleSince + 0.00001 >= confirmTime
 			? SightState.Visible : SightState.Confirming;
+		if (reading.State == SightState.Visible) reading.SeenPosition = groundPos;
 	}
 
 	private static void Reject(ref Reading reading, SightState state)

@@ -3,7 +3,9 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class TankCombat : MonoBehaviour
 {
-	public enum CombatState { Idle, Patrol, Approach, StopAndFire, WaitForSight }
+	public enum CombatState { Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen }
+
+	private const float MaxSearchTime = 10f;
 
 	[SerializeField] private TankAI owner;
 	[SerializeField, Min(0f)] private float fireRange = 28f;
@@ -14,13 +16,15 @@ public sealed class TankCombat : MonoBehaviour
 	[SerializeField, Min(0.02f)] private float replanInterval = 0.5f;
 	[SerializeField, Min(0.1f)] private float approachTimeout = 8f;
 	[SerializeField, Min(0.02f)] private float sightWait = 0.75f;
+	[SerializeField, Min(0.1f)] private float searchMoveTimeout = 6f;
 
 	private Transform[] patrol;
 	private uint moveCommand;
 	private Vector3 plannedTarget;
 	private double approachDeadline;
 	private double nextPlanTime;
-	private double sightDeadline;
+	private double searchStepDeadline;
+	private double searchDeadline;
 	private bool attackStarted;
 
 	public CombatState State { get; private set; }
@@ -80,21 +84,19 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
-		bool waiting = State == CombatState.WaitForSight;
-		if (waiting && owner.Runner.SimulationTime >= sightDeadline)
+		if (State == CombatState.WaitForSight || State == CombatState.MoveToLastSeen)
 		{
-			StopCombat("Sight wait expired");
+			UpdateSearch(sensor, position);
 			return;
 		}
 
 		if (!ReadSighting(sensor, Target))
 		{
-			if (!waiting) BeginSightWait();
+			BeginSightWait(sensor);
 			return;
 		}
 
-		if (waiting) BeginEngagement(position, "Reacquired");
-		else if (State == CombatState.Approach) UpdateApproach(position);
+		if (State == CombatState.Approach) UpdateApproach(position);
 		else UpdateFire();
 	}
 
@@ -139,15 +141,78 @@ public sealed class TankCombat : MonoBehaviour
 		if (!TryPlanApproach(position, now, false, out string failure)) StopCombat(failure);
 	}
 
-	private void BeginSightWait()
+	private void BeginSightWait(TankSensor sensor)
 	{
 		owner.StopAttack();
 		owner.StopMove();
 		moveCommand = owner.CommandId;
 		attackStarted = false;
 
-		sightDeadline = owner.Runner.SimulationTime + sightWait;
+		searchStepDeadline = owner.Runner.SimulationTime + sightWait;
+		searchDeadline = LastSeenTime + Mathf.Min(sensor.MemoryTime, MaxSearchTime);
 		ChangeState(CombatState.WaitForSight, "Tracked target no longer visible");
+	}
+
+	private void UpdateSearch(TankSensor sensor, Vector3 position)
+	{
+		double now = owner.Runner.SimulationTime;
+		if (now >= searchDeadline)
+		{
+			StopCombat("Last sighting expired");
+			return;
+		}
+
+		if (ReadSighting(sensor, Target))
+		{
+			BeginEngagement(position, "Reacquired");
+			return;
+		}
+
+		if (State == CombatState.WaitForSight)
+		{
+			if (now >= searchStepDeadline) BeginSearchMove(position, now);
+			return;
+		}
+
+		if (owner.MoveStatus == TankAI.MoveState.Failed)
+			StopCombat("Search movement failed: " + owner.MoveFailure);
+		else if (!IsRouteInRange(position))
+			StopCombat("Search left engagement radius");
+		else if (owner.MoveStatus == TankAI.MoveState.Arrived)
+			StopCombat("Reached last seen position");
+		else if (now >= searchStepDeadline)
+			StopCombat("Search movement timed out");
+	}
+
+	private void BeginSearchMove(Vector3 position, double now)
+	{
+		TankPath path = owner.Path;
+		if (path == null || !IsInEngageRange(LastSeenPosition)
+			|| !path.TryMeasure(position, LastSeenPosition, EngageOrigin, engageRadius, out Vector3 point, out _))
+		{
+			StopCombat("No reachable path to last seen position within engagement radius");
+			return;
+		}
+
+		if (!owner.MoveTo(point))
+		{
+			StopCombat("Search movement order rejected");
+			return;
+		}
+		moveCommand = owner.CommandId;
+		if (owner.MoveStatus == TankAI.MoveState.Failed)
+		{
+			StopCombat("Search movement failed: " + owner.MoveFailure);
+			return;
+		}
+		if (!IsRouteInRange(position))
+		{
+			StopCombat("Search left engagement radius");
+			return;
+		}
+
+		searchStepDeadline = now + searchMoveTimeout;
+		ChangeState(CombatState.MoveToLastSeen, "Moving to last seen position");
 	}
 
 	private void UpdateApproach(Vector3 position)
@@ -158,9 +223,7 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
-		TankPath path = owner.Path;
-		if (FlatDistanceSquared(position, EngageOrigin) > engageRadius * engageRadius
-			|| path != null && !path.IsWithin(EngageOrigin, engageRadius))
+		if (!IsRouteInRange(position))
 		{
 			StopCombat("Approach left engagement radius");
 			return;
@@ -279,10 +342,17 @@ public sealed class TankCombat : MonoBehaviour
 		return offset.sqrMagnitude;
 	}
 
+	private bool IsInEngageRange(Vector3 point) => FlatDistanceSquared(point, EngageOrigin) <= engageRadius * engageRadius;
+
+	private bool IsRouteInRange(Vector3 position)
+	{
+		TankPath path = owner.Path;
+		return IsInEngageRange(position) && (path == null || path.IsWithin(EngageOrigin, engageRadius));
+	}
+
 	private bool ReadSighting(TankSensor sensor, TankTarget target)
 	{
-		if (sensor.SelectedTarget != target || !sensor.IsVisible
-			|| !sensor.TryGetLastSeen(out Vector3 position, out double time)) return false;
+		if (!sensor.TryGetSighting(target, out Vector3 position, out double time)) return false;
 
 		LastSeenPosition = position;
 		LastSeenTime = time;
@@ -319,7 +389,7 @@ public sealed class TankCombat : MonoBehaviour
 		ContactDistance = 0f;
 		plannedTarget = default;
 		approachDeadline = nextPlanTime = 0d;
-		sightDeadline = 0d;
+		searchStepDeadline = searchDeadline = 0d;
 		attackStarted = false;
 	}
 
