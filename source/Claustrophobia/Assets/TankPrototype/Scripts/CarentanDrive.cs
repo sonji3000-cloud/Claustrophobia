@@ -41,21 +41,23 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void Update()
 	{
-		if (enemy == null || !sceneLink.IsReady) return;
-
+		bool canDrive = enemy != null && sceneLink.IsReady;
 		Keyboard keys = Keyboard.current;
 		if (keys != null && Application.isFocused)
 		{
-			if (keys.digit7Key.wasPressedThisFrame) StartPatrol();
-			else if (keys.digit8Key.wasPressedThisFrame) MoveOffRoad();
-			else if (keys.digit9Key.wasPressedThisFrame) StopPatrol();
+			if (keys.digit7Key.wasPressedThisFrame || keys.numpad7Key.wasPressedThisFrame) StartPatrol();
+			else if (canDrive)
+			{
+				if (keys.digit8Key.wasPressedThisFrame || keys.numpad8Key.wasPressedThisFrame) MoveOffRoad();
+				else if (keys.digit9Key.wasPressedThisFrame || keys.numpad9Key.wasPressedThisFrame) StopPatrol();
+			}
 		}
 
-		if (patrolIndex < 0 || enemy.MoveStatus == TankAI.MoveState.Moving) return;
+		if (!canDrive || patrolIndex < 0 || enemy.MoveStatus == TankAI.MoveState.Moving) return;
 		if (enemy.MoveStatus != TankAI.MoveState.Arrived)
 		{
+			Debug.LogWarning($"Carentan Sherman stopped on the way to {patrol[patrolIndex].name}: {enemy.MoveFailure}", this);
 			patrolIndex = -1;
-			Debug.LogWarning($"Carentan Sherman stopped: {enemy.MoveFailure}", this);
 			return;
 		}
 
@@ -67,7 +69,17 @@ public sealed class CarentanDrive : MonoBehaviour
 	[ContextMenu("Start Sherman Patrol")]
 	private void StartPatrol()
 	{
-		if (enemy == null || !enemy.CanAct || patrol.Length == 0) return;
+		if (!Application.isPlaying) return;
+		if (enemy == null || !sceneLink.IsReady)
+		{
+			Debug.LogWarning($"Carentan Sherman is not ready for patrol. Scene stage: {sceneLink.CurrentStage}.", this);
+			return;
+		}
+		if (patrol.Length == 0)
+		{
+			Debug.LogWarning("Carentan Sherman has no patrol waypoints.", this);
+			return;
+		}
 
 		patrolIndex = 0;
 		MovePatrol();
@@ -75,7 +87,16 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void MovePatrol()
 	{
-		if (!enemy.MoveTo(patrol[patrolIndex].position)) patrolIndex = -1;
+		Transform point = patrol[patrolIndex];
+		if (!enemy.MoveTo(point.position))
+		{
+			Debug.LogWarning($"Carentan Sherman rejected the move to {point.name}. {enemy.MoveBlockReason}", this);
+			patrolIndex = -1;
+			return;
+		}
+
+		if (enemy.MoveStatus == TankAI.MoveState.Moving)
+			Debug.Log($"Carentan Sherman moving to {point.name}.", this);
 	}
 
 	[ContextMenu("Request Off-road Destination")]
