@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(TankMotor), typeof(TankAim), typeof(TankGun))]
@@ -9,6 +10,15 @@ public sealed class TankAI : NetworkBehaviour
 	public enum MoveState { Idle, Moving, Arrived, Failed }
 	public enum MoveMode { Direct, NavMesh }
 	public enum AttackState { Idle, Aiming, Reloading, Attacking, Blocked, TargetDown }
+
+	private const float ReverseSpeed = 2.5f;
+	private const float RearMargin = 0.3f;
+	private readonly Collider[] rearHits = new Collider[24];
+	private BoxCollider hull;
+	private bool reversing;
+	private Vector3 reverseStart;
+	private Vector3 reverseDir;
+	private float reverseLimit;
 
 	[SerializeField] private TankMotor motor;
 	[SerializeField] private TankAim aim;
@@ -58,6 +68,7 @@ public sealed class TankAI : NetworkBehaviour
 	private Transform attackTarget;
 	private TankHealth targetHealth;
 	private float shotCheckLeft;
+	private double shotBlockedSince = -1d;
 	private bool alignPath;
 	private int watchIndex = -1;
 	private float bestDistance;
@@ -69,6 +80,7 @@ public sealed class TankAI : NetworkBehaviour
 	private float airSeconds;
 	private float stopSeconds;
 	private bool stopping;
+	private bool hadHost;
 	private float stopRange;
 	private Vector3 stopPos;
 	private Vector3 stopForward;
@@ -87,6 +99,7 @@ public sealed class TankAI : NetworkBehaviour
 	public TankPath Path => path;
 	public TankSensor Sensor => sensor;
 	public TankCombat Combat => combat;
+	internal int DamageHitCount => health.DamageHitCount;
 	public uint CommandId { get; private set; }
 	public int RetryCount { get; private set; }
 	public int RetryLimit => retryLimit;
@@ -97,6 +110,16 @@ public sealed class TankAI : NetworkBehaviour
 	public float StopRadius => stopRadius;
 	public float LeftDriveInput => leftLever;
 	public float RightDriveInput => rightLever;
+	internal float ReverseTravel => body != null ? Mathf.Max(0f, Vector3.Dot(body.position - reverseStart, reverseDir)) : 0f;
+	internal Vector3 RearDirection
+	{
+		get
+		{
+			Vector3 rear = body != null ? body.rotation * Vector3.back : transform.TransformDirection(Vector3.back);
+			rear.y = 0f;
+			return rear.normalized;
+		}
+	}
 	public string MoveBlockReason
 	{
 		get
@@ -117,6 +140,8 @@ public sealed class TankAI : NetworkBehaviour
 	public TankHealth TargetHealth => targetHealth;
 	public AttackState AttackStatus { get; private set; }
 	public string AttackBlockReason { get; private set; } = "";
+	public bool IsShotBlocked => shotBlockedSince >= 0d;
+	public float ShotBlockedSeconds { get; private set; }
 	internal bool HasLiveTarget => IsHost && attackTarget != null && attackTarget.gameObject.activeInHierarchy
 		&& targetHealth != null && attackTarget.IsChildOf(targetHealth.transform)
 		&& targetHealth.isActiveAndEnabled && !targetHealth.Destroyed;
@@ -128,6 +153,7 @@ public sealed class TankAI : NetworkBehaviour
 		if (gun == null) gun = GetComponent<TankGun>();
 		if (health == null) health = GetComponent<TankHealth>();
 		if (body == null) body = GetComponent<Rigidbody>();
+		if (body != null) hull = body.GetComponent<BoxCollider>();
 		if (ballistics == null) ballistics = GetComponent<TankBallistics>();
 		if (path == null) path = GetComponent<TankPath>();
 		if (sensor == null) sensor = GetComponent<TankSensor>();
@@ -153,39 +179,52 @@ public sealed class TankAI : NetworkBehaviour
 		RetryCount = 0;
 		leftLever = rightLever = 0f;
 		aimInput = Vector2.zero;
-		if (body != null) body.isKinematic = !IsHost;
+		hadHost = IsHost;
+		if (body != null) body.isKinematic = !hadHost;
 		MoveStatus = MoveState.Idle;
 		ClearPath();
 		Destination = body != null ? body.position : transform.position;
 
-		if (IsHost) StopActions();
+		if (hadHost) StopActions();
 	}
 
 	public override void FixedUpdateNetwork()
 	{
 		if (!IsHost)
 		{
-			if (sensor != null) sensor.ClearState();
-			if (combat != null && combat.State != TankCombat.CombatState.Idle)
-				combat.ClearState("Host authority lost");
+			if (hadHost) ClearSession("Host authority lost");
 			return;
 		}
 
-		if (sensor != null) sensor.Tick();
+		hadHost = true;
 		TickCount++;
 		if (!CanAct)
 		{
 			StopActions();
 			return;
 		}
+		if (sensor != null) sensor.Tick();
 		EnsureHostBody();
 
+		Transform moveAimPoint = null;
 		if (combat != null && combat.isActiveAndEnabled)
+		{
 			combat.Tick(body != null ? body.position : transform.position);
-		if (MoveStatus == MoveState.Moving) UpdateMove();
+			moveAimPoint = combat.MoveAimPoint;
+		}
+		if (MoveStatus == MoveState.Moving)
+		{
+			if (reversing) UpdateReverse();
+			else UpdateMove();
+		}
 
 		motor.SetLeverInputs(leftLever, rightLever);
 		if (AttackStatus != AttackState.Idle) UpdateAttack();
+		else if (moveAimPoint != null && moveAimPoint.gameObject.activeInHierarchy && MoveStatus == MoveState.Moving)
+		{
+			TryGetAimInput(moveAimPoint.position, out Vector2 input, out _);
+			aim.ApplyHostInput(input.x, input.y);
+		}
 		else aim.ApplyHostInput(aimInput.x, aimInput.y);
 	}
 
@@ -204,7 +243,9 @@ public sealed class TankAI : NetworkBehaviour
 	}
 
 	// Invalid requests preserve the previous destination and command.
-	public bool MoveTo(Vector3 point)
+	public bool MoveTo(Vector3 point) => TryMove(point, moveMode);
+
+	internal bool TryMove(Vector3 point, MoveMode mode)
 	{
 		if (!CanAct || !IsFinite(point.x) || !IsFinite(point.y) || !IsFinite(point.z)) return false;
 		EnsureHostBody();
@@ -213,7 +254,9 @@ public sealed class TankAI : NetworkBehaviour
 		offset.y = 0f;
 		if (!IsFinite(offset.sqrMagnitude)) return false;
 
+		if (reversing) ClearMove();
 		CommandId++;
+		moveMode = mode;
 		ClearAttack();
 		ClearPath();
 		RetryCount = 0;
@@ -236,6 +279,91 @@ public sealed class TankAI : NetworkBehaviour
 		return true;
 	}
 
+	internal bool TryReverse(Vector3 rear, float distance, out string reason)
+	{
+		reason = "Reverse drive unavailable";
+		if (!CanMove() || !motor.CanDrive || hull == null || !hull.enabled || hull.isTrigger) return false;
+
+		Vector3 start = body.position;
+		Vector3 goal = start + rear * distance;
+		reason = "Rear navigation blocked";
+		if (path == null || !path.IsStraight(start, goal)) return false;
+		reason = "Rear obstacle";
+		if (IsRearBlocked(distance + RearMargin)) return false;
+
+		CommandId++;
+		ClearAttack();
+		ClearMove();
+		reversing = true;
+		reverseStart = start;
+		reverseDir = rear;
+		reverseLimit = distance;
+		Destination = goal;
+		MoveStatus = MoveState.Moving;
+		reason = "";
+		return true;
+	}
+
+	internal void StopReverse()
+	{
+		if (reversing) ClearMove();
+	}
+
+	private void UpdateReverse()
+	{
+		if (!CanMove() || !motor.CanDrive || hull == null || !hull.enabled || hull.isTrigger)
+		{
+			FailMove("Reverse drive unavailable");
+			return;
+		}
+
+		Vector3 rear = RearDirection;
+		if (Vector3.Dot(rear, reverseDir) < 0.985f)
+		{
+			FailMove("Hull turned away from reverse line");
+			return;
+		}
+
+		float speed = Mathf.Max(0f, Mathf.Max(-motor.AppliedForwardSpeed, Vector3.Dot(body.linearVelocity, rear)));
+		float dt = Mathf.Max(Runner.DeltaTime, Time.fixedDeltaTime);
+		float brake = speed * speed / (2f * motor.MoveDeceleration) + speed * 2f * dt + RearMargin;
+		if (IsRearBlocked(brake))
+		{
+			FailMove("Rear obstacle");
+			return;
+		}
+
+		float remaining = Mathf.Max(0f, reverseLimit - ReverseTravel - speed * dt);
+		float drive = Mathf.Min(Mathf.Min(ReverseSpeed, motor.MaxMoveSpeed), Mathf.Sqrt(2f * motor.MoveDeceleration * remaining));
+		leftLever = rightLever = -drive / motor.MaxMoveSpeed;
+	}
+
+	private bool IsRearBlocked(float distance)
+	{
+		Transform frame = hull.transform;
+		Vector3 scale = frame.lossyScale;
+		Vector3 half = Vector3.Scale(hull.size, new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z))) * 0.5f;
+		// Sweep the hull's width behind its rear edge, leaving a small clearance above the floor.
+		const float overlap = 0.1f;
+		Vector3 center = frame.TransformPoint(hull.center) - frame.forward * (half.z + (distance - overlap) * 0.5f);
+		half.z = (distance + overlap) * 0.5f;
+		half.y = Mathf.Max(0.05f, half.y - overlap * 0.5f);
+		center += frame.up * (overlap * 0.5f);
+
+		PhysicsScene scene = gameObject.scene.GetPhysicsScene();
+		if (!scene.IsValid()) return true;
+		int count = scene.OverlapBox(center, half, rearHits, frame.rotation, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+		if (count >= rearHits.Length) return true;
+		for (int i = 0; i < count; i++)
+		{
+			Collider hit = rearHits[i];
+			if (hit != null && !hit.transform.IsChildOf(body.transform)
+				&& !Physics.GetIgnoreLayerCollision(hull.gameObject.layer, hit.gameObject.layer)
+				&& !Physics.GetIgnoreCollision(hull, hit)) return true;
+		}
+		return false;
+	}
+
 	public bool SetMoveMode(MoveMode mode)
 	{
 		if (!CanAct || mode != MoveMode.Direct && mode != MoveMode.NavMesh) return false;
@@ -254,17 +382,18 @@ public sealed class TankAI : NetworkBehaviour
 		ClearMove();
 	}
 
-	private void ClearMove()
+	private void ClearMove(bool stopMotor = true)
 	{
 		MoveStatus = MoveState.Idle;
 		ClearPath();
 		RetryCount = 0;
 		leftLever = rightLever = 0f;
-		if (motor != null) motor.Stop();
+		if (stopMotor && motor != null) motor.Stop();
 	}
 
 	private void ClearPath()
 	{
+		reversing = false;
 		stopping = false;
 		stopSeconds = 0f;
 		if (path != null) path.Clear();
@@ -624,6 +753,7 @@ public sealed class TankAI : NetworkBehaviour
 		targetHealth = null;
 		aimInput = Vector2.zero;
 		shotCheckLeft = 0f;
+		ClearShotBlock();
 		AttackStatus = AttackState.Idle;
 		AttackBlockReason = "";
 		if (gun != null) gun.ClearAIRequest();
@@ -641,6 +771,7 @@ public sealed class TankAI : NetworkBehaviour
 		}
 		if (targetHealth.Destroyed)
 		{
+			ClearShotBlock();
 			aimInput = Vector2.zero;
 			gun.ClearAIRequest();
 			AttackStatus = AttackState.TargetDown;
@@ -649,27 +780,13 @@ public sealed class TankAI : NetworkBehaviour
 		}
 
 		shotCheckLeft = Mathf.Max(0f, shotCheckLeft - Runner.DeltaTime);
-		if (ballistics == null || !ballistics.isActiveAndEnabled || gun.Muzzle == null || gun.ProjectilePrefab == null
-			|| !IsFinite(aim.YawSpeed) || !IsFinite(aim.PitchSpeed)
-			|| aim.YawSpeed <= 0f || aim.PitchSpeed <= 0f || !IsFinite(Runner.DeltaTime) || Runner.DeltaTime <= 0f)
+		if (!TryGetAimInput(attackTarget.position, out Vector2 input, out string aimFailure))
 		{
-			BlockAttack("Aim or weapon unavailable");
-			return;
-		}
-		if (!TryGetDirection(out Vector3 direction))
-		{
-			BlockAttack("Target outside ballistic range");
-			return;
-		}
-		if (!aim.TryGetAim(direction, out Vector2 angles))
-		{
-			BlockAttack("Target outside gun elevation limits");
+			BlockAttack(aimFailure);
 			return;
 		}
 
-		aimInput.x = Mathf.Clamp(Mathf.DeltaAngle(aim.CurrentYaw, angles.x) / (aim.YawSpeed * Runner.DeltaTime), -1f, 1f);
-		aimInput.y = Mathf.Clamp((angles.y - aim.CurrentPitch) / (aim.PitchSpeed * Runner.DeltaTime), -1f, 1f);
-		aim.ApplyHostInput(aimInput.x, aimInput.y);
+		aim.ApplyHostInput(input.x, input.y);
 
 		switch (gun.State)
 		{
@@ -680,14 +797,16 @@ public sealed class TankAI : NetworkBehaviour
 			case TankGun.ChamberState.LoadedOpen:
 				QueueLoad(TankInputButton.Close); return;
 			case TankGun.ChamberState.Recovering:
+				ClearShotBlock();
 				AttackStatus = AttackState.Reloading;
 				AttackBlockReason = "";
 				return;
 		}
 
 		// Muzzle position changes with the pivots. Recheck the actual pose after applying aim.
-		if (!TryGetDirection(out direction) || Vector3.Angle(gun.Muzzle.forward, direction) > aimTolerance)
+		if (!TryGetDirection(attackTarget.position, out Vector3 direction) || Vector3.Angle(gun.Muzzle.forward, direction) > aimTolerance)
 		{
+			ClearShotBlock();
 			AttackStatus = AttackState.Aiming;
 			AttackBlockReason = "";
 			return;
@@ -706,34 +825,80 @@ public sealed class TankAI : NetworkBehaviour
 		}
 
 		TankPrediction prediction = ballistics.Predict(conditions, gun.OwnerColliders);
-		if (!prediction.HasHit || prediction.Collider == null || prediction.Collider.GetComponentInParent<TankHealth>() != targetHealth)
+		bool hasHit = prediction.HasHit && prediction.Collider != null;
+		if (!hasHit || prediction.Collider.GetComponentInParent<TankHealth>() != targetHealth)
 		{
-			BlockAttack(prediction.HasHit ? "Shot path obstructed" : "No target hit predicted");
+			BlockAttack(hasHit ? "Shot path obstructed" : "No target hit predicted", shotObstructed: hasHit);
 			return;
 		}
+
+		ClearShotBlock();
 		AttackBlockReason = "";
 		if (gun.RequestAI(TankInputButton.Fire, true)) AttackStatus = AttackState.Attacking;
 	}
 
-	private bool TryGetDirection(out Vector3 direction)
+	private bool TryGetAimInput(Vector3 point, out Vector2 input, out string reason)
 	{
-		return TankAimSolver.TrySolve(attackTarget.position - gun.Muzzle.position, Physics.gravity,
+		input = Vector2.zero;
+		reason = "";
+		float dt = Runner.DeltaTime;
+		if (ballistics == null || !ballistics.isActiveAndEnabled || gun.Muzzle == null || gun.ProjectilePrefab == null
+			|| !IsFinite(aim.YawSpeed) || !IsFinite(aim.PitchSpeed)
+			|| aim.YawSpeed <= 0f || aim.PitchSpeed <= 0f || !IsFinite(dt) || dt <= 0f)
+		{
+			reason = "Aim or weapon unavailable";
+			return false;
+		}
+		if (!TryGetDirection(point, out Vector3 direction))
+		{
+			reason = "Target outside ballistic range";
+			return false;
+		}
+		if (!aim.TryGetAim(direction, out Vector2 angles))
+		{
+			reason = "Target outside gun elevation limits";
+			return false;
+		}
+
+		input.x = Mathf.Clamp(Mathf.DeltaAngle(aim.CurrentYaw, angles.x) / (aim.YawSpeed * dt), -1f, 1f);
+		input.y = Mathf.Clamp((angles.y - aim.CurrentPitch) / (aim.PitchSpeed * dt), -1f, 1f);
+		return true;
+	}
+
+	private bool TryGetDirection(Vector3 point, out Vector3 direction)
+	{
+		return TankAimSolver.TrySolve(point - gun.Muzzle.position, Physics.gravity,
 			gun.ProjectileSpeed, Time.fixedDeltaTime, gun.ProjectilePrefab.Lifetime, out direction, out _);
 	}
 
 	private void QueueLoad(TankInputButton action)
 	{
+		ClearShotBlock();
 		AttackStatus = AttackState.Reloading;
 		AttackBlockReason = "";
 		gun.RequestAI(action, true);
 	}
 
-	private void BlockAttack(string reason)
+	private void BlockAttack(string reason, bool shotObstructed = false)
 	{
+		if (shotObstructed)
+		{
+			double now = Runner.SimulationTime;
+			if (!IsShotBlocked) shotBlockedSince = now;
+			ShotBlockedSeconds = (float)(now - shotBlockedSince);
+		}
+		else ClearShotBlock();
+
 		aimInput = Vector2.zero;
 		gun.ClearAIRequest();
 		AttackStatus = AttackState.Blocked;
 		AttackBlockReason = reason;
+	}
+
+	private void ClearShotBlock()
+	{
+		shotBlockedSince = -1d;
+		ShotBlockedSeconds = 0f;
 	}
 
 	public void StopActions() => StopActions("Actions stopped");
@@ -754,12 +919,20 @@ public sealed class TankAI : NetworkBehaviour
 		if (sensor != null) sensor.ClearState();
 		if (health != null) health.Died -= OnDied;
 		if (IsHost) StopActions();
+		else if (hadHost) ClearSession("Host authority lost");
 	}
 
 	public override void Despawned(NetworkRunner runner, bool hasState)
+		=> ClearSession("Despawned");
+
+	private void ClearSession(string reason)
 	{
+		hadHost = false;
+		CommandId++;
+		ClearAttack();
+		ClearMove(stopMotor: false);
 		if (sensor != null) sensor.ClearState();
-		if (combat != null) combat.ClearState("Despawned");
+		if (combat != null) combat.ClearState(reason);
 	}
 
 	private static bool IsFinite(float value)

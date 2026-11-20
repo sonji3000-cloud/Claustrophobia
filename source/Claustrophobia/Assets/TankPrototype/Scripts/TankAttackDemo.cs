@@ -35,6 +35,11 @@ public sealed class TankAttackDemo : MonoBehaviour
 	[SerializeField] private Transform noPathTarget;
 	[SerializeField] private Transform searchContact;
 	[SerializeField] private Transform searchHideout;
+	[SerializeField] private Transform shotBlockTarget;
+	[SerializeField] private GameObject shotBlockWall;
+	[SerializeField] private Transform[] shotReturnPoints;
+	[SerializeField] private GameObject repositionBlocker;
+	[SerializeField] private GameObject repositionShotWall;
 
 	private NetworkObject combatTarget;
 	private bool hideOnAttack;
@@ -60,10 +65,16 @@ public sealed class TankAttackDemo : MonoBehaviour
 		&& noPathPatrol != null && noPathPatrol.Length > 0 && noPathTarget != null;
 	public bool HasSearchTests => HasCombatTest && combatWall != null && searchContact != null && searchHideout != null
 		&& patrolPoints.Length > 1 && patrolPoints[1] != null;
+	public bool HasShotBlockTest => HasCombatTest && shotBlockTarget != null && shotBlockWall != null;
+	public bool HasRepositionFailureTests => HasShotBlockTest && shotReturnPoints != null && shotReturnPoints.Length > 1
+		&& shotReturnPoints[0] != null && shotReturnPoints[1] != null && repositionBlocker != null && repositionShotWall != null;
 	public Vector3 SearchContact => searchContact.position;
 	public Vector3 SearchHideout => searchHideout.position;
+	public Vector3 FirstWaypoint => patrolPoints[0].position;
 	public Vector3 SecondWaypoint => patrolPoints[1].position;
 	public bool IsCombatCoverOn => combatWall != null && combatWall.activeSelf;
+	public GameObject ShotBlockWall => shotBlockWall;
+	public Vector3 ShotBlockPoint => shotBlockTarget.position;
 	public bool CanRunTests => isActiveAndEnabled && Application.isPlaying && runner != null && runner.IsRunning && runner.IsServer;
 	public bool HasBlocker => stallBlocker != null;
 	public bool BlockerEnabled => stallBlocker != null && stallBlocker.activeSelf;
@@ -243,14 +254,101 @@ public sealed class TankAttackDemo : MonoBehaviour
 		ShowCombatArea(start.position, point.position);
 	}
 
-	public bool RunSearchTest(string name, bool startHidden)
+	public bool RunSearchTest(string name, bool startHidden, bool frameContact = false)
 	{
 		if (!CanRunTests || !HasSearchTests
 			|| !StartCombatTest(combatStart, startHidden ? searchHideout : searchContact, patrolPoints)) return false;
 
 		TestName = name;
-		ShowCombatArea(searchHideout.position, SecondWaypoint);
+		if (frameContact) ShowCombatArea(combatStart.position, searchContact.position);
+		else ShowCombatArea(searchHideout.position, SecondWaypoint);
 		return true;
+	}
+
+	public bool RunBackOffTest(string name)
+	{
+		if (!CanRunTests || !HasSearchTests || !StartCombatTest(searchContact, nearTarget, patrolPoints)) return false;
+
+		Vector3 contact = searchContact.position + searchContact.forward * 7.5f;
+		Quaternion facing = searchContact.rotation * Quaternion.AngleAxis(180f, Vector3.up);
+		if (!MoveCombatTarget(contact, facing)) return false;
+		TestName = name;
+		ShowCombatArea(searchContact.position - searchContact.forward * 6f, contact);
+		return true;
+	}
+
+	public bool RunManualPatrol(string name)
+	{
+		if (!CanRunTests || !HasSearchTests || !StartCombatTest(combatStart, null, patrolPoints)) return false;
+
+		TestName = name;
+		ShowCombatArea(combatStart.position, SecondWaypoint);
+		return true;
+	}
+
+	public bool RunShotBlockTest(string name, bool testReturn = false)
+	{
+		if (!CanRunTests || !HasShotBlockTest || (testReturn && !HasRepositionFailureTests)
+			|| !StartCombatTest(combatStart, shotBlockTarget, testReturn ? shotReturnPoints : patrolPoints)) return false;
+
+		shotBlockWall.SetActive(true);
+		Physics.SyncTransforms();
+		TestName = name;
+		ShowCombatArea(combatStart.position, shotBlockTarget.position);
+		return true;
+	}
+
+	public Vector3 GetShotReturnPoint(int index) => shotReturnPoints[index].position;
+
+	public bool BlockRepositionRoute()
+	{
+		if (!CanRunTests || repositionBlocker == null || Enemy == null || Enemy.MoveStatus != TankAI.MoveState.Moving) return false;
+
+		Vector3 goal = Enemy.Destination;
+		Vector3 direction = goal - Enemy.transform.position;
+		direction.y = 0f;
+		if (direction.sqrMagnitude <= 0.01f) return false;
+
+		direction.Normalize();
+		Transform wall = repositionBlocker.transform;
+		Vector3 position = goal + direction * 0.8f;
+		position.y += wall.lossyScale.y * 0.5f;
+		wall.SetPositionAndRotation(position, Quaternion.LookRotation(direction));
+		repositionBlocker.SetActive(true);
+		Physics.SyncTransforms();
+		return true;
+	}
+
+	public bool BlockReverse(float gap)
+	{
+		if (!CanRunTests || repositionBlocker == null || Enemy == null
+			|| !Enemy.TryGetComponent(out BoxCollider hull)) return false;
+
+		Transform wall = repositionBlocker.transform;
+		Vector3 rear = Enemy.RearDirection;
+		Vector3 edge = hull.transform.TransformPoint(hull.center - Vector3.forward * hull.size.z * 0.5f);
+		Vector3 position = edge + rear * (gap + wall.lossyScale.z * 0.5f);
+		position.y = Enemy.transform.position.y + wall.lossyScale.y * 0.5f;
+		wall.SetPositionAndRotation(position, Quaternion.LookRotation(rear));
+		repositionBlocker.SetActive(true);
+		Physics.SyncTransforms();
+		return true;
+	}
+
+	public bool ShowRepositionShotWall()
+	{
+		if (!CanRunTests || repositionShotWall == null) return false;
+
+		repositionShotWall.SetActive(true);
+		Physics.SyncTransforms();
+		return true;
+	}
+
+	public void ClearShotWalls()
+	{
+		if (shotBlockWall != null) shotBlockWall.SetActive(false);
+		if (repositionShotWall != null) repositionShotWall.SetActive(false);
+		Physics.SyncTransforms();
 	}
 
 	public void SetCombatCover(bool active)
@@ -260,11 +358,11 @@ public sealed class TankAttackDemo : MonoBehaviour
 		Physics.SyncTransforms();
 	}
 
-	public bool MoveCombatTarget(Vector3 position)
+	public bool MoveCombatTarget(Vector3 position, Quaternion? rotation = null)
 	{
 		if (!CanRunTests || combatTarget == null || !combatTarget.TryGetComponent(out NetworkTransform motion)) return false;
 
-		motion.Teleport(position, motion.transform.rotation);
+		motion.Teleport(position, rotation ?? motion.transform.rotation);
 		Physics.SyncTransforms();
 		return true;
 	}
@@ -276,34 +374,41 @@ public sealed class TankAttackDemo : MonoBehaviour
 		SetBlocker(false);
 		if (!SpawnEnemy(start)) return false;
 
-		try
+		if (point != null)
 		{
-			combatTarget = runner.Spawn(combatTargetPrefab, point.position, point.rotation);
-		}
-		catch (Exception error)
-		{
-			Debug.LogError("[AI COMBAT] Target spawn failed: " + error.Message, this);
-			return false;
+			try
+			{
+				combatTarget = runner.Spawn(combatTargetPrefab, point.position, point.rotation);
+			}
+			catch (Exception error)
+			{
+				Debug.LogError("[AI COMBAT] Target spawn failed: " + error.Message, this);
+				return false;
+			}
 		}
 
-		if (combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(route))
+		if (point != null && combatTarget == null || Enemy.Combat == null || !Enemy.Combat.StartPatrol(route))
 		{
 			EndCombatTest();
 			Debug.LogError("[AI COMBAT] Patrol detection test could not start.", this);
 			return false;
 		}
 
-		CombatTargetHealth = combatTarget.GetComponent<TankHealth>();
+		CombatTargetHealth = combatTarget != null ? combatTarget.GetComponent<TankHealth>() : null;
 		return true;
 	}
 
 	private void ShowCombatArea(Vector3 start, Vector3 goal)
 	{
 		Vector3 center = (start + goal) * 0.5f;
-		testCamera.transform.SetPositionAndRotation(center + Vector3.up * 55f,
-			Quaternion.LookRotation(Vector3.down, Vector3.forward));
+		Vector3 view = new Vector3(30f, 48f, -36f);
+		Quaternion rotation = Quaternion.LookRotation(-view);
+		float size = Mathf.Max(10f, Vector3.Distance(start, goal) * 0.5f + 3f);
+		// Leave room for the AI test controls on the left of the Game view.
+		Vector3 menuOffset = rotation * Vector3.right * (size * testCamera.aspect * 0.2f);
+		testCamera.transform.SetPositionAndRotation(center + view - menuOffset, rotation);
 		testCamera.orthographic = true;
-		testCamera.orthographicSize = 29f;
+		testCamera.orthographicSize = size;
 		testCamera.enabled = true;
 	}
 
@@ -311,6 +416,9 @@ public sealed class TankAttackDemo : MonoBehaviour
 	{
 		hideOnAttack = false;
 		if (combatWall != null) combatWall.SetActive(false);
+		if (shotBlockWall != null) shotBlockWall.SetActive(false);
+		if (repositionBlocker != null) repositionBlocker.SetActive(false);
+		if (repositionShotWall != null) repositionShotWall.SetActive(false);
 		CombatTargetHealth = null;
 		if (combatTarget == null) return;
 
@@ -483,14 +591,25 @@ public sealed class TankAttackDemo : MonoBehaviour
 		accepted |= Enemy.Attack(targetPoint);
 		accepted |= Enemy.RequestWeapon(TankInputButton.Fire);
 		Rigidbody body = Enemy.GetComponent<Rigidbody>();
+		TankMotor motor = Enemy.GetComponent<TankMotor>();
 		TankAim aim = Enemy.GetComponent<TankAim>();
 		TankGun gun = Enemy.GetComponent<TankGun>();
-		bool stopped = !Enemy.CanAct && !accepted && !gun.CanFire && Enemy.MoveStatus == TankAI.MoveState.Idle
-			&& Enemy.AttackStatus == TankAI.AttackState.Idle && EnemyHealth.DestructionCount == 1
-			&& aim.TurretInput == 0f && aim.GunInput == 0f && body != null
-			&& new Vector2(body.linearVelocity.x, body.linearVelocity.z).sqrMagnitude < 0.0001f
-			&& body.angularVelocity.sqrMagnitude < 0.0001f;
-		DestructionCheck = stopped ? "PASS: stopped; new commands rejected" : "FAIL: inspect AI/body/weapon state";
+		bool driveStopped = motor != null && Enemy.LeftDriveInput == 0f && Enemy.RightDriveInput == 0f
+			&& motor.LeftInput == 0f && motor.RightInput == 0f && motor.AppliedForwardSpeed == 0f && motor.AppliedTurnSpeed == 0f;
+		bool bodyStopped = body != null && motor != null;
+		if (bodyStopped && motor.CanDrive)
+		{
+			Vector3 normal = motor.Ground.GroundNormal;
+			// The motor stops ground travel and yaw while preserving terrain alignment and gravity.
+			bodyStopped = Vector3.ProjectOnPlane(body.linearVelocity, normal).sqrMagnitude < 0.0001f
+				&& Mathf.Abs(Vector3.Dot(body.angularVelocity, normal)) < 0.01f;
+		}
+		bool aiStopped = !Enemy.CanAct && Enemy.MoveStatus == TankAI.MoveState.Idle
+			&& Enemy.AttackStatus == TankAI.AttackState.Idle && EnemyHealth.DestructionCount == 1;
+		bool gunStopped = !gun.CanFire && aim.TurretInput == 0f && aim.GunInput == 0f;
+		bool stopped = aiStopped && !accepted && driveStopped && bodyStopped && gunStopped;
+		DestructionCheck = stopped ? "PASS: stopped; new commands rejected"
+			: $"FAIL: AI stopped={aiStopped}, command accepted={accepted}, drive stopped={driveStopped}, ground motion stopped={bodyStopped}, weapon stopped={gunStopped}";
 		if (stopped) Debug.Log("[AI CHECK] " + DestructionCheck, this);
 		else Debug.LogError("[AI CHECK] " + DestructionCheck, this);
 	}
