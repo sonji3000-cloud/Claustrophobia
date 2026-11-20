@@ -265,6 +265,18 @@ public sealed class TankAttackDemo : MonoBehaviour
 		return true;
 	}
 
+	public bool RunBackOffTest(string name)
+	{
+		if (!CanRunTests || !HasSearchTests || !StartCombatTest(searchContact, nearTarget, patrolPoints)) return false;
+
+		Vector3 contact = searchContact.position + searchContact.forward * 7.5f;
+		Quaternion facing = searchContact.rotation * Quaternion.AngleAxis(180f, Vector3.up);
+		if (!MoveCombatTarget(contact, facing)) return false;
+		TestName = name;
+		ShowCombatArea(searchContact.position - searchContact.forward * 6f, contact);
+		return true;
+	}
+
 	public bool RunManualPatrol(string name)
 	{
 		if (!CanRunTests || !HasSearchTests || !StartCombatTest(combatStart, null, patrolPoints)) return false;
@@ -307,6 +319,22 @@ public sealed class TankAttackDemo : MonoBehaviour
 		return true;
 	}
 
+	public bool BlockReverse(float gap)
+	{
+		if (!CanRunTests || repositionBlocker == null || Enemy == null
+			|| !Enemy.TryGetComponent(out BoxCollider hull)) return false;
+
+		Transform wall = repositionBlocker.transform;
+		Vector3 rear = Enemy.RearDirection;
+		Vector3 edge = hull.transform.TransformPoint(hull.center - Vector3.forward * hull.size.z * 0.5f);
+		Vector3 position = edge + rear * (gap + wall.lossyScale.z * 0.5f);
+		position.y = Enemy.transform.position.y + wall.lossyScale.y * 0.5f;
+		wall.SetPositionAndRotation(position, Quaternion.LookRotation(rear));
+		repositionBlocker.SetActive(true);
+		Physics.SyncTransforms();
+		return true;
+	}
+
 	public bool ShowRepositionShotWall()
 	{
 		if (!CanRunTests || repositionShotWall == null) return false;
@@ -330,11 +358,11 @@ public sealed class TankAttackDemo : MonoBehaviour
 		Physics.SyncTransforms();
 	}
 
-	public bool MoveCombatTarget(Vector3 position)
+	public bool MoveCombatTarget(Vector3 position, Quaternion? rotation = null)
 	{
 		if (!CanRunTests || combatTarget == null || !combatTarget.TryGetComponent(out NetworkTransform motion)) return false;
 
-		motion.Teleport(position, motion.transform.rotation);
+		motion.Teleport(position, rotation ?? motion.transform.rotation);
 		Physics.SyncTransforms();
 		return true;
 	}

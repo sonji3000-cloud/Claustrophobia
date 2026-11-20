@@ -7,13 +7,19 @@ public sealed class TankCombat : MonoBehaviour
 	public enum CombatState
 	{
 		Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen, CheckSurroundings, ReturnToPatrol, Reposition,
-		ForcedMove, Retreat, CheckAfterHit
+		ForcedMove, Retreat, CheckAfterHit, BackOff
 	}
 
 	private const float MaxSearchTime = 10f;
 	private const float HitCheckTime = 3f;
 	private const float ReapproachRange = 32f;
 	private const double ReapproachDelay = 0.5d;
+	private const float CloseRange = 8f;
+	private const float ClearRange = 12f;
+	private const float ReverseLimit = 6f;
+	private const double CloseDelay = 0.3d;
+	private const double ReverseTimeout = 5d;
+	private const double ReverseStallTime = 1d;
 
 	[SerializeField] private TankAI owner;
 	[SerializeField, Min(0f)] private float fireRange = 28f;
@@ -46,6 +52,12 @@ public sealed class TankCombat : MonoBehaviour
 	private Vector3 sweepForward;
 	private bool sweepingRight;
 	private bool attackStarted;
+	private double closeSince = -1d;
+	private double backOffDeadline;
+	private double backOffProgressTime;
+	private float backOffProgress;
+	private float stoppedReverseTravel;
+	private bool repositionRefunded;
 
 	public CombatState State { get; private set; }
 	public int PatrolIndex { get; private set; } = -1;
@@ -62,9 +74,14 @@ public sealed class TankCombat : MonoBehaviour
 	public int SuppressedTargetCount => suppressedTargets.Count;
 	public string LastRepositionFailure { get; private set; } = "";
 	public string LastStopReason { get; private set; } = "";
+	public int BackOffCount { get; private set; }
+	public float BackOffStartDistance { get; private set; }
+	public float BackOffEndDistance { get; private set; }
+	public float BackOffTravel => State == CombatState.BackOff ? owner.ReverseTravel : stoppedReverseTravel;
+	public string LastBackOffReason { get; private set; } = "";
 
 	// Read after Tick, which handles sight loss and command replacement.
-	internal Transform MoveAimPoint => State is (CombatState.Approach or CombatState.Reposition) && Target != null
+	internal Transform MoveAimPoint => State is (CombatState.Approach or CombatState.Reposition or CombatState.BackOff) && Target != null
 		? Target.AimPoint : null;
 
 	public bool StartPatrol(Transform[] points)
@@ -84,6 +101,8 @@ public sealed class TankCombat : MonoBehaviour
 		moveCommand = owner.CommandId;
 		LastStopReason = "";
 		LastRepositionFailure = "";
+		LastBackOffReason = "";
+		BackOffStartDistance = BackOffEndDistance = stoppedReverseTravel = 0f;
 		ChangeState(CombatState.Patrol, "Patrol started");
 		return true;
 	}
@@ -127,6 +146,7 @@ public sealed class TankCombat : MonoBehaviour
 		if (State == CombatState.Idle) return;
 		if (owner.CommandId != moveCommand)
 		{
+			if (State == CombatState.BackOff) owner.StopReverse();
 			ClearState("Command replaced");
 			return;
 		}
@@ -182,9 +202,15 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
+		float distanceSq = FlatDistanceSquared(position, LastSeenPosition);
+		double tickTime = owner.Runner.SimulationTime;
+		if (distanceSq > CloseRange * CloseRange) closeSince = -1d;
+		else if (closeSince < 0d) closeSince = tickTime;
+
 		if (State == CombatState.Approach) UpdateApproach(position);
-		else if (State == CombatState.StopAndFire) UpdateFire(position);
-		else if (State == CombatState.Reposition) UpdateReposition(position);
+		else if (State == CombatState.StopAndFire) UpdateFire(position, distanceSq, tickTime);
+		else if (State == CombatState.Reposition) UpdateReposition(position, distanceSq);
+		else if (State == CombatState.BackOff) UpdateBackOff(distanceSq, tickTime);
 	}
 
 	private void UpdateOrder()
@@ -301,6 +327,7 @@ public sealed class TankCombat : MonoBehaviour
 
 	private void BeginSightWait(TankSensor sensor)
 	{
+		closeSince = -1d;
 		owner.StopAttack();
 		owner.StopMove();
 		moveCommand = owner.CommandId;
@@ -543,27 +570,30 @@ public sealed class TankCombat : MonoBehaviour
 		ChangeState(CombatState.StopAndFire, reason);
 	}
 
-	private void UpdateFire(Vector3 position)
+	private void UpdateFire(Vector3 position, float distanceSq, double now)
 	{
-		if (FlatDistanceSquared(position, LastSeenPosition) > ReapproachRange * ReapproachRange)
+		if (distanceSq > ReapproachRange * ReapproachRange)
 		{
 			WaitToApproach(position);
 			return;
 		}
 		outOfRangeSince = -1d;
 
+		if (!attackStarted && owner.MoveStatus != TankAI.MoveState.Arrived && !owner.UpdateSettle()) return;
+		if (BackOffCount == 0 && closeSince >= 0d && now - closeSince >= CloseDelay && TryBackOff(position, distanceSq, now)) return;
+
 		if (attackStarted)
 		{
 			if (owner.AttackStatus == TankAI.AttackState.Idle) StopCombat("Attack target unavailable");
-			else if (owner.IsShotBlocked && owner.ShotBlockedSeconds + 0.0001f >= shotBlockWait)
+			else if (owner.IsShotBlocked && owner.ShotBlockedSeconds + 0.0001f >= shotBlockWait
+				&& distanceSq > CloseRange * CloseRange
+				&& (distanceSq > ClearRange * ClearRange || BackOffCount == 0 && !repositionRefunded))
 			{
 				if (RepositionCount == 0) BeginReposition(position);
 				else FailReposition("Shot path still blocked after reposition");
 			}
 			return;
 		}
-
-		if (owner.MoveStatus != TankAI.MoveState.Arrived && !owner.UpdateSettle()) return;
 
 		if (!owner.Attack(Target.AimPoint))
 		{
@@ -572,6 +602,51 @@ public sealed class TankCombat : MonoBehaviour
 		}
 		attackStarted = true;
 		moveCommand = owner.CommandId;
+	}
+
+	private bool TryBackOff(Vector3 position, float distanceSq, double now)
+	{
+		BackOffCount++;
+		BackOffStartDistance = BackOffEndDistance = Mathf.Sqrt(distanceSq);
+		stoppedReverseTravel = 0f;
+		Vector3 rear = owner.RearDirection;
+		if (Vector3.Dot(LastSeenPosition - position, rear) >= 0f)
+		{
+			LastBackOffReason = "Reverse would not increase target distance";
+			return false;
+		}
+
+		if (!owner.TryReverse(rear, ReverseLimit, out string reason))
+		{
+			LastBackOffReason = reason;
+			return false;
+		}
+
+		moveCommand = owner.CommandId;
+		attackStarted = false;
+		backOffDeadline = now + ReverseTimeout;
+		backOffProgressTime = now;
+		backOffProgress = 0f;
+		LastBackOffReason = "";
+		ChangeState(CombatState.BackOff, "Target stayed within 8 m");
+		return true;
+	}
+
+	private void UpdateBackOff(float distanceSq, double now)
+	{
+		BackOffEndDistance = Mathf.Sqrt(distanceSq);
+		float travel = owner.ReverseTravel;
+		if (travel >= backOffProgress + 0.12f)
+		{
+			backOffProgress = travel;
+			backOffProgressTime = now;
+		}
+
+		if (owner.MoveStatus == TankAI.MoveState.Failed) BeginFire(owner.MoveFailure);
+		else if (distanceSq >= ClearRange * ClearRange) BeginFire("Target distance reached 12 m");
+		else if (travel >= ReverseLimit - 0.05f) BeginFire("Reverse travel limit reached");
+		else if (now >= backOffDeadline) BeginFire("Reverse timed out");
+		else if (now - backOffProgressTime >= ReverseStallTime) BeginFire("Reverse stalled");
 	}
 
 	private void WaitToApproach(Vector3 position)
@@ -647,15 +722,26 @@ public sealed class TankCombat : MonoBehaviour
 		return bestLength < float.PositiveInfinity;
 	}
 
-	private void UpdateReposition(Vector3 position)
+	private void UpdateReposition(Vector3 position, float distanceSq)
 	{
+		if (distanceSq <= CloseRange * CloseRange)
+		{
+			if (!repositionRefunded && owner.MoveStatus != TankAI.MoveState.Arrived)
+			{
+				RepositionCount--;
+				repositionRefunded = true;
+			}
+			BeginFire("Reposition stopped for close target");
+			return;
+		}
+
 		if (owner.MoveStatus == TankAI.MoveState.Failed)
 			FailReposition("Reposition failed: " + owner.MoveFailure);
 		else if (!IsRouteInRange(position))
 			FailReposition("Reposition left engagement radius");
 		else if (owner.MoveStatus == TankAI.MoveState.Arrived)
 		{
-			if (FlatDistanceSquared(position, LastSeenPosition) <= fireRange * fireRange)
+			if (distanceSq <= fireRange * fireRange)
 				BeginFire("Reposition arrived, retrying fire");
 			else FailReposition("Target outside fire range after reposition");
 		}
@@ -731,6 +817,9 @@ public sealed class TankCombat : MonoBehaviour
 		ContactDistance = 0f;
 		RepositionBlockSeconds = 0f;
 		RepositionCount = 0;
+		BackOffCount = 0;
+		closeSince = -1d;
+		repositionRefunded = false;
 		plannedTarget = default;
 		approachDeadline = nextPlanTime = 0d;
 		repositionDeadline = 0d;
@@ -746,6 +835,16 @@ public sealed class TankCombat : MonoBehaviour
 
 		CombatState previous = State;
 		if (previous == CombatState.StopAndFire) outOfRangeSince = -1d;
+		if (previous == CombatState.BackOff)
+		{
+			stoppedReverseTravel = owner.ReverseTravel;
+			LastBackOffReason = next switch
+			{
+				CombatState.ForcedMove => "Forced move order",
+				CombatState.Retreat => "Retreat order",
+				_ => reason
+			};
+		}
 		State = next;
 		Debug.Log($"[AI COMBAT] {previous} -> {State}: {reason}", this);
 	}

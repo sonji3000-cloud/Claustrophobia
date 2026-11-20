@@ -184,6 +184,15 @@ public sealed class TankAttackDemoEditor : Editor
 			if (GUILayout.Button("02 수색 중 재발견")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Reacquire);
 			if (GUILayout.Button("03 끝까지 못 찾음 → 순찰 복귀")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.Return);
 			if (GUILayout.Button("이동 중 포탑 추적 → 정지 사격")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ApproachTracking);
+			if (demo.HasRepositionFailureTests)
+			{
+				EditorGUILayout.LabelField("근거리 이격", EditorStyles.boldLabel);
+				if (GUILayout.Button("후방 열림 → 한 번 후진 후 사격")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BackOffOpen);
+				if (GUILayout.Button("후방 막힘 → 제자리 응전")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BackOffBlocked);
+				if (GUILayout.Button("후진 중 장애물 → 정지 후 사격")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BackOffObstacle);
+				if (GUILayout.Button("표적이 따라붙음 → 한 번만 이격")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BackOffFollow);
+				if (GUILayout.Button("후진 중 퇴각 명령 → 우선 수행")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.BackOffRetreat);
+			}
 			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 확인")) TankCombatChecks.Start(demo, TankCombatChecks.Scenario.ShotBlock);
 			if (demo.HasShotBlockTest && GUILayout.Button("사선 차단 → 위치 변경 → 사격"))
 				TankCombatChecks.Start(demo, TankCombatChecks.Scenario.RepositionFire);

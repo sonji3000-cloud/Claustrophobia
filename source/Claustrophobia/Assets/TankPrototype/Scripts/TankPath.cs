@@ -58,6 +58,22 @@ public sealed class TankPath : MonoBehaviour
 
 	internal bool IsWithin(Vector3 center, float radius) => IsWithin(corners, CornerCount, center, radius);
 
+	internal bool IsStraight(Vector3 start, Vector3 goal)
+	{
+		if (!isActiveAndEnabled) return false;
+
+		var filter = new NavMeshQueryFilter { agentTypeID = agentId, areaMask = areaMask };
+		if (!NavMesh.SamplePosition(start, out NavMeshHit from, sampleDistance, filter)
+			|| !NavMesh.SamplePosition(goal, out NavMeshHit to, sampleDistance, filter)) return false;
+
+		// A sample may snap sideways to an edge. Require the actual reverse line to be on the surface.
+		Vector3 fromOffset = from.position - start;
+		Vector3 toOffset = to.position - goal;
+		fromOffset.y = toOffset.y = 0f;
+		return fromOffset.sqrMagnitude <= 0.0225f && toOffset.sqrMagnitude <= 0.0225f
+			&& !NavMesh.Raycast(from.position, to.position, out _, filter);
+	}
+
 	private static bool IsWithin(Vector3[] points, int count, Vector3 center, float radius)
 	{
 		float limit = radius * radius;

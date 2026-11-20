@@ -14,7 +14,8 @@ internal sealed class TankCombatChecks
 		BriefCover, Reacquire, Return, All, ShotBlock, RepositionFire,
 		NoRepositionPoint, RepositionStalled, RepositionStillBlocked, RepositionReturnUnavailable,
 		ForceMove, Retreat, CancelOrder, HitReturn, HitEngage, HitOrder, Reapproach, RangeSight, RangeNoPath,
-		ReplaceOrder, Manual, ApproachTracking
+		ReplaceOrder, Manual, ApproachTracking,
+		BackOffOpen, BackOffBlocked, BackOffObstacle, BackOffFollow, BackOffRetreat
 	}
 
 	internal sealed class Result
@@ -37,7 +38,7 @@ internal sealed class TankCombatChecks
 
 	internal const string SuitePath = "Builds/TankCombatIntegration/play-results.txt";
 	internal const string ScenarioPath = "Builds/TankCombatIntegration/last-scenario.txt";
-	internal const int SuiteCount = 33;
+	internal const int SuiteCount = 38;
 	private const string MenuPath = "Tools/Tank/AI Test/Run Combat Checks";
 
 	internal static TankCombatChecks Current { get; private set; }
@@ -190,6 +191,11 @@ internal sealed class TankCombatChecks
 				case Scenario.RangeNoPath: await RunCase("재접근 경로 없음 → 정지", RangeNoPath); break;
 				case Scenario.ReplaceOrder: await RunCase("퇴각 A → 목적지 B → 정지", ReplaceOrder); break;
 				case Scenario.ApproachTracking: await RunCase("접근 중 포탑 추적 → 정지 사격", ApproachTracking); break;
+				case Scenario.BackOffOpen: await RunCase("후방 열림 → 근거리 이격", () => CheckBackOff(scenario)); break;
+				case Scenario.BackOffBlocked: await RunCase("후방 막힘 → 제자리 응전", () => CheckBackOff(scenario)); break;
+				case Scenario.BackOffObstacle: await RunCase("후진 중 후방 차단 → 정지", () => CheckBackOff(scenario)); break;
+				case Scenario.BackOffFollow: await RunCase("표적이 따라붙음 → 한 번만 이격", () => CheckBackOff(scenario)); break;
+				case Scenario.BackOffRetreat: await RunCase("후진 중 퇴각 명령 → 우선 수행", () => CheckBackOff(scenario)); break;
 				default: await RunAll(); break;
 			}
 			Status = $"완료 · {PassedCount}/{ExpectedCount} 통과";
@@ -263,6 +269,11 @@ internal sealed class TankCombatChecks
 		await RunCase("31 재접근 경로 없음 → 정지", RangeNoPath);
 		await RunCase("32 거리 초과 중 취소·자기 파괴 → 정지", RangeStop);
 		await RunCase("33 퇴각 A → 목적지 B → 정지", ReplaceOrder);
+		await RunCase("34 후방 열림 → 근거리 이격", () => CheckBackOff(Scenario.BackOffOpen));
+		await RunCase("35 후방 막힘 → 제자리 응전", () => CheckBackOff(Scenario.BackOffBlocked));
+		await RunCase("36 후진 중 후방 차단 → 정지", () => CheckBackOff(Scenario.BackOffObstacle));
+		await RunCase("37 표적이 따라붙음 → 한 번만 이격", () => CheckBackOff(Scenario.BackOffFollow));
+		await RunCase("38 후진 중 퇴각 명령 → 우선 수행", () => CheckBackOff(Scenario.BackOffRetreat));
 	}
 
 	private async Task RunCase(string name, Func<Task<string>> test)
@@ -1136,6 +1147,111 @@ internal sealed class TankCombatChecks
 		return $"정지 사격에서 실제 발사 {gun.ShotCount}발";
 	}
 
+	private async Task<string> CheckBackOff(Scenario test)
+	{
+		Require(demo.RunBackOffTest(ActiveCase), "이격 시험용 전차를 준비하지 못했어요.");
+		if (test == Scenario.BackOffBlocked)
+			Require(demo.BlockReverse(0.45f), "후방 장애물을 놓지 못했어요.");
+
+		await Wait(() => Combat.BackOffCount == 1, 5f, "가까운 표적을 상대로 이격을 판단하지 않았어요.");
+		int shots = gun.ShotCount;
+		if (test == Scenario.BackOffBlocked)
+		{
+			Require(Combat.State == State.StopAndFire && !visited.Contains(State.BackOff)
+				&& Combat.LastBackOffReason == "Rear obstacle" && Combat.BackOffTravel == 0f,
+				$"막힌 뒤에서 후진을 시작했거나 차단 사유가 달라요. {Combat.LastBackOffReason}");
+		}
+		else await CheckReversing(test, shots);
+
+		if (test != Scenario.BackOffRetreat)
+		{
+			try { await Wait(() => Combat.State == State.StopAndFire && gun.ShotCount > shots, 8f, "차체를 멈춘 뒤 사격하지 않았어요."); }
+			catch (TimeoutException)
+			{
+				Timeline.Add($"공격 상태 {AI.AttackStatus} / 약실 {gun.State} / 사격 제한 {AI.AttackBlockReason}");
+				throw;
+			}
+			if (test == Scenario.BackOffFollow)
+			{
+				double fired = SimulationTime;
+				await Wait(() => SimulationTime - fired >= 0.8, 2f, "계속 붙어 있는 표적을 관찰하지 못했어요.");
+			}
+			Require(Combat.BackOffCount == 1 && Combat.State == State.StopAndFire, "같은 교전에서 이격을 반복했어요.");
+		}
+
+		keepScene = scenario == test;
+		return $"표적 거리 {Combat.BackOffStartDistance:F1} → {Combat.BackOffEndDistance:F1}m / 실제 후진 {Combat.BackOffTravel:F2}m"
+			+ $" / {Combat.LastBackOffReason} / 후진 중 0발";
+	}
+
+	private async Task CheckReversing(Scenario test, int shots)
+	{
+		Require(Combat.State == State.BackOff, $"후진을 시작하지 않았어요. {Combat.LastBackOffReason}");
+		Vector3 rear = -AI.transform.forward;
+		rear.y = 0f;
+		rear.Normalize();
+		Vector3 contact = Combat.Target.Health.transform.position;
+		TankAim aim = AI.GetComponent<TankAim>();
+		uint command = AI.CommandId;
+		float followed = 0f;
+		float startYaw = aim.CurrentYaw;
+		float turn = 0f;
+
+		await Wait(() =>
+		{
+			Require(Combat.State == State.BackOff && AI.CommandId == command && gun.ShotCount == shots,
+				"후진이 일찍 끝났거나 이동 중 사격했어요.");
+			return Combat.BackOffTravel >= 0.6f;
+		}, 3f, "음수 레버 입력 뒤 실제 차체 변위를 확인하지 못했어요.");
+		Require(AI.LeftDriveInput < 0f && AI.LeftDriveInput == AI.RightDriveInput,
+			"두 레버가 같은 양으로 후진하지 않았어요.");
+
+		if (test == Scenario.BackOffRetreat)
+		{
+			Require(Combat.RetreatTo(demo.FirstWaypoint) && Combat.State == State.Retreat
+				&& AI.CommandId == command + 1 && AI.LeftDriveInput == 0f && AI.RightDriveInput == 0f,
+				"퇴각 명령이 후진을 즉시 교체하지 못했어요.");
+			await Wait(() => Combat.State == State.Idle, 10f, "퇴각 목적지에 도착하지 않았어요.");
+			Require(Combat.LastStopReason == "Retreat completed" && gun.ShotCount == shots,
+				"퇴각 중 사격했거나 퇴각이 실패했어요.");
+			return;
+		}
+
+		if (test == Scenario.BackOffObstacle)
+			Require(demo.BlockReverse(0.9f), "후진 경로에 움직이는 장애물을 넣지 못했어요.");
+		if (test == Scenario.BackOffOpen)
+			Require(demo.MoveCombatTarget(contact + Vector3.Cross(rear, Vector3.up) * 1.5f), "후진 추적 시험용 표적을 옮기지 못했어요.");
+
+		await Wait(() =>
+		{
+			if (Combat.State != State.BackOff) return true;
+			Require(AI.CommandId == command && gun.ShotCount == shots && AI.AttackStatus == TankAI.AttackState.Idle,
+				"후진 중 이동 명령이 바뀌거나 사격을 요청했어요.");
+			turn = Mathf.Max(turn, Mathf.Abs(Mathf.DeltaAngle(startYaw, aim.CurrentYaw)));
+			if (test == Scenario.BackOffFollow && Combat.BackOffTravel - followed >= 0.25f)
+			{
+				followed = Combat.BackOffTravel;
+				Require(demo.MoveCombatTarget(contact + rear * followed), "따라붙는 표적을 움직이지 못했어요.");
+			}
+			return false;
+		}, 6f, "후진을 끝내지 않았어요.");
+
+		string reason = test switch
+		{
+			Scenario.BackOffObstacle => "Rear obstacle",
+			Scenario.BackOffFollow => "Reverse travel limit reached",
+			_ => "Target distance reached 12 m"
+		};
+		Require(Combat.State == State.StopAndFire && Combat.LastBackOffReason == reason && Combat.BackOffTravel <= 6.05f,
+			$"후진 종료 조건이 달라요. {Combat.LastBackOffReason} / {Combat.BackOffTravel:F2}m");
+		Require(Vector3.Angle(-AI.transform.forward, rear) <= 5f, "후진하는 동안 차체가 크게 돌았어요.");
+		if (test == Scenario.BackOffOpen)
+		{
+			Require(turn >= 3f, "후진 중 포탑이 옮겨간 표적을 추적하지 않았어요.");
+			Timeline.Add($"후진 중 포탑 회전 {turn:F1}° / 발사 0발");
+		}
+	}
+
 	private async Task<string> NoApproachPath()
 	{
 		StartCombatCase(TankAttackDemo.CombatCase.NoPath);
@@ -1312,6 +1428,7 @@ internal sealed class TankCombatChecks
 		State.CheckSurroundings => "주변 확인",
 		State.ReturnToPatrol => "순찰 복귀",
 		State.Reposition => "위치 변경 시작",
+		State.BackOff => "근거리 후진",
 		State.ForcedMove => "강제 이동",
 		State.Retreat => "퇴각",
 		State.CheckAfterHit => "피격 후 주변 확인",

@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(TankMotor), typeof(TankAim), typeof(TankGun))]
@@ -9,6 +10,15 @@ public sealed class TankAI : NetworkBehaviour
 	public enum MoveState { Idle, Moving, Arrived, Failed }
 	public enum MoveMode { Direct, NavMesh }
 	public enum AttackState { Idle, Aiming, Reloading, Attacking, Blocked, TargetDown }
+
+	private const float ReverseSpeed = 2.5f;
+	private const float RearMargin = 0.3f;
+	private readonly Collider[] rearHits = new Collider[24];
+	private BoxCollider hull;
+	private bool reversing;
+	private Vector3 reverseStart;
+	private Vector3 reverseDir;
+	private float reverseLimit;
 
 	[SerializeField] private TankMotor motor;
 	[SerializeField] private TankAim aim;
@@ -100,6 +110,16 @@ public sealed class TankAI : NetworkBehaviour
 	public float StopRadius => stopRadius;
 	public float LeftDriveInput => leftLever;
 	public float RightDriveInput => rightLever;
+	internal float ReverseTravel => body != null ? Mathf.Max(0f, Vector3.Dot(body.position - reverseStart, reverseDir)) : 0f;
+	internal Vector3 RearDirection
+	{
+		get
+		{
+			Vector3 rear = body != null ? body.rotation * Vector3.back : transform.TransformDirection(Vector3.back);
+			rear.y = 0f;
+			return rear.normalized;
+		}
+	}
 	public string MoveBlockReason
 	{
 		get
@@ -133,6 +153,7 @@ public sealed class TankAI : NetworkBehaviour
 		if (gun == null) gun = GetComponent<TankGun>();
 		if (health == null) health = GetComponent<TankHealth>();
 		if (body == null) body = GetComponent<Rigidbody>();
+		if (body != null) hull = body.GetComponent<BoxCollider>();
 		if (ballistics == null) ballistics = GetComponent<TankBallistics>();
 		if (path == null) path = GetComponent<TankPath>();
 		if (sensor == null) sensor = GetComponent<TankSensor>();
@@ -191,7 +212,11 @@ public sealed class TankAI : NetworkBehaviour
 			combat.Tick(body != null ? body.position : transform.position);
 			moveAimPoint = combat.MoveAimPoint;
 		}
-		if (MoveStatus == MoveState.Moving) UpdateMove();
+		if (MoveStatus == MoveState.Moving)
+		{
+			if (reversing) UpdateReverse();
+			else UpdateMove();
+		}
 
 		motor.SetLeverInputs(leftLever, rightLever);
 		if (AttackStatus != AttackState.Idle) UpdateAttack();
@@ -229,6 +254,7 @@ public sealed class TankAI : NetworkBehaviour
 		offset.y = 0f;
 		if (!IsFinite(offset.sqrMagnitude)) return false;
 
+		if (reversing) ClearMove();
 		CommandId++;
 		moveMode = mode;
 		ClearAttack();
@@ -251,6 +277,91 @@ public sealed class TankAI : NetworkBehaviour
 		}
 		MoveStatus = MoveState.Moving;
 		return true;
+	}
+
+	internal bool TryReverse(Vector3 rear, float distance, out string reason)
+	{
+		reason = "Reverse drive unavailable";
+		if (!CanMove() || !motor.CanDrive || hull == null || !hull.enabled || hull.isTrigger) return false;
+
+		Vector3 start = body.position;
+		Vector3 goal = start + rear * distance;
+		reason = "Rear navigation blocked";
+		if (path == null || !path.IsStraight(start, goal)) return false;
+		reason = "Rear obstacle";
+		if (IsRearBlocked(distance + RearMargin)) return false;
+
+		CommandId++;
+		ClearAttack();
+		ClearMove();
+		reversing = true;
+		reverseStart = start;
+		reverseDir = rear;
+		reverseLimit = distance;
+		Destination = goal;
+		MoveStatus = MoveState.Moving;
+		reason = "";
+		return true;
+	}
+
+	internal void StopReverse()
+	{
+		if (reversing) ClearMove();
+	}
+
+	private void UpdateReverse()
+	{
+		if (!CanMove() || !motor.CanDrive || hull == null || !hull.enabled || hull.isTrigger)
+		{
+			FailMove("Reverse drive unavailable");
+			return;
+		}
+
+		Vector3 rear = RearDirection;
+		if (Vector3.Dot(rear, reverseDir) < 0.985f)
+		{
+			FailMove("Hull turned away from reverse line");
+			return;
+		}
+
+		float speed = Mathf.Max(0f, Mathf.Max(-motor.AppliedForwardSpeed, Vector3.Dot(body.linearVelocity, rear)));
+		float dt = Mathf.Max(Runner.DeltaTime, Time.fixedDeltaTime);
+		float brake = speed * speed / (2f * motor.MoveDeceleration) + speed * 2f * dt + RearMargin;
+		if (IsRearBlocked(brake))
+		{
+			FailMove("Rear obstacle");
+			return;
+		}
+
+		float remaining = Mathf.Max(0f, reverseLimit - ReverseTravel - speed * dt);
+		float drive = Mathf.Min(Mathf.Min(ReverseSpeed, motor.MaxMoveSpeed), Mathf.Sqrt(2f * motor.MoveDeceleration * remaining));
+		leftLever = rightLever = -drive / motor.MaxMoveSpeed;
+	}
+
+	private bool IsRearBlocked(float distance)
+	{
+		Transform frame = hull.transform;
+		Vector3 scale = frame.lossyScale;
+		Vector3 half = Vector3.Scale(hull.size, new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z))) * 0.5f;
+		// Sweep the hull's width behind its rear edge, leaving a small clearance above the floor.
+		const float overlap = 0.1f;
+		Vector3 center = frame.TransformPoint(hull.center) - frame.forward * (half.z + (distance - overlap) * 0.5f);
+		half.z = (distance + overlap) * 0.5f;
+		half.y = Mathf.Max(0.05f, half.y - overlap * 0.5f);
+		center += frame.up * (overlap * 0.5f);
+
+		PhysicsScene scene = gameObject.scene.GetPhysicsScene();
+		if (!scene.IsValid()) return true;
+		int count = scene.OverlapBox(center, half, rearHits, frame.rotation, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+		if (count >= rearHits.Length) return true;
+		for (int i = 0; i < count; i++)
+		{
+			Collider hit = rearHits[i];
+			if (hit != null && !hit.transform.IsChildOf(body.transform)
+				&& !Physics.GetIgnoreLayerCollision(hull.gameObject.layer, hit.gameObject.layer)
+				&& !Physics.GetIgnoreCollision(hull, hit)) return true;
+		}
+		return false;
 	}
 
 	public bool SetMoveMode(MoveMode mode)
@@ -282,6 +393,7 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void ClearPath()
 	{
+		reversing = false;
 		stopping = false;
 		stopSeconds = 0f;
 		if (path != null) path.Clear();
