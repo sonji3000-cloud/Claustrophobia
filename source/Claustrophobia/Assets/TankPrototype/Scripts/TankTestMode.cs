@@ -32,9 +32,12 @@ public sealed class TankTestMode : MonoBehaviour
 	private bool ownsCursor;
 	private CursorLockMode savedLock;
 	private bool savedVisible;
+	private Camera observer;
+	private AudioListener observerAudio;
 
 	public Mode CurrentMode { get; private set; }
 	public bool IsInterior => outputApplied && CurrentMode == Mode.Interior;
+	public bool IsObserving => observer != null;
 	public bool IsUsingSight { get; private set; }
 	public bool IsBound => bound;
 	public bool CanApply => isActiveAndEnabled && !disconnected && (!waitForBind || bound);
@@ -111,6 +114,7 @@ public sealed class TankTestMode : MonoBehaviour
 		if (mode != Mode.Exterior && mode != Mode.Interior) return;
 		if (outputApplied && CurrentMode == mode) return;
 
+		ClearObserver();
 		StopSight();
 		if (carry != null) carry.ReturnRound();
 		if (tankInput != null) tankInput.ResetInput();
@@ -135,6 +139,39 @@ public sealed class TankTestMode : MonoBehaviour
 		if (interiorHud != null) interiorHud.SetActive(IsInterior);
 		if (tankHud != null) tankHud.enabled = !IsInterior;
 		RefreshLabel();
+	}
+
+	public bool TryObserve(Camera camera, AudioListener listener)
+	{
+		if (!CanApply || camera == null || !camera.gameObject.activeInHierarchy
+			|| camera.targetTexture != null) return false;
+		if (observer == camera) return true;
+
+		ClearOutput();
+		if (tankInput != null) tankInput.SuspendInput();
+		observer = camera;
+		observerAudio = listener;
+		observer.tag = "MainCamera";
+		observer.enabled = true;
+		if (observerAudio != null) observerAudio.enabled = true;
+		return true;
+	}
+
+	public void StopObserving(Camera camera)
+	{
+		if (IsObserving && observer == camera) ApplyMode();
+	}
+
+	private void ClearObserver()
+	{
+		if (observer != null)
+		{
+			observer.enabled = false;
+			observer.tag = "Untagged";
+		}
+		if (observerAudio != null) observerAudio.enabled = false;
+		observer = null;
+		observerAudio = null;
 	}
 
 	private bool CanUseSight(CrewInteract user)
@@ -260,6 +297,7 @@ public sealed class TankTestMode : MonoBehaviour
 
 	private void ClearOutput()
 	{
+		ClearObserver();
 		bool wasUsingSight = IsUsingSight;
 		StopSight();
 		if (carry != null) carry.ReturnRound();

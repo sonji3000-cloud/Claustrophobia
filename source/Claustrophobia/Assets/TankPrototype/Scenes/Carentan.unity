@@ -3365,7 +3365,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: Sherman Follow Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11024,6 +11024,7 @@ MonoBehaviour:
   - {fileID: 2121324022}
   - {fileID: 977750738}
   offRoad: {fileID: 870920631}
+  followCamera: {fileID: 330585545}
 --- !u!4 &1302798522
 Transform:
   m_ObjectHideFlags: 0

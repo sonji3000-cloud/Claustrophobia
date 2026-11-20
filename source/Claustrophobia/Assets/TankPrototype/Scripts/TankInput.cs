@@ -78,6 +78,8 @@ public sealed class TankInput : MonoBehaviour
 			return;
 		}
 
+		if (testMode != null && testMode.IsObserving) return;
+
 		Keyboard keyboard = Keyboard.current;
 		if (!Application.isFocused || keyboard == null)
 		{

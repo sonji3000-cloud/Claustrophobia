@@ -9,9 +9,16 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform enemySpawn;
 	[SerializeField] private Transform[] patrol;
 	[SerializeField] private Transform offRoad;
+	[SerializeField] private Camera followCamera;
 
 	private TankAI enemy;
 	private int patrolIndex = -1;
+	private AudioListener followAudio;
+
+	private void Awake()
+	{
+		if (followCamera != null) followCamera.TryGetComponent(out followAudio);
+	}
 
 	private void OnEnable()
 	{
@@ -50,6 +57,7 @@ public sealed class CarentanDrive : MonoBehaviour
 			{
 				if (keys.digit8Key.wasPressedThisFrame || keys.numpad8Key.wasPressedThisFrame) MoveOffRoad();
 				else if (keys.digit9Key.wasPressedThisFrame || keys.numpad9Key.wasPressedThisFrame) StopPatrol();
+				else if (keys.f5Key.wasPressedThisFrame) FollowEnemy();
 			}
 		}
 
@@ -83,6 +91,47 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		patrolIndex = 0;
 		MovePatrol();
+		FollowEnemy();
+	}
+
+	private void FollowEnemy()
+	{
+		if (followCamera == null) return;
+
+		PlaceCamera();
+		sceneLink.Interior.Mode.TryObserve(followCamera, followAudio);
+	}
+
+	private void LateUpdate()
+	{
+		if (followCamera == null || !followCamera.enabled) return;
+		if (enemy != null && enemy.isActiveAndEnabled) PlaceCamera();
+		else StopFollowing();
+	}
+
+	private void PlaceCamera()
+	{
+		Transform hull = enemy.transform;
+		Vector3 forward = Vector3.ProjectOnPlane(hull.forward, Vector3.up).normalized;
+		Vector3 origin = hull.position + Vector3.up * 4f;
+		Vector3 offset = -forward * 8f + Vector3.up * 1.5f;
+		Vector3 dir = offset.normalized;
+		float distance = offset.magnitude;
+
+		// Cast above the hull so the rear view can move in when it meets a building.
+		if (Physics.SphereCast(origin, 0.25f, dir, out RaycastHit hit, distance,
+			followCamera.cullingMask & Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+			distance = Mathf.Max(0f, hit.distance - 0.1f);
+
+		Vector3 pos = origin + dir * distance;
+		Vector3 lookAt = hull.position + Vector3.up * 1.6f + forward;
+		followCamera.transform.SetPositionAndRotation(pos, Quaternion.LookRotation(lookAt - pos));
+	}
+
+	private void StopFollowing()
+	{
+		if (sceneLink != null && sceneLink.Interior != null)
+			sceneLink.Interior.Mode.StopObserving(followCamera);
 	}
 
 	private void MovePatrol()
@@ -119,6 +168,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	private void OnDisable()
 	{
 		if (sceneLink != null) sceneLink.StageChanged -= OnStageChanged;
+		StopFollowing();
 		StopPatrol();
 	}
 }
