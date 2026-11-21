@@ -8,16 +8,22 @@ public sealed class CarentanDriveEditor : Editor
 
 	public override void OnInspectorGUI()
 	{
+		CarentanDrive drive = (CarentanDrive)target;
+		if (EditorApplication.isPlaying && drive.IsEntryTest)
+		{
+			DrawEntryTest(drive);
+			return;
+		}
+
 		using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
 			DrawDefaultInspector();
 
 		if (!EditorApplication.isPlaying)
 		{
-			EditorGUILayout.HelpBox("Layout에서 광장 배치를 고른 다음 Play를 누르세요.", MessageType.Info);
+			EditorGUILayout.HelpBox("Layout에서 광장 또는 진입 시험을 고른 다음 Play를 누르세요.", MessageType.Info);
 			return;
 		}
 
-		CarentanDrive drive = (CarentanDrive)target;
 		TankAI enemy = drive.Enemy;
 		TankCombat combat = enemy != null ? enemy.Combat : null;
 		bool canStart = drive.CanStartMarket && combat != null && combat.State == TankCombat.CombatState.Idle;
@@ -78,6 +84,59 @@ public sealed class CarentanDriveEditor : Editor
 		if (enemy.AttackBlockReason.Length > 0) EditorGUILayout.HelpBox(enemy.AttackBlockReason, MessageType.Warning);
 	}
 
+	private static void DrawEntryTest(CarentanDrive drive)
+	{
+		using (new EditorGUI.DisabledScope(!drive.CanStartEntry))
+			if (GUILayout.Button("진입 시험 시작 (0)")) drive.StartMarketCombat();
+
+		using (new EditorGUI.DisabledScope(!drive.CanStartMarket))
+			if (GUILayout.Button("시험 정지 (9)")) drive.StopPatrol();
+
+		using (new EditorGUI.DisabledScope(drive.Enemy == null))
+			if (GUILayout.Button("광장 전체 보기")) drive.ObserveOverview();
+
+		using (new EditorGUILayout.HorizontalScope())
+		{
+			using (new EditorGUI.DisabledScope(drive.Enemy == null || drive.IsWestOnly))
+				if (GUILayout.Button("남쪽 Sherman 따라가기")) drive.ObserveEnemy(drive.Enemy);
+
+			using (new EditorGUI.DisabledScope(drive.WestEnemy == null))
+				if (GUILayout.Button("서쪽 Sherman 따라가기")) drive.ObserveEnemy(drive.WestEnemy);
+		}
+
+		if (drive.PlayerHealth != null)
+			EditorGUILayout.LabelField("Tiger HP / 피격", $"{drive.PlayerHealth.CurrentHP:F0} / {drive.PlayerHealth.DamageHitCount}회");
+
+		if (drive.HasWestOrder)
+			EditorGUILayout.LabelField("서쪽 출발까지", $"{drive.WestWait:F1}초");
+
+		if (!drive.IsWestOnly) DrawEntryTank("남쪽 Sherman", drive.Enemy);
+		DrawEntryTank("서쪽 Sherman", drive.WestEnemy);
+	}
+
+	private static void DrawEntryTank(string label, TankAI ai)
+	{
+		if (ai == null || ai.Combat == null) return;
+
+		EditorGUILayout.Space();
+		EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
+		TankCombat combat = ai.Combat;
+		EditorGUILayout.LabelField("교전 / 이동", $"{combat.State} / {ai.MoveStatus}");
+		if (combat.PatrolIndex >= 0)
+			EditorGUILayout.LabelField("순찰 경유점", (combat.PatrolIndex + 1).ToString());
+		if (ai.Path != null && ai.Path.HasPath)
+			EditorGUILayout.LabelField("이동 목적지", ai.Path.Goal.ToString("F2"));
+		if (ai.Sensor != null) DrawSight(ai.Sensor);
+		if (ai.TryGetComponent(out TankGun gun))
+			EditorGUILayout.LabelField("실제 발사 / 피해를 준 탄", $"{gun.ShotCount} / {gun.DamageHitCount}");
+		if (ai.TryGetComponent(out TankHealth health))
+			EditorGUILayout.LabelField("Sherman HP", health.CurrentHP.ToString("F0"));
+
+		if (ai.MoveFailure.Length > 0) EditorGUILayout.HelpBox(ai.MoveFailure, MessageType.Warning);
+		if (ai.AttackBlockReason.Length > 0) EditorGUILayout.HelpBox(ai.AttackBlockReason, MessageType.Info);
+		if (combat.LastStopReason.Length > 0) EditorGUILayout.HelpBox(combat.LastStopReason, MessageType.Info);
+	}
+
 	private static void DrawSight(TankSensor sensor)
 	{
 		for (int i = 0; i < sensor.CandidateCount; ++i)
@@ -95,14 +154,47 @@ public sealed class CarentanDriveEditor : Editor
 
 	private void OnSceneGUI()
 	{
+		if (((CarentanDrive)target).IsEntryTest)
+		{
+			DrawEntryRoute("southEntrySpawn", "southEntryPatrol", "남쪽", Color.yellow);
+			DrawEntryRoute("westEntrySpawn", "westEntryPatrol", "서쪽", Color.cyan);
+			DrawPoint("entryTiger", "Tiger", Color.white);
+			return;
+		}
+
 		DrawPoint("southPlayerStart", "Tiger 출발", Color.cyan);
 		DrawPoint("southContact", "노출 / 재등장", Color.yellow);
 		DrawPoint("southCover", "건물 뒤 엄폐", new Color(1f, .5f, .2f));
 	}
 
+	private void DrawEntryRoute(string spawnField, string routeField, string label, Color color)
+	{
+		if (serializedObject.FindProperty(spawnField).objectReferenceValue is not Transform spawn) return;
+
+		DrawPoint(spawn, label + " 출발", color);
+		var route = serializedObject.FindProperty(routeField);
+		Vector3 from = spawn.position;
+		using (new Handles.DrawingScope(color))
+		{
+			for (int i = 0; i < route.arraySize; i++)
+			{
+				if (route.GetArrayElementAtIndex(i).objectReferenceValue is not Transform point) continue;
+
+				DrawPoint(point, $"{label} {i + 1}", color);
+				Handles.DrawDottedLine(from + Vector3.up * .3f, point.position + Vector3.up * .3f, 4f);
+				from = point.position;
+			}
+		}
+	}
+
 	private void DrawPoint(string field, string label, Color color)
 	{
-		if (serializedObject.FindProperty(field).objectReferenceValue is not Transform point) return;
+		if (serializedObject.FindProperty(field).objectReferenceValue is Transform point)
+			DrawPoint(point, label, color);
+	}
+
+	private static void DrawPoint(Transform point, string label, Color color)
+	{
 
 		using (new Handles.DrawingScope(color))
 		{

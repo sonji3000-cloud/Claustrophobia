@@ -13,7 +13,11 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("시장 남쪽 진입")] SouthEntry,
 		[InspectorName("광장 사선 차단 · 위치 변경")] ShotBlock,
 		[InspectorName("광장 근거리 · 후방 열림")] RearOpen,
-		[InspectorName("광장 근거리 · 후방 막힘")] RearBlocked
+		[InspectorName("광장 근거리 · 후방 막힘")] RearBlocked,
+		[InspectorName("진입 비교 · 남쪽 1대")] EntrySouth,
+		[InspectorName("진입 검증 · 서쪽 1대")] EntryWest,
+		[InspectorName("진입 비교 · 2대 순차")] EntryStaggered,
+		[InspectorName("진입 비교 · 2대 동시")] EntryTogether
 	}
 
 	[SerializeField] private TankSceneLink sceneLink;
@@ -45,7 +49,21 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private GameObject shotObstacle;
 	[SerializeField] private GameObject rearObstacle;
 
+	[Header("광장 진입로 비교")]
+	[SerializeField] private Transform entryTiger;
+	[SerializeField] private Transform southEntrySpawn;
+	[SerializeField] private Transform[] southEntryPatrol;
+	[SerializeField] private Transform westEntrySpawn;
+	[SerializeField] private Transform[] westEntryPatrol;
+	[SerializeField] private Transform entryOverview;
+
+	private const double EntryDelay = 4d;
 	private TankAI enemy;
+	private TankAI westEnemy;
+	private TankAI observedEnemy;
+	private bool entryStarted;
+	private bool showOverview;
+	private double westEntryAt = -1d;
 	private int patrolIndex = -1;
 	private AudioListener followAudio;
 	private Layout loadedLayout;
@@ -53,6 +71,15 @@ public sealed class CarentanDrive : MonoBehaviour
 	private Rigidbody playerBody;
 
 	public TankAI Enemy => enemy;
+	public TankAI WestEnemy => IsWestOnly ? enemy : westEnemy;
+	public bool IsWestOnly => layout == Layout.EntryWest;
+	public bool IsEntryTest => layout is Layout.EntrySouth or Layout.EntryWest or Layout.EntryStaggered or Layout.EntryTogether;
+	public bool HasWestOrder => westEntryAt >= 0d;
+	public double WestWait => HasWestOrder && enemy != null && enemy.Runner != null
+		? System.Math.Max(0d, westEntryAt - enemy.Runner.SimulationTime) : 0d;
+	public bool CanStartEntry => IsEntryTest && CanStartMarket && !entryStarted
+		&& PlayerHealth != null && !PlayerHealth.Destroyed;
+
 	public TankHealth PlayerHealth { get; private set; }
 	public bool IsSouthEntry => loadedLayout == Layout.SouthEntry;
 	public bool IsManeuverTest => loadedLayout is Layout.ShotBlock or Layout.RearOpen or Layout.RearBlocked;
@@ -88,6 +115,8 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		Transform spawn = layout switch
 		{
+			Layout.EntryWest => westEntrySpawn,
+			Layout.EntrySouth or Layout.EntryStaggered or Layout.EntryTogether => southEntrySpawn,
 			Layout.Road => enemySpawn,
 			Layout.SouthEntry => southSpawn,
 			Layout.ShotBlock or Layout.RearOpen or Layout.RearBlocked => maneuverSpawn,
@@ -95,6 +124,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		};
 		Transform target = layout switch
 		{
+			Layout.EntrySouth or Layout.EntryWest or Layout.EntryStaggered or Layout.EntryTogether => entryTiger,
 			Layout.MarketNear => nearTarget,
 			Layout.MarketFar => farTarget,
 			Layout.SouthEntry => southPlayerStart,
@@ -110,8 +140,8 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
-		NetworkObject tank = runner.Spawn(enemyPrefab, spawn.position, spawn.rotation);
-		if (tank != null && tank.TryGetComponent(out enemy) && enemy.SetMoveMode(TankAI.MoveMode.NavMesh))
+		enemy = SpawnEnemy(runner, spawn);
+		if (enemy != null)
 		{
 			if (shotObstacle != null) shotObstacle.SetActive(layout == Layout.ShotBlock);
 			if (rearObstacle != null) rearObstacle.SetActive(layout == Layout.RearBlocked);
@@ -121,21 +151,33 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
-		if (tank != null) runner.Despawn(tank);
-		enemy = null;
 		Debug.LogError("Carentan could not start the Sherman in NavMesh mode.", this);
+	}
+
+	private TankAI SpawnEnemy(NetworkRunner runner, Transform spawn)
+	{
+		if (spawn == null) return null;
+
+		NetworkObject tank = runner.Spawn(enemyPrefab, spawn.position, spawn.rotation);
+		if (tank == null) return null;
+		if (tank.TryGetComponent(out TankAI ai) && ai.SetMoveMode(TankAI.MoveMode.NavMesh)) return ai;
+
+		runner.Despawn(tank);
+		return null;
 	}
 
 	private void Update()
 	{
 		bool canDrive = enemy != null && sceneLink.IsReady;
+		if (canDrive && HasWestOrder) UpdateWestEntry();
+
 		Keyboard keys = Keyboard.current;
 		if (keys != null && Application.isFocused)
 		{
-			if (keys.digit7Key.wasPressedThisFrame || keys.numpad7Key.wasPressedThisFrame) StartPatrol();
+			if (!IsEntryTest && (keys.digit7Key.wasPressedThisFrame || keys.numpad7Key.wasPressedThisFrame)) StartPatrol();
 			else if (canDrive)
 			{
-				if (keys.digit8Key.wasPressedThisFrame || keys.numpad8Key.wasPressedThisFrame) MoveOffRoad();
+				if (!IsEntryTest && (keys.digit8Key.wasPressedThisFrame || keys.numpad8Key.wasPressedThisFrame)) MoveOffRoad();
 				else if (keys.digit9Key.wasPressedThisFrame || keys.numpad9Key.wasPressedThisFrame) StopPatrol();
 				else if (keys.digit0Key.wasPressedThisFrame || keys.numpad0Key.wasPressedThisFrame) StartMarketCombat();
 				else if (keys.f5Key.wasPressedThisFrame) FollowEnemy();
@@ -158,7 +200,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	[ContextMenu("Start Sherman Patrol")]
 	private void StartPatrol()
 	{
-		if (!Application.isPlaying) return;
+		if (!Application.isPlaying || IsEntryTest) return;
 		if (enemy == null || !sceneLink.IsReady)
 		{
 			Debug.LogWarning($"Carentan Sherman is not ready for patrol. Scene stage: {sceneLink.CurrentStage}.", this);
@@ -178,6 +220,12 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	public void StartMarketCombat()
 	{
+		if (IsEntryTest)
+		{
+			StartEntry();
+			return;
+		}
+
 		if (!CanStartMarket)
 		{
 			Debug.LogWarning("[Carentan] Select a market layout before entering Play Mode and wait for the host.", this);
@@ -205,6 +253,63 @@ public sealed class CarentanDrive : MonoBehaviour
 		else FollowEnemy();
 	}
 
+	private void StartEntry()
+	{
+		if (!CanStartEntry) return;
+
+		bool needsWest = layout is Layout.EntryTogether or Layout.EntryStaggered;
+		if (needsWest && westEntrySpawn == null)
+		{
+			Debug.LogError("[Carentan Entry] Missing west spawn.", this);
+			return;
+		}
+
+		if (enemy.Combat == null || !enemy.Combat.StartPatrol(IsWestOnly ? westEntryPatrol : southEntryPatrol))
+		{
+			Debug.LogError("[Carentan Entry] First Sherman could not start its route.", this);
+			return;
+		}
+
+		entryStarted = true;
+		enemy.name = IsWestOnly ? "Sherman - West" : "Sherman - South";
+		Debug.Log($"[Carentan Entry] {layout}: {enemy.name} departed.", enemy);
+
+		if (layout == Layout.EntryStaggered) westEntryAt = enemy.Runner.SimulationTime + EntryDelay;
+		else if (layout == Layout.EntryTogether) StartWestEntry();
+
+		ObserveOverview();
+	}
+
+	private void UpdateWestEntry()
+	{
+		if (PlayerHealth == null || PlayerHealth.Destroyed)
+		{
+			westEntryAt = -1d;
+			Debug.Log("[Carentan Entry] West departure cancelled: Tiger destroyed.", this);
+			return;
+		}
+
+		if (enemy.Runner.SimulationTime >= westEntryAt) StartWestEntry();
+	}
+
+	private void StartWestEntry()
+	{
+		westEntryAt = -1d;
+		NetworkRunner runner = enemy.Runner;
+		westEnemy = SpawnEnemy(runner, westEntrySpawn);
+		if (westEnemy != null && westEnemy.Combat != null && westEnemy.Combat.StartPatrol(westEntryPatrol))
+		{
+			westEnemy.name = "Sherman - West";
+			Debug.Log("[Carentan Entry] Sherman - West departed.", westEnemy);
+			return;
+		}
+
+		if (westEnemy != null) runner.Despawn(westEnemy.Object);
+		westEnemy = null;
+		StopPatrol();
+		Debug.LogError("[Carentan Entry] West Sherman could not start its route.", this);
+	}
+
 	public void MoveSouthTiger(bool exposed)
 	{
 		Transform point = exposed ? southContact : southCover;
@@ -224,24 +329,36 @@ public sealed class CarentanDrive : MonoBehaviour
 		Physics.SyncTransforms();
 	}
 
-	private void FollowEnemy()
-	{
-		if (followCamera == null) return;
+	private void FollowEnemy() => ObserveEnemy(enemy);
 
-		PlaceCamera();
+	public void ObserveEnemy(TankAI tank)
+	{
+		if (followCamera == null || tank == null || !sceneLink.IsReady) return;
+
+		showOverview = false;
+		observedEnemy = tank;
+		PlaceCamera(tank.transform);
+		sceneLink.Interior.Mode.TryObserve(followCamera, followAudio);
+	}
+
+	public void ObserveOverview()
+	{
+		if (followCamera == null || entryOverview == null || !sceneLink.IsReady) return;
+
+		showOverview = true;
+		followCamera.transform.SetPositionAndRotation(entryOverview.position, entryOverview.rotation);
 		sceneLink.Interior.Mode.TryObserve(followCamera, followAudio);
 	}
 
 	private void LateUpdate()
 	{
-		if (followCamera == null || !followCamera.enabled) return;
-		if (enemy != null && enemy.isActiveAndEnabled) PlaceCamera();
+		if (followCamera == null || !followCamera.enabled || showOverview) return;
+		if (observedEnemy != null && observedEnemy.isActiveAndEnabled) PlaceCamera(observedEnemy.transform);
 		else StopFollowing();
 	}
 
-	private void PlaceCamera()
+	private void PlaceCamera(Transform hull)
 	{
-		Transform hull = enemy.transform;
 		Vector3 forward = Vector3.ProjectOnPlane(hull.forward, Vector3.up).normalized;
 		Vector3 origin = hull.position + Vector3.up * 4f;
 		Vector3 offset = -forward * 8f + Vector3.up * 1.5f;
@@ -281,7 +398,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	[ContextMenu("Request Off-road Destination")]
 	private void MoveOffRoad()
 	{
-		if (enemy == null || !enemy.CanAct) return;
+		if (IsEntryTest || enemy == null || !enemy.CanAct) return;
 
 		StopPatrol();
 		enemy.MoveTo(offRoad.position);
@@ -291,6 +408,9 @@ public sealed class CarentanDrive : MonoBehaviour
 	[ContextMenu("Stop Sherman Patrol")]
 	public void StopPatrol()
 	{
+		westEntryAt = -1d;
+		if (westEnemy != null && (westEnemy.Combat == null || !westEnemy.Combat.CancelOrder())) westEnemy.StopActions();
+
 		bool hadRoute = patrolIndex >= 0;
 		patrolIndex = -1;
 		if (enemy == null) return;
