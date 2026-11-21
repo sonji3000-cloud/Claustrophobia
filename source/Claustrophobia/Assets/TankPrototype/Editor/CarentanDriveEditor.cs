@@ -4,11 +4,18 @@ using UnityEngine;
 [CustomEditor(typeof(CarentanDrive))]
 public sealed class CarentanDriveEditor : Editor
 {
+	private static readonly string[] DeploymentLabels = { "A", "B", "C", "D" };
+
 	public override bool RequiresConstantRepaint() => EditorApplication.isPlaying;
 
 	public override void OnInspectorGUI()
 	{
 		CarentanDrive drive = (CarentanDrive)target;
+		if (EditorApplication.isPlaying && drive.IsDeployment)
+		{
+			DrawDeployment(drive);
+			return;
+		}
 		if (EditorApplication.isPlaying && drive.IsEntryTest)
 		{
 			DrawEntryTest(drive);
@@ -131,6 +138,71 @@ public sealed class CarentanDriveEditor : Editor
 		DrawEntryTank("서쪽 Sherman", ai);
 	}
 
+	private static void DrawDeployment(CarentanDrive drive)
+	{
+		using (new EditorGUILayout.HorizontalScope())
+		{
+			using (new EditorGUI.DisabledScope(!drive.CanStartDeployment))
+				if (GUILayout.Button("시험 시작 (0)")) drive.StartDeployment();
+			using (new EditorGUI.DisabledScope(!drive.DeploymentStarted))
+				if (GUILayout.Button("시험 정지 (9)")) drive.StopDeployment();
+		}
+
+		using (new EditorGUI.DisabledScope(!drive.CanObserve))
+		{
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				if (GUILayout.Button("전체 탑뷰")) drive.ObserveDeploymentTop();
+				if (GUILayout.Button("조종석 복귀")) drive.ReturnToCabin();
+			}
+
+			EditorGUILayout.LabelField("전차 따라가기", EditorStyles.boldLabel);
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				using (new EditorGUI.DisabledScope(drive.PlayerHealth == null))
+					if (GUILayout.Button("Tiger")) drive.ObserveTiger();
+
+				for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
+				{
+					TankAI tank = drive.GetDeployed(i);
+					using (new EditorGUI.DisabledScope(tank == null))
+						if (GUILayout.Button(DeploymentLabels[i])) drive.ObserveEnemy(tank);
+				}
+			}
+		}
+
+		if (drive.DeploymentError.Length > 0)
+			EditorGUILayout.HelpBox(drive.DeploymentError, MessageType.Error);
+		if (!drive.CanObserve)
+		{
+			EditorGUILayout.LabelField("세션·전차 내부", drive.SceneStage.ToString());
+			if (!string.IsNullOrEmpty(drive.SceneError)) EditorGUILayout.HelpBox(drive.SceneError, MessageType.Warning);
+		}
+		if (drive.PlayerHealth != null)
+			EditorGUILayout.LabelField("Tiger HP / 피격", $"{drive.PlayerHealth.CurrentHP:F0} / {drive.PlayerHealth.DamageHitCount}회");
+
+		EditorGUILayout.Space();
+		for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
+		{
+			TankAI tank = drive.GetDeployed(i);
+			string label = DeploymentLabels[i];
+			if (tank == null)
+			{
+				EditorGUILayout.LabelField(label, "배치 대기");
+				continue;
+			}
+
+			TankCombat combat = tank.Combat;
+			string state = i == 3 && combat.State == TankCombat.CombatState.Patrol
+				&& tank.MoveStatus == TankAI.MoveState.Arrived ? "경계 대기" : $"{combat.State} / {tank.MoveStatus}";
+			if (combat.PatrolIndex >= 0 && i != 3) state += $" · 경유점 {combat.PatrolIndex + 1}";
+			EditorGUILayout.LabelField(label, state);
+			if (tank.MoveFailure.Length > 0) EditorGUILayout.HelpBox($"{label} · {tank.MoveFailure}", MessageType.Warning);
+			else if (combat.LastStopReason.Length > 0 && drive.DeploymentStarted)
+				EditorGUILayout.HelpBox($"{label} · {combat.LastStopReason}", MessageType.Info);
+		}
+	}
+
 	private static void DrawEntryTest(CarentanDrive drive)
 	{
 		using (new EditorGUI.DisabledScope(!drive.CanStartEntry))
@@ -202,6 +274,7 @@ public sealed class CarentanDriveEditor : Editor
 	private void OnSceneGUI()
 	{
 		var drive = (CarentanDrive)target;
+		if (drive.IsDeployment) return;
 		if (drive.IsEntryTest)
 		{
 			DrawEntryRoute("southEntrySpawn", "southEntryPatrol", "남쪽", Color.yellow);

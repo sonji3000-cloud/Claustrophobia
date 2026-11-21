@@ -19,7 +19,15 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("진입 비교 · 2대 순차")] EntryStaggered,
 		[InspectorName("진입 비교 · 2대 동시")] EntryTogether,
 		[InspectorName("맵 변경 · 중앙 연결로 주행")] CentralDrive,
-		[InspectorName("맵 변경 · 시장 서쪽 틈 교전")] WestGap
+		[InspectorName("맵 변경 · 시장 서쪽 틈 교전")] WestGap,
+		[InspectorName("4대 배치 디버그")] Deployment
+	}
+
+	[System.Serializable]
+	private sealed class DeploymentSlot
+	{
+		public Transform Spawn;
+		public Transform[] Waypoints;
 	}
 
 	[SerializeField] private TankSceneLink sceneLink;
@@ -67,12 +75,24 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform westGapCover;
 	[SerializeField] private Transform westGapOpening;
 
+	[Header("4대 배치 디버그 · A / B / C / D")]
+	[SerializeField] private DeploymentSlot[] deployment;
+	[SerializeField] private Transform deploymentTiger;
+	[SerializeField] private Transform deploymentTop;
+	[SerializeField, Min(1f)] private float topHalfWidth = 145f;
+	[SerializeField, Min(1f)] private float topHalfDepth = 132f;
+
+	public const int DeploymentCount = 4;
 	private const double EntryDelay = 4d;
+	private static readonly string[] DeploymentNames = { "A", "B", "C", "D" };
+	private readonly TankAI[] deployed = new TankAI[DeploymentCount];
+	private bool deploymentStarted;
 	private TankAI enemy;
 	private TankAI westEnemy;
-	private TankAI observedEnemy;
+	private Transform observedHull;
 	private bool entryStarted;
 	private bool showOverview;
+	private bool showTop;
 	private double westEntryAt = -1d;
 	private int patrolIndex = -1;
 	private AudioListener followAudio;
@@ -95,10 +115,42 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool IsManeuverTest => loadedLayout is Layout.ShotBlock or Layout.RearOpen or Layout.RearBlocked;
 	public bool IsCentralDrive => layout == Layout.CentralDrive;
 	public bool IsWestGap => layout == Layout.WestGap;
+	public bool IsDeployment => layout == Layout.Deployment;
+	public bool CanObserve => followCamera != null && sceneLink != null && sceneLink.IsReady;
+	public bool DeploymentStarted => deploymentStarted;
+	public string DeploymentError { get; private set; } = "";
+	public TankSceneLink.Stage SceneStage => sceneLink != null ? sceneLink.CurrentStage : TankSceneLink.Stage.Idle;
+	public string SceneError => sceneLink != null ? sceneLink.LastError ?? sceneLink.Session?.LastError : null;
+
 	public bool CanStartMarket => loadedLayout != Layout.Road && sceneLink != null && sceneLink.IsReady
 		&& enemy != null && enemy.CanAct;
 	public bool CanStartCentralDrive => IsCentralDrive && CanStartMarket && enemy.MoveStatus != TankAI.MoveState.Moving;
-	private bool CanUseRoadKeys => !IsEntryTest && !IsCentralDrive && !IsWestGap;
+	private bool CanUseRoadKeys => !IsEntryTest && !IsCentralDrive && !IsWestGap && !IsDeployment;
+
+	public bool CanStartDeployment
+	{
+		get
+		{
+			if (!IsDeployment || deploymentStarted || sceneLink == null || !sceneLink.IsReady
+				|| PlayerHealth == null || PlayerHealth.Destroyed) return false;
+
+			for (int i = 0; i < DeploymentCount; i++)
+			{
+				TankAI tank = GetDeployed(i);
+				if (tank == null || !tank.CanAct || tank.Combat == null) return false;
+			}
+
+			return true;
+		}
+	}
+
+	public TankAI GetDeployed(int index)
+	{
+		if ((uint)index >= DeploymentCount) return null;
+
+		TankAI tank = deployed[index];
+		return tank != null && tank.Object != null && tank.Object.IsValid ? tank : null;
+	}
 
 	private void Awake()
 	{
@@ -107,6 +159,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void OnEnable()
 	{
+		if (sceneLink == null) return;
 		sceneLink.StageChanged += OnStageChanged;
 		if (sceneLink.IsReady) OnStageChanged(TankSceneLink.Stage.Ready);
 	}
@@ -116,16 +169,22 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (stage != TankSceneLink.Stage.Ready)
 		{
 			StopPatrol();
+			if (IsDeployment) StopFollowing();
 			return;
 		}
 
 		sceneLink.Interior.Mode.SetMode(TankTestMode.Mode.Interior);
 		NetworkRunner runner = sceneLink.Session.Runner;
-		if (!runner.IsServer || enemy != null) return;
+		if (runner == null || !runner.IsServer || enemy != null) return;
 
 		TankControl player = sceneLink.Session.tankControl;
 		player.TryGetComponent(out TankHealth health);
 		PlayerHealth = health;
+		if (IsDeployment)
+		{
+			PrepareDeployment(runner, player);
+			return;
+		}
 
 		Transform spawn = layout switch
 		{
@@ -150,8 +209,7 @@ public sealed class CarentanDrive : MonoBehaviour
 			_ => null
 		};
 		bool needsTarget = layout is not (Layout.Road or Layout.MarketPatrol or Layout.CentralDrive);
-		if (spawn == null || needsTarget && (target == null || health == null
-			|| !player.TryGetComponent(out playerMotion) || !player.TryGetComponent(out playerBody) || !playerMotion.HasStateAuthority))
+		if (spawn == null || needsTarget && !CanPlaceTiger(player, target))
 		{
 			Debug.LogError("[Carentan] Missing or unavailable tank placement.", this);
 			return;
@@ -169,6 +227,63 @@ public sealed class CarentanDrive : MonoBehaviour
 		}
 
 		Debug.LogError("Carentan could not start the Sherman in NavMesh mode.", this);
+	}
+
+	private bool CanPlaceTiger(TankControl player, Transform point)
+	{
+		return point != null && PlayerHealth != null && player.TryGetComponent(out playerMotion)
+			&& player.TryGetComponent(out playerBody) && playerMotion.HasStateAuthority;
+	}
+
+	private void PrepareDeployment(NetworkRunner runner, TankControl player)
+	{
+		if (GetDeployed(0) != null && loadedLayout == Layout.Deployment) return;
+		if (deployment == null || deployment.Length != DeploymentCount || !CanPlaceTiger(player, deploymentTiger))
+		{
+			ReportDeploymentError("4대 배치 또는 Tiger 출발점이 연결되지 않았습니다.");
+			return;
+		}
+
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			DeploymentSlot slot = deployment[i];
+			if (slot != null && slot.Spawn != null && slot.Waypoints != null && slot.Waypoints.Length != 0
+				&& System.Array.TrueForAll(slot.Waypoints, point => point != null)) continue;
+
+			ReportDeploymentError($"{DeploymentNames[i]}의 시작점 또는 경유점이 빠졌습니다.");
+			return;
+		}
+
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			TankAI tank = SpawnEnemy(runner, deployment[i].Spawn);
+			deployed[i] = tank;
+			if (tank == null || tank.Combat == null)
+			{
+				for (int j = 0; j <= i; j++)
+				{
+					if (deployed[j] != null) runner.Despawn(deployed[j].Object);
+					deployed[j] = null;
+				}
+
+				ReportDeploymentError($"{DeploymentNames[i]} 전차를 생성하지 못했습니다.");
+				return;
+			}
+
+			tank.name = "Sherman " + DeploymentNames[i];
+		}
+
+		if (shotObstacle != null) shotObstacle.SetActive(false);
+		if (rearObstacle != null) rearObstacle.SetActive(false);
+		PlaceTiger(deploymentTiger);
+		loadedLayout = Layout.Deployment;
+		DeploymentError = "";
+	}
+
+	private void ReportDeploymentError(string reason)
+	{
+		DeploymentError = reason;
+		Debug.LogError("[Carentan] " + reason, this);
 	}
 
 	private TankAI SpawnEnemy(NetworkRunner runner, Transform spawn)
@@ -191,7 +306,12 @@ public sealed class CarentanDrive : MonoBehaviour
 		Keyboard keys = Keyboard.current;
 		if (keys != null && Application.isFocused)
 		{
-			if (CanUseRoadKeys && (keys.digit7Key.wasPressedThisFrame || keys.numpad7Key.wasPressedThisFrame)) StartPatrol();
+			if (IsDeployment)
+			{
+				if (keys.digit0Key.wasPressedThisFrame || keys.numpad0Key.wasPressedThisFrame) StartDeployment();
+				else if (keys.digit9Key.wasPressedThisFrame || keys.numpad9Key.wasPressedThisFrame) StopDeployment();
+			}
+			else if (CanUseRoadKeys && (keys.digit7Key.wasPressedThisFrame || keys.numpad7Key.wasPressedThisFrame)) StartPatrol();
 			else if (canDrive)
 			{
 				if (CanUseRoadKeys && (keys.digit8Key.wasPressedThisFrame || keys.numpad8Key.wasPressedThisFrame)) MoveOffRoad();
@@ -212,6 +332,31 @@ public sealed class CarentanDrive : MonoBehaviour
 		Debug.Log($"Carentan Sherman arrived at {patrol[patrolIndex].name}.", this);
 		if (++patrolIndex == patrol.Length) patrolIndex = -1;
 		else MovePatrol();
+	}
+
+	public void StartDeployment()
+	{
+		if (!CanStartDeployment) return;
+
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			if (deployed[i].Combat.StartPatrol(deployment[i].Waypoints)) continue;
+
+			StopDeployment();
+			ReportDeploymentError($"{DeploymentNames[i]}의 순찰·경계 명령을 시작하지 못했습니다.");
+			return;
+		}
+
+		deploymentStarted = true;
+		DeploymentError = "";
+	}
+
+	public void StopDeployment()
+	{
+		if (!IsDeployment) return;
+
+		deploymentStarted = false;
+		for (int i = 0; i < DeploymentCount; i++) GetDeployed(i)?.StopActions();
 	}
 
 	[ContextMenu("Start Sherman Patrol")]
@@ -384,29 +529,100 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	public void ObserveEnemy(TankAI tank)
 	{
-		if (followCamera == null || tank == null || !sceneLink.IsReady) return;
+		if (tank != null) ObserveHull(tank.transform);
+	}
 
+	public void ObserveTiger()
+	{
+		if (PlayerHealth != null) ObserveHull(PlayerHealth.transform);
+	}
+
+	private void ObserveHull(Transform hull)
+	{
+		if (!CanObserve || !sceneLink.Interior.Mode.TryObserve(followCamera, followAudio)) return;
+
+		showTop = false;
 		showOverview = false;
-		observedEnemy = tank;
-		PlaceCamera(tank.transform);
-		sceneLink.Interior.Mode.TryObserve(followCamera, followAudio);
+		observedHull = hull;
+		followCamera.orthographic = false;
+		PlaceCamera(hull);
 	}
 
 	public void ObserveOverview()
 	{
-		if (followCamera == null || entryOverview == null || !sceneLink.IsReady) return;
+		if (!CanObserve || entryOverview == null || !sceneLink.Interior.Mode.TryObserve(followCamera, followAudio)) return;
 
+		showTop = false;
 		showOverview = true;
+		observedHull = null;
+		followCamera.orthographic = false;
 		followCamera.transform.SetPositionAndRotation(entryOverview.position, entryOverview.rotation);
-		sceneLink.Interior.Mode.TryObserve(followCamera, followAudio);
+	}
+
+	public void ObserveDeploymentTop()
+	{
+		if (!IsDeployment || !CanObserve || deploymentTop == null
+			|| !sceneLink.Interior.Mode.TryObserve(followCamera, followAudio)) return;
+
+		showTop = true;
+		showOverview = true;
+		observedHull = null;
+		followCamera.transform.SetPositionAndRotation(deploymentTop.position, deploymentTop.rotation);
+		followCamera.orthographic = true;
+		FitDeploymentTop();
+	}
+
+	public void ReturnToCabin()
+	{
+		if (!CanObserve) return;
+
+		StopFollowing();
+		sceneLink.Interior.Mode.SetMode(TankTestMode.Mode.Interior);
 	}
 
 	private void LateUpdate()
 	{
-		if (followCamera == null || !followCamera.enabled || showOverview) return;
-		if (observedEnemy != null && observedEnemy.isActiveAndEnabled) PlaceCamera(observedEnemy.transform);
+		if (followCamera == null || !followCamera.enabled) return;
+		if (showTop) FitDeploymentTop();
+		if (showOverview) return;
+
+		if (observedHull != null && observedHull.gameObject.activeInHierarchy) PlaceCamera(observedHull);
 		else StopFollowing();
 	}
+
+	private void FitDeploymentTop()
+	{
+		followCamera.orthographicSize = Mathf.Max(topHalfDepth, topHalfWidth / Mathf.Max(.01f, followCamera.aspect));
+	}
+
+#if UNITY_EDITOR
+	private GUIStyle mapLabel;
+
+	private void OnGUI()
+	{
+		if (!showTop || followCamera == null || !followCamera.enabled || Event.current.type != EventType.Repaint) return;
+
+		mapLabel ??= new GUIStyle(GUI.skin.box) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+		mapLabel.fontSize = Mathf.Clamp(Screen.height / 65, 15, 22);
+		mapLabel.normal.textColor = Color.white;
+
+		if (PlayerHealth != null) DrawMapLabel(PlayerHealth.transform, "Tiger", mapLabel.fontSize * 3f);
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			TankAI tank = GetDeployed(i);
+			if (tank != null) DrawMapLabel(tank.transform, DeploymentNames[i], mapLabel.fontSize + 12f);
+		}
+	}
+
+	private void DrawMapLabel(Transform hull, string label, float width)
+	{
+		Vector3 point = followCamera.WorldToScreenPoint(hull.position);
+		if (point.z <= 0f || !followCamera.pixelRect.Contains(new Vector2(point.x, point.y))) return;
+
+		float height = mapLabel.fontSize + 8f;
+		GUI.Box(new Rect(point.x - width * .5f, Screen.height - point.y - height - 9f, width, height), label, mapLabel);
+	}
+#endif
 
 	private void PlaceCamera(Transform hull)
 	{
@@ -428,6 +644,10 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void StopFollowing()
 	{
+		showTop = false;
+		showOverview = false;
+		observedHull = null;
+		if (followCamera != null) followCamera.orthographic = false;
 		if (sceneLink != null && sceneLink.Interior != null)
 			sceneLink.Interior.Mode.StopObserving(followCamera);
 	}
@@ -459,6 +679,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	[ContextMenu("Stop Sherman Patrol")]
 	public void StopPatrol()
 	{
+		if (IsDeployment) StopDeployment();
 		westEntryAt = -1d;
 		if (westEnemy != null && (westEnemy.Combat == null || !westEnemy.Combat.CancelOrder())) westEnemy.StopActions();
 

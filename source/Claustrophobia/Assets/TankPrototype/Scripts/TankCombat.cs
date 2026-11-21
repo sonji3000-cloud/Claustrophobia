@@ -245,7 +245,7 @@ public sealed class TankCombat : MonoBehaviour
 			return;
 		}
 
-		if (owner.MoveStatus != TankAI.MoveState.Arrived) return;
+		if (owner.MoveStatus != TankAI.MoveState.Arrived || patrol.Length == 1) return;
 
 		PatrolIndex = (PatrolIndex + 1) % patrol.Length;
 		MovePatrol();
