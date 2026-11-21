@@ -89,6 +89,20 @@
 
 사격이 안 되면 Inspector의 이동 실패·사격 차단 메시지와 Console의 `[AI COMBAT]` 전이 사유를 먼저 확인한다. 상태 구조는 [적 전차 하위 AI 구현도](EnemyTankAI-Implementation-Draft.html)를 따른다.
 
+### 시장 남쪽 진입과 건물 엄폐 시험
+
+1. Edit Mode에서 **Carentan Drive → Layout → 시장 남쪽 진입**을 선택하고 Play한다. **광장 시험 시작 (0)**을 누르면 Sherman이 시장 남쪽에서 순찰을 시작하고 화면은 Tiger 내부에 남는다.
+2. Game 뷰에서 `F9`, `1`로 조종석 시점과 좌석을 선택한다. 조종 장치를 보고 `Space`를 누른 뒤 `W`와 `I`로 양쪽 레버를 전진시켜 북쪽 광장에 접근한다. 양쪽 레버를 중립으로 돌릴 때는 `Q`와 `U`를 누른다. `F5`는 Sherman을 따라가고, `F9`는 Tiger 내부로 돌아온다. 다시 주행하려면 장치를 다시 잡는다.
+3. 같은 상황을 재현하려면 새 Play에서 **광장 시험 시작 (0) → Tiger 노출점으로**를 누른다. Sherman이 발사하고 Tiger HP가 처음 줄면 **Tiger 건물 뒤로**를 누른다. Scene 뷰에서 **Carentan Drive**를 선택하면 출발점·노출점·엄폐점이 표시된다.
+
+| 시나리오 | 조작과 통과 조건 |
+| --- | --- |
+| 남쪽 진입 | Tiger를 몰고 올라갈 때 Sherman이 `Patrol`에서 접근 또는 정지 사격으로 바뀌고 첫 발이 나간다. |
+| 수색 중 재발견 | `MoveToLastSeen`이 보일 때 **Tiger 노출점으로**를 누른다. Sherman이 수색을 중단하고 같은 Tiger와 교전을 재개한다. |
+| 끝까지 엄폐 | **Tiger 건물 뒤로**를 누른 뒤 기다린다. `WaitForSight → MoveToLastSeen → CheckSurroundings → ReturnToPatrol → Patrol`이 이어지고, 기존 경유점 도착 후 다음 경유점으로 이동한다. |
+
+가려진 동안 실제 발사 수가 늘지 않는지 확인한다. Inspector의 **Tiger 시야 판정**이 `Occluded`일 때 가리는 오브젝트 이름이 표시된다. **이동 목적지**와 **마지막 목격 위치**를 비교하면 Sherman이 실제 Tiger 대신 마지막 목격점으로 향하는지 확인할 수 있다. Console에서 `[AI COMBAT]`를 검색하면 지나간 상태와 사유가 남는다. 재시험은 Play를 다시 시작해 체력과 위치를 초기화한다.
+
 ## 구현 순서와 완료 기준
 
 1. 바닥, 도로, 출발점을 배치하고 A → B → C → A가 이어지는지 확인한다.

@@ -9,7 +9,8 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("기존 도로 주행")] Road,
 		[InspectorName("광장 순찰만")] MarketPatrol,
 		[InspectorName("광장 20m 교전")] MarketNear,
-		[InspectorName("광장 35m 교전")] MarketFar
+		[InspectorName("광장 35m 교전")] MarketFar,
+		[InspectorName("시장 남쪽 진입")] SouthEntry
 	}
 
 	[SerializeField] private TankSceneLink sceneLink;
@@ -26,13 +27,23 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform nearTarget;
 	[SerializeField] private Transform farTarget;
 
+	[Header("시장 남쪽 진입 시험")]
+	[SerializeField] private Transform southSpawn;
+	[SerializeField] private Transform[] southPatrol;
+	[SerializeField] private Transform southPlayerStart;
+	[SerializeField] private Transform southContact;
+	[SerializeField] private Transform southCover;
+
 	private TankAI enemy;
 	private int patrolIndex = -1;
 	private AudioListener followAudio;
 	private Layout loadedLayout;
+	private NetworkTransform playerMotion;
+	private Rigidbody playerBody;
 
 	public TankAI Enemy => enemy;
 	public TankHealth PlayerHealth { get; private set; }
+	public bool IsSouthEntry => loadedLayout == Layout.SouthEntry;
 	public bool CanStartMarket => loadedLayout != Layout.Road && sceneLink != null && sceneLink.IsReady
 		&& enemy != null && enemy.CanAct;
 
@@ -63,13 +74,22 @@ public sealed class CarentanDrive : MonoBehaviour
 		player.TryGetComponent(out TankHealth health);
 		PlayerHealth = health;
 
-		Transform spawn = layout == Layout.Road ? enemySpawn : marketSpawn;
-		Transform target = layout == Layout.MarketNear ? nearTarget : layout == Layout.MarketFar ? farTarget : null;
-		bool needsTarget = layout == Layout.MarketNear || layout == Layout.MarketFar;
-		NetworkTransform motion = null;
-		Rigidbody body = null;
+		Transform spawn = layout switch
+		{
+			Layout.Road => enemySpawn,
+			Layout.SouthEntry => southSpawn,
+			_ => marketSpawn
+		};
+		Transform target = layout switch
+		{
+			Layout.MarketNear => nearTarget,
+			Layout.MarketFar => farTarget,
+			Layout.SouthEntry => southPlayerStart,
+			_ => null
+		};
+		bool needsTarget = layout is Layout.MarketNear or Layout.MarketFar or Layout.SouthEntry;
 		if (spawn == null || needsTarget && (target == null || health == null
-			|| !player.TryGetComponent(out motion) || !player.TryGetComponent(out body) || !motion.HasStateAuthority))
+			|| !player.TryGetComponent(out playerMotion) || !player.TryGetComponent(out playerBody) || !playerMotion.HasStateAuthority))
 		{
 			Debug.LogError("[Carentan] Missing or unavailable tank placement.", this);
 			return;
@@ -78,14 +98,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		NetworkObject tank = runner.Spawn(enemyPrefab, spawn.position, spawn.rotation);
 		if (tank != null && tank.TryGetComponent(out enemy) && enemy.SetMoveMode(TankAI.MoveMode.NavMesh))
 		{
-			if (needsTarget)
-			{
-				motion.Teleport(target.position, target.rotation);
-				body.position = target.position;
-				body.rotation = target.rotation;
-				body.linearVelocity = body.angularVelocity = Vector3.zero;
-				Physics.SyncTransforms();
-			}
+			if (needsTarget) PlaceTiger(target);
 
 			loadedLayout = layout;
 			return;
@@ -162,7 +175,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		TankCombat combat = enemy.Combat;
 		if (combat == null || combat.State != TankCombat.CombatState.Idle) return;
-		if (!combat.StartPatrol(marketPatrol))
+		if (!combat.StartPatrol(IsSouthEntry ? southPatrol : marketPatrol))
 		{
 			Debug.LogWarning("[Carentan] The Sherman could not start the market patrol. Check its sensor and waypoints.", this);
 			return;
@@ -170,7 +183,27 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		patrolIndex = -1;
 		Debug.Log($"[Carentan] {loadedLayout}: market patrol started at {enemy.transform.position:F2}.", this);
-		FollowEnemy();
+		if (IsSouthEntry) StopFollowing();
+		else FollowEnemy();
+	}
+
+	public void MoveSouthTiger(bool exposed)
+	{
+		Transform point = exposed ? southContact : southCover;
+		if (!IsSouthEntry || !CanStartMarket || point == null || playerMotion == null || playerBody == null
+			|| !playerMotion.HasStateAuthority || PlayerHealth == null || PlayerHealth.Destroyed) return;
+
+		PlaceTiger(point);
+		Debug.Log($"[Carentan] Tiger at {point.name} {point.position:F2}.", this);
+	}
+
+	private void PlaceTiger(Transform point)
+	{
+		playerMotion.Teleport(point.position, point.rotation);
+		playerBody.position = point.position;
+		playerBody.rotation = point.rotation;
+		playerBody.linearVelocity = playerBody.angularVelocity = Vector3.zero;
+		Physics.SyncTransforms();
 	}
 
 	private void FollowEnemy()
