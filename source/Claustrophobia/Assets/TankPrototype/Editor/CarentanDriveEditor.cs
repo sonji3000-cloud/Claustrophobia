@@ -14,13 +14,18 @@ public sealed class CarentanDriveEditor : Editor
 			DrawEntryTest(drive);
 			return;
 		}
+		if (EditorApplication.isPlaying && (drive.IsCentralDrive || drive.IsWestGap))
+		{
+			DrawMapTest(drive);
+			return;
+		}
 
 		using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
 			DrawDefaultInspector();
 
 		if (!EditorApplication.isPlaying)
 		{
-			EditorGUILayout.HelpBox("Layout에서 광장 또는 진입 시험을 고른 다음 Play를 누르세요.", MessageType.Info);
+			EditorGUILayout.HelpBox("Layout에서 시험 배치를 고른 다음 Play를 누르세요.", MessageType.Info);
 			return;
 		}
 
@@ -82,6 +87,48 @@ public sealed class CarentanDriveEditor : Editor
 		if (combat.LastStopReason.Length > 0) EditorGUILayout.HelpBox(combat.LastStopReason, MessageType.Info);
 		if (enemy.MoveFailure.Length > 0) EditorGUILayout.HelpBox(enemy.MoveFailure, MessageType.Warning);
 		if (enemy.AttackBlockReason.Length > 0) EditorGUILayout.HelpBox(enemy.AttackBlockReason, MessageType.Warning);
+	}
+
+	private static void DrawMapTest(CarentanDrive drive)
+	{
+		TankAI ai = drive.Enemy;
+		bool central = drive.IsCentralDrive;
+		bool tigerReady = drive.CanStartMarket && drive.PlayerHealth != null && !drive.PlayerHealth.Destroyed;
+		bool canStart = central ? drive.CanStartCentralDrive : tigerReady && ai.Combat != null
+			&& ai.Combat.State == TankCombat.CombatState.Idle;
+		using (new EditorGUI.DisabledScope(!canStart))
+			if (GUILayout.Button(central ? "중앙 연결로 주행 시작 (0)" : "틈 교전 시작 (0)")) drive.StartMarketCombat();
+
+		using (new EditorGUI.DisabledScope(ai == null))
+		{
+			if (GUILayout.Button("시험 정지 (9)")) drive.StopPatrol();
+			if (GUILayout.Button("Sherman 따라가기 (F5)")) drive.ObserveEnemy(ai);
+		}
+
+		if (central)
+		{
+			if (ai == null) return;
+			EditorGUILayout.LabelField("이동 상태", ai.MoveStatus.ToString());
+			if (ai.Path != null && ai.Path.HasPath)
+			{
+				EditorGUILayout.LabelField("다음 경로 지점", ai.Path.Point.ToString("F2"));
+				EditorGUILayout.LabelField("이동 목적지", ai.Path.Goal.ToString("F2"));
+			}
+			if (ai.MoveFailure.Length > 0) EditorGUILayout.HelpBox(ai.MoveFailure, MessageType.Warning);
+			return;
+		}
+
+		EditorGUILayout.HelpBox("직접 주행은 F9 → 1 → 조종 장치를 보고 Space.", MessageType.Info);
+		using (new EditorGUI.DisabledScope(!tigerReady))
+		using (new EditorGUILayout.HorizontalScope())
+		{
+			if (GUILayout.Button("건물 뒤로")) drive.MoveWestGapTiger(false);
+			if (GUILayout.Button("틈에 노출")) drive.MoveWestGapTiger(true);
+		}
+		if (drive.PlayerHealth != null)
+			EditorGUILayout.LabelField("Tiger HP / 피격", $"{drive.PlayerHealth.CurrentHP:F0} / {drive.PlayerHealth.DamageHitCount}회");
+
+		DrawEntryTank("서쪽 Sherman", ai);
 	}
 
 	private static void DrawEntryTest(CarentanDrive drive)
@@ -154,11 +201,25 @@ public sealed class CarentanDriveEditor : Editor
 
 	private void OnSceneGUI()
 	{
-		if (((CarentanDrive)target).IsEntryTest)
+		var drive = (CarentanDrive)target;
+		if (drive.IsEntryTest)
 		{
 			DrawEntryRoute("southEntrySpawn", "southEntryPatrol", "남쪽", Color.yellow);
 			DrawEntryRoute("westEntrySpawn", "westEntryPatrol", "서쪽", Color.cyan);
 			DrawPoint("entryTiger", "Tiger", Color.white);
+			return;
+		}
+		if (drive.IsCentralDrive)
+		{
+			DrawPoint("centralSpawn", "Sherman 출발", Color.cyan);
+			DrawPoint("centralGoal", "광장 서쪽 입구", Color.cyan);
+			return;
+		}
+		if (drive.IsWestGap)
+		{
+			DrawEntryRoute("westGapSpawn", "westGapPatrol", "Sherman", Color.cyan);
+			DrawPoint("westGapCover", "Tiger 건물 뒤", Color.white);
+			DrawPoint("westGapOpening", "틈에 노출", Color.yellow);
 			return;
 		}
 

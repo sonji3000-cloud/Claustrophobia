@@ -17,7 +17,9 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("진입 비교 · 남쪽 1대")] EntrySouth,
 		[InspectorName("진입 검증 · 서쪽 1대")] EntryWest,
 		[InspectorName("진입 비교 · 2대 순차")] EntryStaggered,
-		[InspectorName("진입 비교 · 2대 동시")] EntryTogether
+		[InspectorName("진입 비교 · 2대 동시")] EntryTogether,
+		[InspectorName("맵 변경 · 중앙 연결로 주행")] CentralDrive,
+		[InspectorName("맵 변경 · 시장 서쪽 틈 교전")] WestGap
 	}
 
 	[SerializeField] private TankSceneLink sceneLink;
@@ -57,6 +59,14 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform[] westEntryPatrol;
 	[SerializeField] private Transform entryOverview;
 
+	[Header("맵 변경 확인")]
+	[SerializeField] private Transform centralSpawn;
+	[SerializeField] private Transform centralGoal;
+	[SerializeField] private Transform westGapSpawn;
+	[SerializeField] private Transform[] westGapPatrol;
+	[SerializeField] private Transform westGapCover;
+	[SerializeField] private Transform westGapOpening;
+
 	private const double EntryDelay = 4d;
 	private TankAI enemy;
 	private TankAI westEnemy;
@@ -83,8 +93,12 @@ public sealed class CarentanDrive : MonoBehaviour
 	public TankHealth PlayerHealth { get; private set; }
 	public bool IsSouthEntry => loadedLayout == Layout.SouthEntry;
 	public bool IsManeuverTest => loadedLayout is Layout.ShotBlock or Layout.RearOpen or Layout.RearBlocked;
+	public bool IsCentralDrive => layout == Layout.CentralDrive;
+	public bool IsWestGap => layout == Layout.WestGap;
 	public bool CanStartMarket => loadedLayout != Layout.Road && sceneLink != null && sceneLink.IsReady
 		&& enemy != null && enemy.CanAct;
+	public bool CanStartCentralDrive => IsCentralDrive && CanStartMarket && enemy.MoveStatus != TankAI.MoveState.Moving;
+	private bool CanUseRoadKeys => !IsEntryTest && !IsCentralDrive && !IsWestGap;
 
 	private void Awake()
 	{
@@ -120,6 +134,8 @@ public sealed class CarentanDrive : MonoBehaviour
 			Layout.Road => enemySpawn,
 			Layout.SouthEntry => southSpawn,
 			Layout.ShotBlock or Layout.RearOpen or Layout.RearBlocked => maneuverSpawn,
+			Layout.CentralDrive => centralSpawn,
+			Layout.WestGap => westGapSpawn,
 			_ => marketSpawn
 		};
 		Transform target = layout switch
@@ -130,9 +146,10 @@ public sealed class CarentanDrive : MonoBehaviour
 			Layout.SouthEntry => southPlayerStart,
 			Layout.ShotBlock => blockedShotTarget,
 			Layout.RearOpen or Layout.RearBlocked => closeTarget,
+			Layout.WestGap => westGapCover,
 			_ => null
 		};
-		bool needsTarget = layout is not (Layout.Road or Layout.MarketPatrol);
+		bool needsTarget = layout is not (Layout.Road or Layout.MarketPatrol or Layout.CentralDrive);
 		if (spawn == null || needsTarget && (target == null || health == null
 			|| !player.TryGetComponent(out playerMotion) || !player.TryGetComponent(out playerBody) || !playerMotion.HasStateAuthority))
 		{
@@ -174,10 +191,10 @@ public sealed class CarentanDrive : MonoBehaviour
 		Keyboard keys = Keyboard.current;
 		if (keys != null && Application.isFocused)
 		{
-			if (!IsEntryTest && (keys.digit7Key.wasPressedThisFrame || keys.numpad7Key.wasPressedThisFrame)) StartPatrol();
+			if (CanUseRoadKeys && (keys.digit7Key.wasPressedThisFrame || keys.numpad7Key.wasPressedThisFrame)) StartPatrol();
 			else if (canDrive)
 			{
-				if (!IsEntryTest && (keys.digit8Key.wasPressedThisFrame || keys.numpad8Key.wasPressedThisFrame)) MoveOffRoad();
+				if (CanUseRoadKeys && (keys.digit8Key.wasPressedThisFrame || keys.numpad8Key.wasPressedThisFrame)) MoveOffRoad();
 				else if (keys.digit9Key.wasPressedThisFrame || keys.numpad9Key.wasPressedThisFrame) StopPatrol();
 				else if (keys.digit0Key.wasPressedThisFrame || keys.numpad0Key.wasPressedThisFrame) StartMarketCombat();
 				else if (keys.f5Key.wasPressedThisFrame) FollowEnemy();
@@ -200,7 +217,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	[ContextMenu("Start Sherman Patrol")]
 	private void StartPatrol()
 	{
-		if (!Application.isPlaying || IsEntryTest) return;
+		if (!Application.isPlaying || !CanUseRoadKeys) return;
 		if (enemy == null || !sceneLink.IsReady)
 		{
 			Debug.LogWarning($"Carentan Sherman is not ready for patrol. Scene stage: {sceneLink.CurrentStage}.", this);
@@ -226,6 +243,12 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
+		if (IsCentralDrive)
+		{
+			StartCentralDrive();
+			return;
+		}
+
 		if (!CanStartMarket)
 		{
 			Debug.LogWarning("[Carentan] Select a market layout before entering Play Mode and wait for the host.", this);
@@ -240,7 +263,13 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		TankCombat combat = enemy.Combat;
 		if (combat == null || combat.State != TankCombat.CombatState.Idle) return;
-		Transform[] points = IsSouthEntry ? southPatrol : IsManeuverTest ? maneuverPatrol : marketPatrol;
+		Transform[] points = loadedLayout switch
+		{
+			Layout.SouthEntry => southPatrol,
+			Layout.ShotBlock or Layout.RearOpen or Layout.RearBlocked => maneuverPatrol,
+			Layout.WestGap => westGapPatrol,
+			_ => marketPatrol
+		};
 		if (!combat.StartPatrol(points))
 		{
 			Debug.LogWarning("[Carentan] The Sherman could not start the market patrol. Check its sensor and waypoints.", this);
@@ -251,6 +280,19 @@ public sealed class CarentanDrive : MonoBehaviour
 		Debug.Log($"[Carentan] {loadedLayout}: market patrol started at {enemy.transform.position:F2}.", this);
 		if (IsSouthEntry) StopFollowing();
 		else FollowEnemy();
+	}
+
+	private void StartCentralDrive()
+	{
+		if (!CanStartCentralDrive) return;
+		if (centralGoal == null || !enemy.MoveTo(centralGoal.position))
+		{
+			Debug.LogWarning($"[Carentan Map] Central drive could not start. {enemy.MoveBlockReason}", this);
+			return;
+		}
+
+		Debug.Log($"[Carentan Map] Central drive to {centralGoal.position:F2}.", this);
+		FollowEnemy();
 	}
 
 	private void StartEntry()
@@ -312,8 +354,17 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	public void MoveSouthTiger(bool exposed)
 	{
-		Transform point = exposed ? southContact : southCover;
-		if (!IsSouthEntry || !CanStartMarket || point == null || playerMotion == null || playerBody == null
+		if (IsSouthEntry) MoveTestTiger(exposed ? southContact : southCover);
+	}
+
+	public void MoveWestGapTiger(bool exposed)
+	{
+		if (IsWestGap) MoveTestTiger(exposed ? westGapOpening : westGapCover);
+	}
+
+	private void MoveTestTiger(Transform point)
+	{
+		if (!CanStartMarket || point == null || playerMotion == null || playerBody == null
 			|| !playerMotion.HasStateAuthority || PlayerHealth == null || PlayerHealth.Destroyed) return;
 
 		PlaceTiger(point);
@@ -398,7 +449,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	[ContextMenu("Request Off-road Destination")]
 	private void MoveOffRoad()
 	{
-		if (IsEntryTest || enemy == null || !enemy.CanAct) return;
+		if (!CanUseRoadKeys || enemy == null || !enemy.CanAct) return;
 
 		StopPatrol();
 		enemy.MoveTo(offRoad.position);
