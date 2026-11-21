@@ -49,11 +49,24 @@ public sealed class CarentanDriveEditor : Editor
 			EditorGUILayout.LabelField("이동 목적지", enemy.Path.Goal.ToString("F2"));
 		}
 
-		if (drive.IsSouthEntry && enemy.Sensor != null)
+		if ((drive.IsSouthEntry || drive.IsManeuverTest) && enemy.Sensor != null)
 		{
 			DrawSight(enemy.Sensor);
 			if (combat.LastSeenTime >= 0d)
 				EditorGUILayout.LabelField("마지막 목격 위치", combat.LastSeenPosition.ToString("F2"));
+		}
+
+		if (drive.IsManeuverTest)
+		{
+			EditorGUILayout.LabelField("사선 차단 시간", $"{Mathf.Max(enemy.ShotBlockedSeconds, combat.RepositionBlockSeconds):F2}초");
+			EditorGUILayout.LabelField("위치 변경 횟수", combat.RepositionCount.ToString());
+			EditorGUILayout.LabelField("근거리 이격 시도 / 후진 거리", $"{combat.BackOffCount}회 / {combat.BackOffTravel:F2}m");
+			if (combat.BackOffCount > 0)
+				EditorGUILayout.LabelField("이격 전후 거리", $"{combat.BackOffStartDistance:F2}m → {combat.BackOffEndDistance:F2}m");
+			if (combat.LastBackOffReason.Length > 0)
+				EditorGUILayout.HelpBox(combat.LastBackOffReason, MessageType.Info);
+			if (combat.LastRepositionFailure.Length > 0)
+				EditorGUILayout.HelpBox(combat.LastRepositionFailure, MessageType.Warning);
 		}
 
 		EditorGUILayout.LabelField("사격 상태", enemy.AttackStatus.ToString());

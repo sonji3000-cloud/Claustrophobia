@@ -10,7 +10,10 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("광장 순찰만")] MarketPatrol,
 		[InspectorName("광장 20m 교전")] MarketNear,
 		[InspectorName("광장 35m 교전")] MarketFar,
-		[InspectorName("시장 남쪽 진입")] SouthEntry
+		[InspectorName("시장 남쪽 진입")] SouthEntry,
+		[InspectorName("광장 사선 차단 · 위치 변경")] ShotBlock,
+		[InspectorName("광장 근거리 · 후방 열림")] RearOpen,
+		[InspectorName("광장 근거리 · 후방 막힘")] RearBlocked
 	}
 
 	[SerializeField] private TankSceneLink sceneLink;
@@ -34,6 +37,14 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform southContact;
 	[SerializeField] private Transform southCover;
 
+	[Header("광장 교전 기동 시험")]
+	[SerializeField] private Transform maneuverSpawn;
+	[SerializeField] private Transform[] maneuverPatrol;
+	[SerializeField] private Transform blockedShotTarget;
+	[SerializeField] private Transform closeTarget;
+	[SerializeField] private GameObject shotObstacle;
+	[SerializeField] private GameObject rearObstacle;
+
 	private TankAI enemy;
 	private int patrolIndex = -1;
 	private AudioListener followAudio;
@@ -44,6 +55,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	public TankAI Enemy => enemy;
 	public TankHealth PlayerHealth { get; private set; }
 	public bool IsSouthEntry => loadedLayout == Layout.SouthEntry;
+	public bool IsManeuverTest => loadedLayout is Layout.ShotBlock or Layout.RearOpen or Layout.RearBlocked;
 	public bool CanStartMarket => loadedLayout != Layout.Road && sceneLink != null && sceneLink.IsReady
 		&& enemy != null && enemy.CanAct;
 
@@ -78,6 +90,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		{
 			Layout.Road => enemySpawn,
 			Layout.SouthEntry => southSpawn,
+			Layout.ShotBlock or Layout.RearOpen or Layout.RearBlocked => maneuverSpawn,
 			_ => marketSpawn
 		};
 		Transform target = layout switch
@@ -85,9 +98,11 @@ public sealed class CarentanDrive : MonoBehaviour
 			Layout.MarketNear => nearTarget,
 			Layout.MarketFar => farTarget,
 			Layout.SouthEntry => southPlayerStart,
+			Layout.ShotBlock => blockedShotTarget,
+			Layout.RearOpen or Layout.RearBlocked => closeTarget,
 			_ => null
 		};
-		bool needsTarget = layout is Layout.MarketNear or Layout.MarketFar or Layout.SouthEntry;
+		bool needsTarget = layout is not (Layout.Road or Layout.MarketPatrol);
 		if (spawn == null || needsTarget && (target == null || health == null
 			|| !player.TryGetComponent(out playerMotion) || !player.TryGetComponent(out playerBody) || !playerMotion.HasStateAuthority))
 		{
@@ -98,6 +113,8 @@ public sealed class CarentanDrive : MonoBehaviour
 		NetworkObject tank = runner.Spawn(enemyPrefab, spawn.position, spawn.rotation);
 		if (tank != null && tank.TryGetComponent(out enemy) && enemy.SetMoveMode(TankAI.MoveMode.NavMesh))
 		{
+			if (shotObstacle != null) shotObstacle.SetActive(layout == Layout.ShotBlock);
+			if (rearObstacle != null) rearObstacle.SetActive(layout == Layout.RearBlocked);
 			if (needsTarget) PlaceTiger(target);
 
 			loadedLayout = layout;
@@ -175,7 +192,8 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		TankCombat combat = enemy.Combat;
 		if (combat == null || combat.State != TankCombat.CombatState.Idle) return;
-		if (!combat.StartPatrol(IsSouthEntry ? southPatrol : marketPatrol))
+		Transform[] points = IsSouthEntry ? southPatrol : IsManeuverTest ? maneuverPatrol : marketPatrol;
+		if (!combat.StartPatrol(points))
 		{
 			Debug.LogWarning("[Carentan] The Sherman could not start the market patrol. Check its sensor and waypoints.", this);
 			return;
