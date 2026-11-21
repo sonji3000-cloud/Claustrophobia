@@ -189,6 +189,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4060138563030664, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
   m_PrefabInstance: {fileID: 6896115}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &13362930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 13362931}
+  - component: {fileID: 13362932}
+  m_Layer: 0
+  m_Name: Off-road 7 - 3 - Street remainder 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &13362931
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13362930}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -41, y: 9, z: -28.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &13362932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13362930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 38, y: 64, z: 29}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &22267037
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -251,96 +300,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4661890553325988, guid: 1556d04c0f61b41e6b9e1b092457e64b, type: 3}
   m_PrefabInstance: {fileID: 22267037}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &27660338
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1325813206}
-    m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -68
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -37
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.00000004371139
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 27660341}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &27660339 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 27660338}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &27660340 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 27660338}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &27660341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 27660340}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!1 &29567428
 GameObject:
   m_ObjectHideFlags: 0
@@ -1043,96 +1002,6 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &66370478
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 407537810}
-    m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -104
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -21
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 66370481}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &66370479 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 66370478}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &66370480 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 66370478}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &66370481
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 66370480}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!1001 &74863965
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1390,6 +1259,96 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94054271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1001 &98515427
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 238459588}
+    m_Modifications:
+    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_Name
+      value: building-house-big
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -38
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 98515430}
+  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+--- !u!4 &98515428 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+  m_PrefabInstance: {fileID: 98515427}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &98515429 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+  m_PrefabInstance: {fileID: 98515427}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &98515430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 98515429}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
@@ -1669,7 +1628,7 @@ Transform:
   m_GameObject: {fileID: 156311699}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.5, y: 9, z: 15.5}
+  m_LocalPosition: {x: -5, y: 9, z: 15.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1688,7 +1647,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 23, y: 64, z: 11}
+  m_Size: {x: 6, y: 64, z: 11}
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
@@ -1772,6 +1731,96 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1077435192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &180089298
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 238459588}
+    m_Modifications:
+    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_Name
+      value: building-house-middle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -83
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 180089301}
+  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+--- !u!4 &180089299 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+  m_PrefabInstance: {fileID: 180089298}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &180089300 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+  m_PrefabInstance: {fileID: 180089298}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &180089301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180089300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &180587733
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1952,96 +2001,6 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &213770424
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 238459588}
-    m_Modifications:
-    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_Name
-      value: building-house-big
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -53
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.00000004371139
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 213770427}
-  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
---- !u!4 &213770425 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 213770424}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &213770426 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 213770424}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &213770427
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 213770426}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!1001 &217995758
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2119,96 +2078,6 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 217995760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
---- !u!1001 &229866272
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 238459588}
-    m_Modifications:
-    - target: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle-broken
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -65
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.00000004371139
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 229866275}
-  m_SourcePrefab: {fileID: 100100000, guid: a59857e040c984286b16549bd131ae03, type: 3}
---- !u!4 &229866273 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-  m_PrefabInstance: {fileID: 229866272}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &229866274 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
-  m_PrefabInstance: {fileID: 229866272}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &229866275
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 229866274}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
@@ -2341,12 +2210,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1281379444}
-  - {fileID: 2064715628}
-  - {fileID: 725387508}
-  - {fileID: 229866273}
-  - {fileID: 213770425}
-  - {fileID: 1526824833}
+  - {fileID: 487815418}
+  - {fileID: 1635730709}
+  - {fileID: 180089299}
+  - {fileID: 548371938}
+  - {fileID: 98515428}
   m_Father: {fileID: 1099100391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &239607281
@@ -2551,7 +2419,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -24
+      value: -19.19
       objectReference: {fileID: 0}
     - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2869,6 +2737,55 @@ MonoBehaviour:
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &262603714
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 262603715}
+  - component: {fileID: 262603716}
+  m_Layer: 0
+  m_Name: Off-road 7 - 4 - Street remainder 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &262603715
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262603714}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -131, y: 9, z: -22}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &262603716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262603714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 6, y: 64, z: 42}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &269605941
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3133,11 +3050,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7
+      value: -7
       objectReference: {fileID: 0}
     - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.00061035156
       objectReference: {fileID: 0}
     - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3329,7 +3246,7 @@ Transform:
   m_GameObject: {fileID: 307264772}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -67, y: 9, z: 36}
+  m_LocalPosition: {x: -93, y: 9, z: 36}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3348,7 +3265,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 90, y: 64, z: 24}
+  m_Size: {x: 38, y: 64, z: 24}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &313619018
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 313619019}
+  - component: {fileID: 313619020}
+  m_Layer: 0
+  m_Name: Central street - Off-road 13
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &313619019
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313619018}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -32.5, y: 9, z: 17}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &313619020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313619018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 6}
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
@@ -3669,6 +3635,55 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &398241745
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 398241746}
+  - component: {fileID: 398241747}
+  m_Layer: 0
+  m_Name: Central street - Off-road 3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &398241746
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398241745}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -17.5, y: 9, z: 17}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &398241747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398241745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 6}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1 &400016134
 GameObject:
   m_ObjectHideFlags: 0
@@ -3837,12 +3852,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 66370479}
-  - {fileID: 1067959579}
-  - {fileID: 1708545976}
-  - {fileID: 1585111656}
-  - {fileID: 1495278010}
-  - {fileID: 1901704903}
+  - {fileID: 834355852}
+  - {fileID: 1536042497}
+  - {fileID: 1666761145}
+  - {fileID: 1832594787}
+  - {fileID: 635039963}
   m_Father: {fileID: 1099100391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &409027528
@@ -4115,6 +4129,55 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &443167706
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 443167707}
+  - component: {fileID: 443167708}
+  m_Layer: 0
+  m_Name: Off-road 9 - 4 - Street remainder 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &443167707
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 443167706}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -32.5, y: 9, z: 42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &443167708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 443167706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 12}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &447458575
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4205,96 +4268,6 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &451557065
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 951241978}
-    m_Modifications:
-    - target: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle-broken
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 113
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 451557068}
-  m_SourcePrefab: {fileID: 100100000, guid: a59857e040c984286b16549bd131ae03, type: 3}
---- !u!4 &451557066 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-  m_PrefabInstance: {fileID: 451557065}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &451557067 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
-  m_PrefabInstance: {fileID: 451557065}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &451557068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 451557067}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!1001 &469524652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4372,6 +4345,96 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 469524654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1001 &487815417
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 238459588}
+    m_Modifications:
+    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_Name
+      value: building-house-big
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -113
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 487815420}
+  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+--- !u!4 &487815418 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+  m_PrefabInstance: {fileID: 487815417}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &487815419 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+  m_PrefabInstance: {fileID: 487815417}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &487815420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487815419}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
@@ -4868,6 +4931,96 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1001 &548371937
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 238459588}
+    m_Modifications:
+    - target: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_Name
+      value: building-house-big-broken
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -51
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 548371940}
+  m_SourcePrefab: {fileID: 100100000, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+--- !u!4 &548371938 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+  m_PrefabInstance: {fileID: 548371937}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &548371939 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+  m_PrefabInstance: {fileID: 548371937}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &548371940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548371939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &557054521
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5048,95 +5201,54 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &571298768
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1417781709}
-    m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 103
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 67
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 571298771}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &571298769 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 571298768}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &571298770 stripped
+--- !u!1 &574023195
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 571298768}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &571298771
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 574023196}
+  - component: {fileID: 574023197}
+  m_Layer: 0
+  m_Name: Central street - Off-road 14
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &574023196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 574023195}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -56, y: 9, z: 23}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &574023197
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 571298770}
+  m_GameObject: {fileID: 574023195}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_OverrideArea: 1
+  m_Size: {x: 4, y: 64, z: 20}
+  m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
 --- !u!1 &591487135
 GameObject:
@@ -5434,6 +5546,104 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &612903947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 612903948}
+  - component: {fileID: 612903949}
+  m_Layer: 0
+  m_Name: Central street - Off-road 18
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &612903948
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612903947}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -122, y: 9, z: 27}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &612903949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612903947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 12, y: 64, z: 14}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &614311175
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 614311176}
+  - component: {fileID: 614311177}
+  m_Layer: 0
+  m_Name: Central street - Off-road 5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &614311176
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614311175}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -95.5, y: 9, z: -11.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &614311177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614311175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 41, y: 64, z: 21}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &622137018
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5676,6 +5886,96 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1001 &635039962
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 407537810}
+    m_Modifications:
+    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_Name
+      value: building-house-middle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -38
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 635039965}
+  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+--- !u!4 &635039963 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+  m_PrefabInstance: {fileID: 635039962}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &635039964 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+  m_PrefabInstance: {fileID: 635039962}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &635039965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635039964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &641443638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5828,96 +6128,6 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &667524911
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 951241978}
-    m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -151
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 44
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 667524914}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &667524912 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 667524911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &667524913 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 667524911}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &667524914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 667524913}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!1001 &694559575
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6007,6 +6217,55 @@ MonoBehaviour:
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &696190456
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 696190457}
+  - component: {fileID: 696190458}
+  m_Layer: 0
+  m_Name: Off-road 9 - 5 - Corner remainder 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &696190457
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 696190456}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -149.5, y: 9, z: 27}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &696190458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 696190456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 15, y: 64, z: 14}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &701374949
 PrefabInstance:
@@ -6251,7 +6510,7 @@ Transform:
   m_GameObject: {fileID: 718948619}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -112.5, y: 8, z: 49}
+  m_LocalPosition: {x: -104.5, y: 9, z: 49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6270,99 +6529,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 91, y: 64, z: 2}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 75, y: 64, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
-  m_AffectedAgents: ffffffffi
---- !u!1001 &725387507
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 238459588}
-    m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -79
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 32
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.00000004371139
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 725387510}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &725387508 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 725387507}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &725387509 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 725387507}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &725387510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 725387509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &731888619
 PrefabInstance:
@@ -6695,6 +6864,104 @@ MonoBehaviour:
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &758749365
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 758749366}
+  - component: {fileID: 758749367}
+  m_Layer: 0
+  m_Name: Off-road 9 - 4 - Street remainder 5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &758749366
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758749365}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -72, y: 9, z: 43}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &758749367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758749365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 4, y: 64, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &762062792
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 762062793}
+  - component: {fileID: 762062794}
+  m_Layer: 0
+  m_Name: Off-road 7 - Corner remainder 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &762062793
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762062792}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.5, y: 9, z: -18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &762062794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762062792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 17, y: 64, z: 50}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &764805683
 PrefabInstance:
@@ -7456,6 +7723,145 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &824929682
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 824929683}
+  - component: {fileID: 824929684}
+  m_Layer: 0
+  m_Name: Central street - Off-road 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &824929683
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824929682}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -17.5, y: 9, z: -12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &824929684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824929682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 20}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1001 &834355851
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 407537810}
+    m_Modifications:
+    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_Name
+      value: building-house-middle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -114
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 834355854}
+  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+--- !u!4 &834355852 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+  m_PrefabInstance: {fileID: 834355851}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &834355853 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+  m_PrefabInstance: {fileID: 834355851}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &834355854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834355853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &839900007
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7572,7 +7978,7 @@ Transform:
   m_GameObject: {fileID: 849073642}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -158.5, y: 9, z: 34.5}
+  m_LocalPosition: {x: -158.5, y: 9, z: 27.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7591,7 +7997,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 3, y: 64, z: 27}
+  m_Size: {x: 3, y: 64, z: 13}
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
@@ -7958,6 +8364,55 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &899996010
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 899996011}
+  - component: {fileID: 899996012}
+  m_Layer: 0
+  m_Name: Off-road 9 - 5 - Street remainder 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &899996011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899996010}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -135, y: 9, z: 34}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &899996012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899996010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 14, y: 64, z: 28}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &918579991
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8283,7 +8738,7 @@ Transform:
   m_GameObject: {fileID: 937210571}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -67, y: 9, z: -28.5}
+  m_LocalPosition: {x: -93, y: 9, z: -28.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8302,7 +8757,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 90, y: 64, z: 29}
+  m_Size: {x: 38, y: 64, z: 29}
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
@@ -8438,7 +8893,6 @@ Transform:
   - {fileID: 666604088}
   - {fileID: 630565860}
   - {fileID: 1160002341}
-  - {fileID: 667524912}
   - {fileID: 1562810206}
   - {fileID: 538450219}
   - {fileID: 1286985550}
@@ -8470,12 +8924,9 @@ Transform:
   - {fileID: 623646652}
   - {fileID: 1665410772}
   - {fileID: 1525345258}
-  - {fileID: 451557066}
-  - {fileID: 1458703252}
   - {fileID: 1319035191}
   - {fileID: 1551079028}
   - {fileID: 839900008}
-  - {fileID: 1687129970}
   - {fileID: 409027529}
   - {fileID: 534653341}
   - {fileID: 1684428314}
@@ -8935,6 +9386,55 @@ MonoBehaviour:
   m_Script: {fileID: -1199893898, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkRunner
+--- !u!1 &1002593968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1002593969}
+  - component: {fileID: 1002593970}
+  m_Layer: 0
+  m_Name: Off-road 9 - 3 - Street remainder 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1002593969
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1002593968}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19.5, y: 9, z: 42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1002593970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1002593968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 5, y: 64, z: 12}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &1023441918
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9113,7 +9613,7 @@ Transform:
   m_GameObject: {fileID: 1044319133}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -139.5, y: 9, z: -18.15}
+  m_LocalPosition: {x: -125, y: 9, z: -22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9132,7 +9632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 35, y: 64, z: 49.7}
+  m_Size: {x: 6, y: 64, z: 42}
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
@@ -9252,7 +9752,7 @@ Transform:
   m_GameObject: {fileID: 1052656777}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25, y: 9, z: -16.5}
+  m_LocalPosition: {x: -5, y: 9, z: -16.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9271,99 +9771,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 66, y: 64, z: 53}
+  m_Size: {x: 6, y: 64, z: 53}
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
-  m_AffectedAgents: ffffffffi
---- !u!1001 &1067959578
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 407537810}
-    m_Modifications:
-    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_Name
-      value: building-house-big
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -92
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -21
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1067959581}
-  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
---- !u!4 &1067959579 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 1067959578}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1067959580 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 1067959578}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1067959581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1067959580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
 --- !u!1 &1074492131
 GameObject:
@@ -9894,6 +10304,55 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &1142428943
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1142428944}
+  - component: {fileID: 1142428945}
+  m_Layer: 0
+  m_Name: Off-road 7 - 4 - Street remainder 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1142428944
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142428943}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -145.5, y: 9, z: -18.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1142428945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142428943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 23, y: 64, z: 49}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1 &1149481138
 GameObject:
   m_ObjectHideFlags: 0
@@ -9920,7 +10379,7 @@ Transform:
   m_GameObject: {fileID: 1149481138}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -139.5, y: 9, z: 33.675}
+  m_LocalPosition: {x: -125, y: 9, z: 34}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9939,7 +10398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 35, y: 64, z: 28.65}
+  m_Size: {x: 6, y: 64, z: 28}
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
@@ -10212,6 +10671,55 @@ MonoBehaviour:
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &1169490091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1169490092}
+  - component: {fileID: 1169490093}
+  m_Layer: 0
+  m_Name: Central street - Off-road 16
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1169490092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169490091}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -59.5, y: 9, z: 19}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1169490093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169490091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &1173421000
 PrefabInstance:
@@ -10488,6 +10996,104 @@ MonoBehaviour:
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &1200896552
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1200896553}
+  - component: {fileID: 1200896554}
+  m_Layer: 0
+  m_Name: Off-road 9 - 4 - Street remainder 6
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1200896553
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200896552}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -27, y: 9, z: 42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1200896554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200896552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 10, y: 64, z: 12}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &1203466899
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1203466900}
+  - component: {fileID: 1203466901}
+  m_Layer: 0
+  m_Name: Central street - Off-road 15
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1203466900
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203466899}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -58.5, y: 9, z: 18.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1203466901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203466899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 11}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &1205516453
 PrefabInstance:
@@ -10844,96 +11450,6 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1280572048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
---- !u!1001 &1281379443
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 238459588}
-    m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -103
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 32
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.00000004371139
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1281379446}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &1281379444 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 1281379443}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1281379445 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 1281379443}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1281379446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1281379445}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
@@ -12027,7 +12543,6 @@ Transform:
   - {fileID: 32051704}
   - {fileID: 1584683367}
   - {fileID: 1624077339}
-  - {fileID: 27660339}
   - {fileID: 952951247}
   - {fileID: 401948228}
   - {fileID: 251522787}
@@ -12508,7 +13023,6 @@ Transform:
   - {fileID: 956456701}
   - {fileID: 52641329}
   - {fileID: 180587734}
-  - {fileID: 571298769}
   - {fileID: 293958596}
   - {fileID: 1196291450}
   - {fileID: 32917947}
@@ -12520,7 +13034,6 @@ Transform:
   - {fileID: 733618823}
   - {fileID: 1833955222}
   - {fileID: 245943109}
-  - {fileID: 1810838803}
   - {fileID: 199867210}
   - {fileID: 801737126}
   - {fileID: 757666155}
@@ -12758,186 +13271,6 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &1458703251
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 951241978}
-    m_Modifications:
-    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_Name
-      value: building-house-big
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 77
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1458703254}
-  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
---- !u!4 &1458703252 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 1458703251}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1458703253 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 1458703251}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1458703254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1458703253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
---- !u!1001 &1495278009
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 407537810}
-    m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -53
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -22
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1495278012}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &1495278010 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 1495278009}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1495278011 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 1495278009}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1495278012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1495278011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!1001 &1525345257
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13028,55 +13361,55 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &1526824832
+--- !u!1001 &1536042496
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 238459588}
+    m_TransformParent: {fileID: 407537810}
     m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_Name
-      value: building-house-middle
+      value: building-house-big
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -40
+      value: -99
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.00061035156
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 30
+      value: -9
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.00000004371139
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
@@ -13084,27 +13417,27 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1526824835}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &1526824833 stripped
+      addedObject: {fileID: 1536042499}
+  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+--- !u!4 &1536042497 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 1526824832}
+  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+  m_PrefabInstance: {fileID: 1536042496}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1526824834 stripped
+--- !u!1 &1536042498 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 1526824832}
+  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
+  m_PrefabInstance: {fileID: 1536042496}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1526824835
+--- !u!114 &1536042499
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1526824834}
+  m_GameObject: {fileID: 1536042498}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
@@ -13797,96 +14130,6 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &1585111655
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 407537810}
-    m_Modifications:
-    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_Name
-      value: building-house-big
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -65
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -22
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1585111658}
-  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
---- !u!4 &1585111656 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 1585111655}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1585111657 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 1585111655}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1585111658
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1585111657}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!1001 &1587683905
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13976,6 +14219,55 @@ MonoBehaviour:
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &1606137592
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1606137593}
+  - component: {fileID: 1606137594}
+  m_Layer: 0
+  m_Name: Central street - Off-road 19
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1606137593
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606137592}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -131, y: 9, z: -11.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1606137594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606137592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 6, y: 64, z: 21}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &1621545587
 PrefabInstance:
@@ -14137,6 +14429,194 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &1628055472
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1628055473}
+  - component: {fileID: 1628055474}
+  m_Layer: 0
+  m_Name: Central street - Off-road 17
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1628055473
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628055472}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -122, y: 9, z: -11.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1628055474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628055472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 12, y: 64, z: 21}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &1634048886
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1634048887}
+  - component: {fileID: 1634048888}
+  m_Layer: 0
+  m_Name: Central street - Off-road 4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1634048887
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634048886}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -21.5, y: 9, z: -12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1634048888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634048886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 7, y: 64, z: 20}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1001 &1635730708
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 238459588}
+    m_Modifications:
+    - target: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_Name
+      value: building-house-middle-broken
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -98
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1635730711}
+  m_SourcePrefab: {fileID: 100100000, guid: a59857e040c984286b16549bd131ae03, type: 3}
+--- !u!4 &1635730709 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
+  m_PrefabInstance: {fileID: 1635730708}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1635730710 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
+  m_PrefabInstance: {fileID: 1635730708}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1635730711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635730710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &1644312381
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14241,7 +14721,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 36
+      value: 36.09
       objectReference: {fileID: 0}
     - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
       propertyPath: m_LocalPosition.y
@@ -14649,6 +15129,145 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1001 &1666761144
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 407537810}
+    m_Modifications:
+    - target: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_Name
+      value: building-house-big-broken
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -84
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1666761147}
+  m_SourcePrefab: {fileID: 100100000, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+--- !u!4 &1666761145 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+  m_PrefabInstance: {fileID: 1666761144}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1666761146 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
+  m_PrefabInstance: {fileID: 1666761144}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1666761147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666761146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &1667187307
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1667187308}
+  - component: {fileID: 1667187309}
+  m_Layer: 0
+  m_Name: Central street - Off-road 11
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1667187308
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1667187307}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -74.5, y: 9, z: 24}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1667187309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1667187307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 20}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &1676980524
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14919,96 +15538,6 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &1687129969
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 951241978}
-    m_Modifications:
-    - target: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_Name
-      value: building-house-middle
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 33
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 86
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1687129972}
-  m_SourcePrefab: {fileID: 100100000, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
---- !u!4 &1687129970 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4526031878786724, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 1687129969}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1687129971 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1377815877884480, guid: 4cb7d4a7f857f4645bfdc2efe9f70775, type: 3}
-  m_PrefabInstance: {fileID: 1687129969}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1687129972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1687129971}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!20 &1698757515 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
@@ -15181,96 +15710,6 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1705791317}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
---- !u!1001 &1708545975
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 407537810}
-    m_Modifications:
-    - target: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_Name
-      value: building-house-big-broken
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -80
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -21
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1708545978}
-  m_SourcePrefab: {fileID: 100100000, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
---- !u!4 &1708545976 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4096536139681166, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-  m_PrefabInstance: {fileID: 1708545975}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1708545977 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1738030349916324, guid: 4febb34fd6c674c24a269abb5ff22242, type: 3}
-  m_PrefabInstance: {fileID: 1708545975}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1708545978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708545977}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
@@ -15618,6 +16057,40 @@ Transform:
   - {fileID: 1149481139}
   - {fileID: 2128203049}
   - {fileID: 849073643}
+  - {fileID: 1841962724}
+  - {fileID: 762062793}
+  - {fileID: 696190457}
+  - {fileID: 13362931}
+  - {fileID: 1142428944}
+  - {fileID: 262603715}
+  - {fileID: 1002593969}
+  - {fileID: 2071460883}
+  - {fileID: 443167707}
+  - {fileID: 2085159682}
+  - {fileID: 1865803781}
+  - {fileID: 758749366}
+  - {fileID: 1200896553}
+  - {fileID: 899996011}
+  - {fileID: 2027377454}
+  - {fileID: 824929683}
+  - {fileID: 398241746}
+  - {fileID: 1634048887}
+  - {fileID: 614311176}
+  - {fileID: 2029771078}
+  - {fileID: 1829988237}
+  - {fileID: 1950760822}
+  - {fileID: 1878419861}
+  - {fileID: 1993106982}
+  - {fileID: 1667187308}
+  - {fileID: 2146207984}
+  - {fileID: 313619019}
+  - {fileID: 574023196}
+  - {fileID: 1203466900}
+  - {fileID: 1169490092}
+  - {fileID: 1628055473}
+  - {fileID: 612903948}
+  - {fileID: 1606137593}
+  - {fileID: 2073817115}
   m_Father: {fileID: 1416604858}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1754891174
@@ -15919,13 +16392,62 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4741729262408572, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
   m_PrefabInstance: {fileID: 1810375125}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1810838802
+--- !u!1 &1829988236
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1829988237}
+  - component: {fileID: 1829988238}
+  m_Layer: 0
+  m_Name: Central street - Off-road 7
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1829988237
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829988236}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -46, y: 9, z: -11.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1829988238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829988236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 26, y: 64, z: 21}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1001 &1832594786
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1417781709}
+    m_TransformParent: {fileID: 407537810}
     m_Modifications:
     - target: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
       propertyPath: m_Name
@@ -15933,19 +16455,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 52
+      value: -51
       objectReference: {fileID: 0}
     - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.00061035156
       objectReference: {fileID: 0}
     - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12
+      value: -9
       objectReference: {fileID: 0}
     - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
       propertyPath: m_LocalRotation.x
@@ -15953,7 +16475,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
       propertyPath: m_LocalRotation.z
@@ -15977,25 +16499,25 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1810838805}
+      addedObject: {fileID: 1832594789}
   m_SourcePrefab: {fileID: 100100000, guid: a59857e040c984286b16549bd131ae03, type: 3}
---- !u!4 &1810838803 stripped
+--- !u!4 &1832594787 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4803626651855554, guid: a59857e040c984286b16549bd131ae03, type: 3}
-  m_PrefabInstance: {fileID: 1810838802}
+  m_PrefabInstance: {fileID: 1832594786}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1810838804 stripped
+--- !u!1 &1832594788 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1393151013443456, guid: a59857e040c984286b16549bd131ae03, type: 3}
-  m_PrefabInstance: {fileID: 1810838802}
+  m_PrefabInstance: {fileID: 1832594786}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1810838805
+--- !u!114 &1832594789
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1810838804}
+  m_GameObject: {fileID: 1832594788}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
@@ -16098,6 +16620,55 @@ MonoBehaviour:
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &1841962723
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1841962724}
+  - component: {fileID: 1841962725}
+  m_Layer: 0
+  m_Name: Off-road 7 - Corner remainder 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1841962724
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1841962723}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 36.5, y: 9, z: -16.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1841962725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1841962723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 43, y: 64, z: 53}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &1857757609
 PrefabInstance:
@@ -16247,6 +16818,55 @@ MonoBehaviour:
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &1865803780
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1865803781}
+  - component: {fileID: 1865803782}
+  m_Layer: 0
+  m_Name: Off-road 9 - 4 - Street remainder 4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1865803781
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865803780}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -56, y: 9, z: 28.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1865803782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865803780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 4, y: 64, z: 9}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &1870036366
 PrefabInstance:
@@ -16477,6 +17097,55 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &1878419860
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1878419861}
+  - component: {fileID: 1878419862}
+  m_Layer: 0
+  m_Name: Central street - Off-road 9
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1878419861
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878419860}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -59.5, y: 9, z: -12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1878419862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878419860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 20}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1 &1881780484
 GameObject:
   m_ObjectHideFlags: 0
@@ -16539,96 +17208,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1077435192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1901704902
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 407537810}
-    m_Modifications:
-    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_Name
-      value: building-house-big
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -40
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -22
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1901704905}
-  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
---- !u!4 &1901704903 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 1901704902}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1901704904 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 1901704902}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1901704905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1901704904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
-  m_SerializedVersion: 0
-  m_OverrideArea: 1
-  m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
-  m_AffectedAgents: ffffffffi
 --- !u!1001 &1905483556
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17100,6 +17679,55 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &1950760821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1950760822}
+  - component: {fileID: 1950760823}
+  m_Layer: 0
+  m_Name: Central street - Off-road 8
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1950760822
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950760821}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -29, y: 9, z: -12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1950760823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950760821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 8, y: 64, z: 20}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &1952368517
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17460,6 +18088,55 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &1993106981
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1993106982}
+  - component: {fileID: 1993106983}
+  m_Layer: 0
+  m_Name: Central street - Off-road 10
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1993106982
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993106981}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -95.5, y: 9, z: 23.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1993106983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993106981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 41, y: 64, z: 21}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1001 &2001406904
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17549,6 +18226,104 @@ MonoBehaviour:
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &2027377453
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2027377454}
+  - component: {fileID: 2027377455}
+  m_Layer: 0
+  m_Name: Central street - Off-road 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2027377454
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027377453}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -14.5, y: 9, z: -0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2027377455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027377453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 5, y: 64, z: 43}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &2029771077
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2029771078}
+  - component: {fileID: 2029771079}
+  m_Layer: 0
+  m_Name: Central street - Off-road 6
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2029771078
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029771077}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -74.5, y: 9, z: -12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2029771079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029771077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 20}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &2042691318
 PrefabInstance:
@@ -17751,95 +18526,152 @@ MonoBehaviour:
   m_Center: {x: 0, y: 1, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
---- !u!1001 &2064715627
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 238459588}
-    m_Modifications:
-    - target: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_Name
-      value: building-house-big
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -91
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00061035156
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 32
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.00000004371139
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2064715630}
-  m_SourcePrefab: {fileID: 100100000, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
---- !u!4 &2064715628 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4147045224011064, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 2064715627}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2064715629 stripped
+--- !u!1 &2071460882
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1361043156711924, guid: b5806ce289070450aa82da8bd02391aa, type: 3}
-  m_PrefabInstance: {fileID: 2064715627}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2064715630
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2071460883}
+  - component: {fileID: 2071460884}
+  m_Layer: 0
+  m_Name: Off-road 9 - 4 - Street remainder 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2071460883
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071460882}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -43, y: 9, z: 36}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2071460884
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2064715629}
+  m_GameObject: {fileID: 2071460882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_OverrideArea: 1
+  m_Size: {x: 20, y: 64, z: 24}
+  m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
-  m_OverrideGenerateLinks: 0
-  m_GenerateLinks: 0
-  m_IgnoreFromBuild: 0
-  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &2073817114
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2073817115}
+  - component: {fileID: 2073817116}
+  m_Layer: 0
+  m_Name: Central street - Off-road 20
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2073817115
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073817114}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -131, y: 9, z: 27}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2073817116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073817114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 6, y: 64, z: 14}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
+--- !u!1 &2085159681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2085159682}
+  - component: {fileID: 2085159683}
+  m_Layer: 0
+  m_Name: Off-road 9 - 4 - Street remainder 3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2085159682
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085159681}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -53.5, y: 9, z: 33.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2085159683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2085159681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 1, y: 64, z: 19}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
   m_AffectedAgents: ffffffffi
 --- !u!1001 &2093175017
 PrefabInstance:
@@ -18137,7 +18969,7 @@ Transform:
   m_GameObject: {fileID: 2114510369}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15, y: 9, z: 41.5}
+  m_LocalPosition: {x: -12.5, y: 9, z: 41.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -18156,7 +18988,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 14, y: 64, z: 13}
+  m_Size: {x: 9, y: 64, z: 13}
   m_Center: {x: 0, y: 0, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffffi
@@ -18430,6 +19262,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsSceneTakeOverEnabled: 1
   LogSceneLoadErrors: 1
+--- !u!1 &2146207983
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2146207984}
+  - component: {fileID: 2146207985}
+  m_Layer: 0
+  m_Name: Central street - Off-road 12
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2146207984
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146207983}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -43.5, y: 9, z: 23.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1751558118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2146207985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146207983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 21, y: 64, z: 21}
+  m_Center: {x: 0, y: 0, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffffi
 --- !u!1 &802101000
 GameObject:
   m_ObjectHideFlags: 0
