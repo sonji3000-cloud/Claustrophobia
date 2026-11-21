@@ -4,6 +4,14 @@ using UnityEngine.InputSystem;
 
 public sealed class CarentanDrive : MonoBehaviour
 {
+	private enum Layout
+	{
+		[InspectorName("기존 도로 주행")] Road,
+		[InspectorName("광장 순찰만")] MarketPatrol,
+		[InspectorName("광장 20m 교전")] MarketNear,
+		[InspectorName("광장 35m 교전")] MarketFar
+	}
+
 	[SerializeField] private TankSceneLink sceneLink;
 	[SerializeField] private NetworkObject enemyPrefab;
 	[SerializeField] private Transform enemySpawn;
@@ -11,9 +19,22 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform offRoad;
 	[SerializeField] private Camera followCamera;
 
+	[Header("시장 광장 시험")]
+	[SerializeField, Tooltip("Play를 누르기 전에 배치를 선택합니다.")] private Layout layout;
+	[SerializeField] private Transform marketSpawn;
+	[SerializeField] private Transform[] marketPatrol;
+	[SerializeField] private Transform nearTarget;
+	[SerializeField] private Transform farTarget;
+
 	private TankAI enemy;
 	private int patrolIndex = -1;
 	private AudioListener followAudio;
+	private Layout loadedLayout;
+
+	public TankAI Enemy => enemy;
+	public TankHealth PlayerHealth { get; private set; }
+	public bool CanStartMarket => loadedLayout != Layout.Road && sceneLink != null && sceneLink.IsReady
+		&& enemy != null && enemy.CanAct;
 
 	private void Awake()
 	{
@@ -38,8 +59,37 @@ public sealed class CarentanDrive : MonoBehaviour
 		NetworkRunner runner = sceneLink.Session.Runner;
 		if (!runner.IsServer || enemy != null) return;
 
-		NetworkObject tank = runner.Spawn(enemyPrefab, enemySpawn.position, enemySpawn.rotation);
-		if (tank != null && tank.TryGetComponent(out enemy) && enemy.SetMoveMode(TankAI.MoveMode.NavMesh)) return;
+		TankControl player = sceneLink.Session.tankControl;
+		player.TryGetComponent(out TankHealth health);
+		PlayerHealth = health;
+
+		Transform spawn = layout == Layout.Road ? enemySpawn : marketSpawn;
+		Transform target = layout == Layout.MarketNear ? nearTarget : layout == Layout.MarketFar ? farTarget : null;
+		bool needsTarget = layout == Layout.MarketNear || layout == Layout.MarketFar;
+		NetworkTransform motion = null;
+		Rigidbody body = null;
+		if (spawn == null || needsTarget && (target == null || health == null
+			|| !player.TryGetComponent(out motion) || !player.TryGetComponent(out body) || !motion.HasStateAuthority))
+		{
+			Debug.LogError("[Carentan] Missing or unavailable tank placement.", this);
+			return;
+		}
+
+		NetworkObject tank = runner.Spawn(enemyPrefab, spawn.position, spawn.rotation);
+		if (tank != null && tank.TryGetComponent(out enemy) && enemy.SetMoveMode(TankAI.MoveMode.NavMesh))
+		{
+			if (needsTarget)
+			{
+				motion.Teleport(target.position, target.rotation);
+				body.position = target.position;
+				body.rotation = target.rotation;
+				body.linearVelocity = body.angularVelocity = Vector3.zero;
+				Physics.SyncTransforms();
+			}
+
+			loadedLayout = layout;
+			return;
+		}
 
 		if (tank != null) runner.Despawn(tank);
 		enemy = null;
@@ -57,6 +107,7 @@ public sealed class CarentanDrive : MonoBehaviour
 			{
 				if (keys.digit8Key.wasPressedThisFrame || keys.numpad8Key.wasPressedThisFrame) MoveOffRoad();
 				else if (keys.digit9Key.wasPressedThisFrame || keys.numpad9Key.wasPressedThisFrame) StopPatrol();
+				else if (keys.digit0Key.wasPressedThisFrame || keys.numpad0Key.wasPressedThisFrame) StartMarketCombat();
 				else if (keys.f5Key.wasPressedThisFrame) FollowEnemy();
 			}
 		}
@@ -89,8 +140,36 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
+		StopPatrol();
 		patrolIndex = 0;
 		MovePatrol();
+		FollowEnemy();
+	}
+
+	public void StartMarketCombat()
+	{
+		if (!CanStartMarket)
+		{
+			Debug.LogWarning("[Carentan] Select a market layout before entering Play Mode and wait for the host.", this);
+			return;
+		}
+
+		if (PlayerHealth != null && PlayerHealth.Destroyed)
+		{
+			Debug.LogWarning("[Carentan] Restart Play Mode to reset the destroyed Tiger.", this);
+			return;
+		}
+
+		TankCombat combat = enemy.Combat;
+		if (combat == null || combat.State != TankCombat.CombatState.Idle) return;
+		if (!combat.StartPatrol(marketPatrol))
+		{
+			Debug.LogWarning("[Carentan] The Sherman could not start the market patrol. Check its sensor and waypoints.", this);
+			return;
+		}
+
+		patrolIndex = -1;
+		Debug.Log($"[Carentan] {loadedLayout}: market patrol started at {enemy.transform.position:F2}.", this);
 		FollowEnemy();
 	}
 
@@ -153,16 +232,21 @@ public sealed class CarentanDrive : MonoBehaviour
 	{
 		if (enemy == null || !enemy.CanAct) return;
 
-		patrolIndex = -1;
+		StopPatrol();
 		enemy.MoveTo(offRoad.position);
 		Debug.Log($"Carentan off-road destination: {enemy.MoveStatus} {enemy.MoveFailure}", this);
 	}
 
 	[ContextMenu("Stop Sherman Patrol")]
-	private void StopPatrol()
+	public void StopPatrol()
 	{
+		bool hadRoute = patrolIndex >= 0;
 		patrolIndex = -1;
-		if (enemy != null) enemy.StopMove();
+		if (enemy == null) return;
+
+		if (enemy.Combat != null && enemy.Combat.CancelOrder()) return;
+		if (hadRoute || enemy.MoveStatus != TankAI.MoveState.Idle || enemy.AttackStatus != TankAI.AttackState.Idle)
+			enemy.StopActions();
 	}
 
 	private void OnDisable()
