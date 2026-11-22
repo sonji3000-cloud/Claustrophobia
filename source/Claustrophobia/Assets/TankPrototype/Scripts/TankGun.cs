@@ -7,6 +7,8 @@ using UnityEngine;
 public sealed class TankGun : NetworkBehaviour, IAfterTick
 {
     public enum ChamberState { EmptyOpen, EmptyClosed, LoadedOpen, Ready, Recovering }
+	internal enum FireTrace { Request, Rejected, Fired }
+
     [SerializeField] private Transform muzzle;
     [SerializeField] private TankProjectile projectilePrefab;
     [SerializeField] private Rigidbody ownerBody;
@@ -34,6 +36,8 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
     public bool UsesNetwork { get; private set; }
 
 	public event Action<ChamberState> StateChanged;
+	internal event Action<TankGun, FireTrace, int, string> FireTraced;
+	internal event Action<TankGun, TankProjectile.Impact> ImpactTraced;
     public float RecoverRemaining => State != ChamberState.Recovering ? 0f
         : IsSpawned ? RecoveryTimer.RemainingTime(Runner) ?? 0f
         : Mathf.Max(0f, recoveryEndsAt - Time.time);
@@ -49,10 +53,12 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 	private TankInputButton aiAction;
 	private bool hasAIRequest;
 	private bool aiTargetRequest;
+	private int fireRequestId;
     private readonly List<Collider> ownerColliders = new();
 	private readonly Queue<(PlayerRef player, TankCrew.Role role, TankInputButton action, int source, NetworkId round)> requests = new(4);
 
     public Transform Muzzle => muzzle;
+	internal Rigidbody Body => ownerBody;
     public TankProjectile ProjectilePrefab => projectilePrefab;
     public bool CanFire => GetBlockReason() == "";
     public string FireBlockReason => GetBlockReason();
@@ -108,7 +114,29 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 	public bool RequestClose() => Request(TankInputButton.Close);
 	public bool RequestOpenEmpty() => Request(TankInputButton.OpenEmpty);
 	public bool RequestOpen() => Request(TankInputButton.Open);
-	public bool RequestFire() => Request(TankInputButton.Fire);
+	public bool RequestFire()
+	{
+		int id = TraceFireRequest();
+		bool accepted = Request(TankInputButton.Fire, source: id);
+		if (!accepted && id != 0)
+			FireTraced?.Invoke(this, FireTrace.Rejected, id, UsesNetwork ? "Request was not queued" : LastWeaponResult);
+		return accepted;
+	}
+
+	internal void TraceBlockedFire(string reason)
+	{
+		int id = TraceFireRequest();
+		if (id != 0) FireTraced?.Invoke(this, FireTrace.Rejected, id, reason);
+	}
+
+	private int TraceFireRequest()
+	{
+		if (FireTraced == null) return 0;
+
+		int id = ++fireRequestId;
+		FireTraced.Invoke(this, FireTrace.Request, id, null);
+		return id;
+	}
 
 	// Approval here means queued; State and ShotCount report the executed result after the tick.
 	internal bool RequestAI(TankInputButton action, bool targetRequest = false)
@@ -180,7 +208,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 
 	private bool Request(TankInputButton action, int source = -1, NetworkId round = default)
 	{
-		if (!UsesNetwork) return Execute(action);
+		if (!UsesNetwork) return Execute(action, source);
 		if (!IsSpawned || !Runner.IsRunning || crewRegistry == null) return false;
 		TankCrew.Role role = crewRegistry.GetRole(Runner.LocalPlayer);
 		if (!CanRequest(role, action)) return false;
@@ -230,6 +258,8 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 			bool allowed = role == request.role && CanRequest(role, request.action);
 			ChamberState previous = State;
 			bool accepted = allowed && ExecuteCrew(request.player, role, request.action, request.source, request.round);
+			if (!accepted && request.action == TankInputButton.Fire && request.source != 0)
+				FireTraced?.Invoke(this, FireTrace.Rejected, request.source, allowed ? LastWeaponResult : "Host rejected the gunner role");
 			if (!allowed)
 				Debug.Log($"[WEAPON HOST] Tick={Runner.Tick}, Player={request.player}, Action={request.action}, Rejected: Role {role}", this);
 			else if (accepted && request.action == TankInputButton.Fire)
@@ -253,7 +283,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 			case TankInputButton.TakeRound: return TakeRound(player, role, source);
 			case TankInputButton.ReturnRound: return ReturnRound(player, role, id);
 			case TankInputButton.Insert when breech != null || id.IsValid: return LoadRound(player, role, id);
-			default: return Execute(action);
+			default: return Execute(action, source);
 		}
 	}
 
@@ -344,7 +374,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 			&& Mathf.Abs(Quaternion.Dot(rotation, rotation) - 1f) < .01f;
 	}
 
-	private bool Execute(TankInputButton action)
+	private bool Execute(TankInputButton action, int source = 0)
 	{
 		switch (action)
 		{
@@ -352,7 +382,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 			case TankInputButton.Close: return Close();
 			case TankInputButton.OpenEmpty: return OpenEmpty();
 			case TankInputButton.Open: return Open();
-			case TankInputButton.Fire: return Fire();
+			case TankInputButton.Fire: return Fire(source);
 			default: return Reject(action.ToString(), "Unknown action");
 		}
 	}
@@ -502,7 +532,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
 	}
 
     // All requests are validated and consumed here, including rejected requests.
-    private bool Fire()
+    private bool Fire(int requestId)
     {
         TickRecovery();
         LastWeaponRequest = "Fire";
@@ -553,6 +583,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
         LastWeaponResult = LastFireResult + "; Recovering";
         LastProjectile = projectile;
         ChangeState(ChamberState.Recovering);
+		FireTraced?.Invoke(this, FireTrace.Fired, requestId, null);
         Debug.Log($"Tank fire: {LastFireResult}; speed={speed:F1} m/s; damage={damage:F1}", this);
         return true;
     }
@@ -566,6 +597,7 @@ public sealed class TankGun : NetworkBehaviour, IAfterTick
         LastHitPoint = point;
     }
     public void RecordImpactComparison(TankImpactComparison comparison) => LastImpactComparison = comparison;
+	internal void TraceImpact(TankProjectile.Impact impact) => ImpactTraced?.Invoke(this, impact);
 
     public void RecordDamageResult(int id, TankHealth target, float damage,
         bool applied, float before, float after, string result)

@@ -101,12 +101,16 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private DeploymentStart deploymentStart;
 	[SerializeField] private bool deploymentSoloDrive = true;
 	[SerializeField, Range(.1f, 1f)] private float soloLever = .5f;
+	[SerializeField, Min(1f)] private float deploymentHP = 300f;
+	[SerializeField] private bool deploymentInvulnerable = true;
+	[SerializeField] private bool deploymentMinimap = true;
 	[SerializeField] private DeploymentSlot[] deployment;
 	[SerializeField] private Transform deploymentTiger;
 	[SerializeField] private Transform deploymentCorner;
 	[SerializeField] private Transform deploymentCover;
 	[SerializeField] private Transform deploymentGoal;
 	[SerializeField] private Transform deploymentTop;
+	[SerializeField] private Camera minimapCamera;
 	[SerializeField, Min(1f)] private float topHalfWidth = 145f;
 	[SerializeField, Min(1f)] private float topHalfDepth = 132f;
 
@@ -120,6 +124,8 @@ public sealed class CarentanDrive : MonoBehaviour
 	private double deploymentDuration;
 	private TankMotor playerMotor;
 	private bool soloArmed;
+	private CarentanTrialLog trialLog;
+	private string trialEnd;
 
 	private TankAI enemy;
 	private TankAI westEnemy;
@@ -164,6 +170,12 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool CanRestartDeployment => IsDeployment && sceneLink != null
 		&& sceneLink.Session != null && sceneLink.Session.IsLocalSession;
 	public bool DeploymentSoloDrive => deploymentSoloDrive && CanRestartDeployment;
+	public bool DeploymentInvulnerable => deploymentInvulnerable && CanRestartDeployment;
+	public float DeploymentVirtualHP => trialLog?.VirtualHP ?? (PlayerHealth != null ? PlayerHealth.CurrentHP : 0f);
+	public int DeploymentBlockedHits => trialLog?.BlockedHits ?? 0;
+	public double DeploymentVirtualDestroyedAt => trialLog?.VirtualDestroyedAt ?? -1d;
+	public string DeploymentLogPath { get; private set; }
+	public static string TrialLogDirectory => CarentanTrialLog.DirectoryPath;
 	public double DeploymentSeconds => DeploymentStarted && deploymentRunner != null && deploymentRunner.IsRunning
 		? deploymentRunner.SimulationTime - deploymentAt : deploymentDuration;
 	public string DeploymentError { get; private set; } = "";
@@ -322,6 +334,12 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
+		if (CanRestartDeployment && !PlayerHealth.SetTrialHealth(deploymentHP, deploymentInvulnerable))
+		{
+			ReportDeploymentError("Tiger의 시험 체력 설정을 적용하지 못했습니다.");
+			return;
+		}
+
 		for (int i = 0; i < DeploymentCount; i++)
 		{
 			if (!IsDeploymentSelected(i)) continue;
@@ -348,6 +366,8 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (rearObstacle != null) rearObstacle.SetActive(false);
 		PlaceTiger(start);
 		player.TryGetComponent(out playerMotor);
+		if (minimapCamera != null && minimapCamera.targetTexture != null)
+			minimapCamera.aspect = (float)minimapCamera.targetTexture.width / minimapCamera.targetTexture.height;
 		deploymentRunner = runner;
 		deploymentState = DeploymentState.Ready;
 		loadedLayout = Layout.Deployment;
@@ -384,6 +404,8 @@ public sealed class CarentanDrive : MonoBehaviour
 			{
 				if (keys.digit0Key.wasPressedThisFrame || keys.numpad0Key.wasPressedThisFrame) StartDeployment();
 				else if (keys.digit9Key.wasPressedThisFrame || keys.numpad9Key.wasPressedThisFrame) StopDeployment();
+				else if (keys.bKey.wasPressedThisFrame && DeploymentStarted && IsCabinView())
+					trialLog?.MarkSpotted(playerBody.position);
 			}
 			else if (CanUseRoadKeys && (keys.digit7Key.wasPressedThisFrame || keys.numpad7Key.wasPressedThisFrame)) StartPatrol();
 			else if (canDrive)
@@ -414,7 +436,10 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		deploymentAt = deploymentRunner.SimulationTime;
 		deploymentState = DeploymentState.Running;
-		PlayerHealth.Died += StopDeployment;
+		PlayerHealth.Died += OnTigerDied;
+		if (CanRestartDeployment)
+			trialLog = new CarentanTrialLog(deploymentRunner, PlayerHealth, deployed, DeploymentPoint,
+				deploymentCover, deploymentGoal, DeploymentInvulnerable, deploymentAt);
 
 		for (int i = 0; i < DeploymentCount; i++)
 		{
@@ -430,17 +455,32 @@ public sealed class CarentanDrive : MonoBehaviour
 		DeploymentError = "";
 	}
 
-	public void StopDeployment()
+	public void StopDeployment() => EndDeployment("stopped");
+
+	private void OnTigerDied() => EndDeployment("Tiger destroyed");
+
+	private void EndDeployment(string reason)
 	{
 		if (!DeploymentStarted) return;
 
 		deploymentDuration = DeploymentSeconds;
 		deploymentState = DeploymentState.Stopped;
-		if (PlayerHealth != null) PlayerHealth.Died -= StopDeployment;
+		if (PlayerHealth != null) PlayerHealth.Died -= OnTigerDied;
+		trialEnd = reason;
 
 		ClearSoloLevers();
 		for (int i = 0; i < DeploymentCount; i++) GetDeployed(i)?.StopActions();
 	}
+
+	private void FinishTrialLog()
+	{
+		if (trialEnd == null || trialLog == null) return;
+		DeploymentLogPath = trialLog.Finish(trialEnd, deploymentDuration);
+		trialEnd = null;
+	}
+
+	private bool IsCabinView() => sceneLink != null && sceneLink.IsReady
+		&& sceneLink.Interior.Mode.IsInterior && !sceneLink.Interior.Mode.IsObserving;
 
 	private void UpdateSoloLevers()
 	{
@@ -448,14 +488,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		Keyboard keys = Keyboard.current;
 		if (!DeploymentStarted || !DeploymentSoloDrive || !Application.isFocused || keys == null
-			|| !sceneLink.IsReady || !playerMotor.CanDriveSolo)
-		{
-			ClearSoloLevers();
-			return;
-		}
-
-		TankTestMode mode = sceneLink.Interior.Mode;
-		if (!mode.IsInterior || mode.IsObserving)
+			|| !IsCabinView() || !playerMotor.CanDriveSolo)
 		{
 			ClearSoloLevers();
 			return;
@@ -714,7 +747,17 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (IsDeployment) UpdateSoloLevers();
+		if (IsDeployment)
+		{
+			UpdateSoloLevers();
+			UpdateMinimap();
+			if (DeploymentStarted && trialLog != null)
+			{
+				bool driving = playerMotor != null && (playerMotor.LeftInput != 0f || playerMotor.RightInput != 0f);
+				trialLog.TrackPosition(playerBody.position, driving);
+			}
+			FinishTrialLog();
+		}
 
 		if (followCamera == null || !followCamera.enabled) return;
 		if (showTop) FitDeploymentTop();
@@ -729,12 +772,26 @@ public sealed class CarentanDrive : MonoBehaviour
 		followCamera.orthographicSize = Mathf.Max(topHalfDepth, topHalfWidth / Mathf.Max(.01f, followCamera.aspect));
 	}
 
-#if UNITY_EDITOR
+	private void UpdateMinimap()
+	{
+		if (minimapCamera == null) return;
+		bool visible = deploymentMinimap && minimapCamera.targetTexture != null && CanObserve
+			&& !sceneLink.Interior.Mode.IsObserving;
+		if (minimapCamera.enabled != visible) minimapCamera.enabled = visible;
+	}
+
 	private GUIStyle mapLabel;
+	private GUIStyle minimapTag;
+	private GUIStyle minimapArrow;
 
 	private void OnGUI()
 	{
-		if (!showTop || followCamera == null || !followCamera.enabled || Event.current.type != EventType.Repaint) return;
+		if (Event.current.type != EventType.Repaint) return;
+		if (!showTop || followCamera == null || !followCamera.enabled)
+		{
+			if (minimapCamera != null && minimapCamera.enabled) DrawMinimap();
+			return;
+		}
 
 		mapLabel ??= new GUIStyle(GUI.skin.box) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
 		mapLabel.fontSize = Mathf.Clamp(Screen.height / 65, 15, 22);
@@ -756,7 +813,64 @@ public sealed class CarentanDrive : MonoBehaviour
 		float height = mapLabel.fontSize + 8f;
 		GUI.Box(new Rect(point.x - width * .5f, Screen.height - point.y - height - 9f, width, height), label, mapLabel);
 	}
-#endif
+
+	private void DrawMinimap()
+	{
+		RenderTexture texture = minimapCamera.targetTexture;
+		if (texture == null || !texture.IsCreated()) return;
+
+		float aspect = minimapCamera.aspect;
+		float width = Mathf.Min(380f, Mathf.Min(Screen.width * .29f, Screen.height * .38f * aspect));
+		float height = width / aspect;
+		float margin = Mathf.Min(14f, Screen.width * .025f);
+		var rect = new Rect(Screen.width - width - margin, Screen.height - height - margin, width, height);
+		minimapTag ??= new GUIStyle(GUI.skin.box) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, fontSize = 12 };
+		minimapArrow ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 17, fontStyle = FontStyle.Bold };
+		minimapTag.normal.textColor = minimapArrow.normal.textColor = Color.white;
+
+		Color tint = GUI.color;
+		GUI.color = new Color(.06f, .10f, .12f, .94f);
+		GUI.DrawTexture(new Rect(rect.x - 2f, rect.y - 2f, rect.width + 4f, rect.height + 4f), Texture2D.whiteTexture);
+		GUI.color = Color.white;
+		GUI.DrawTexture(rect, texture);
+		GUI.Box(new Rect(rect.center.x - 10f, rect.y + 2f, 20f, 18f), "N", minimapTag);
+
+		if (deploymentGoal != null) DrawMinimapTag(rect, deploymentGoal.position, "목표", 36f, new Color(.75f, .92f, .70f));
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			TankAI tank = GetDeployed(i);
+			if (tank != null) DrawMinimapTag(rect, tank.transform.position, DeploymentNames[i], 20f, new Color(1f, .76f, .52f));
+		}
+
+		if (PlayerHealth != null && TryMinimapPoint(rect, PlayerHealth.transform.position, out Vector2 center))
+		{
+			center.x = Mathf.Clamp(center.x, rect.xMin + 11f, rect.xMax - 11f);
+			center.y = Mathf.Clamp(center.y, rect.yMin + 11f, rect.yMax - 11f);
+			Matrix4x4 matrix = GUI.matrix;
+			GUI.color = new Color(.46f, 1f, 1f);
+			GUIUtility.RotateAroundPivot(PlayerHealth.transform.eulerAngles.y, center);
+			GUI.Label(new Rect(center.x - 11f, center.y - 11f, 22f, 22f), "▲", minimapArrow);
+			GUI.matrix = matrix;
+		}
+		GUI.color = tint;
+	}
+
+	private void DrawMinimapTag(Rect rect, Vector3 pos, string label, float width, Color tint)
+	{
+		if (!TryMinimapPoint(rect, pos, out Vector2 point)) return;
+
+		GUI.color = tint;
+		float x = Mathf.Clamp(point.x - width * .5f, rect.xMin, rect.xMax - width);
+		float y = Mathf.Clamp(point.y - 9f, rect.yMin, rect.yMax - 18f);
+		GUI.Box(new Rect(x, y, width, 18f), label, minimapTag);
+	}
+
+	private bool TryMinimapPoint(Rect rect, Vector3 pos, out Vector2 point)
+	{
+		Vector3 viewport = minimapCamera.WorldToViewportPoint(pos);
+		point = new Vector2(rect.x + viewport.x * rect.width, rect.y + (1f - viewport.y) * rect.height);
+		return viewport.z > 0f && rect.Contains(point);
+	}
 
 	private void PlaceCamera(Transform hull)
 	{
@@ -831,5 +945,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (sceneLink != null) sceneLink.StageChanged -= OnStageChanged;
 		StopFollowing();
 		StopPatrol();
+		FinishTrialLog();
+		if (minimapCamera != null) minimapCamera.enabled = false;
 	}
 }

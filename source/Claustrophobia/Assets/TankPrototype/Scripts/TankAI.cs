@@ -142,6 +142,7 @@ public sealed class TankAI : NetworkBehaviour
 	public string AttackBlockReason { get; private set; } = "";
 	public bool IsShotBlocked => shotBlockedSince >= 0d;
 	public float ShotBlockedSeconds { get; private set; }
+	internal event System.Action<TankAI, bool, string> ShotBlockChanged;
 	internal bool HasLiveTarget => IsHost && attackTarget != null && attackTarget.gameObject.activeInHierarchy
 		&& targetHealth != null && attackTarget.IsChildOf(targetHealth.transform)
 		&& targetHealth.isActiveAndEnabled && !targetHealth.Destroyed;
@@ -881,6 +882,7 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void BlockAttack(string reason, bool shotObstructed = false)
 	{
+		bool justBlocked = shotObstructed && !IsShotBlocked;
 		if (shotObstructed)
 		{
 			double now = Runner.SimulationTime;
@@ -893,12 +895,15 @@ public sealed class TankAI : NetworkBehaviour
 		gun.ClearAIRequest();
 		AttackStatus = AttackState.Blocked;
 		AttackBlockReason = reason;
+		if (justBlocked) ShotBlockChanged?.Invoke(this, true, reason);
 	}
 
 	private void ClearShotBlock()
 	{
+		bool wasBlocked = IsShotBlocked;
 		shotBlockedSince = -1d;
 		ShotBlockedSeconds = 0f;
+		if (wasBlocked) ShotBlockChanged?.Invoke(this, false, null);
 	}
 
 	public void StopActions() => StopActions("Actions stopped");

@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -158,6 +159,34 @@ public sealed class CarentanDriveEditor : Editor
 	private void DrawEditSettings(bool isDeployment)
 	{
 		serializedObject.Update();
+		SerializedProperty property = serializedObject.GetIterator();
+		bool enterChildren = true;
+		while (property.NextVisible(enterChildren))
+		{
+			enterChildren = false;
+			switch (property.name)
+			{
+				case "deploymentEnemies":
+				case "deploymentStart":
+				case "deploymentSoloDrive":
+				case "soloLever":
+				case "deploymentHP":
+				case "deploymentInvulnerable":
+				case "deploymentMinimap":
+					continue;
+			}
+
+			using (new EditorGUI.DisabledScope(property.name == "m_Script"))
+				EditorGUILayout.PropertyField(property, true);
+
+			if (property.name == "layout") DrawTrialSettings(isDeployment);
+		}
+
+		serializedObject.ApplyModifiedProperties();
+	}
+
+	private void DrawTrialSettings(bool isDeployment)
+	{
 		if (isDeployment)
 		{
 			SerializedProperty enemies = serializedObject.FindProperty("deploymentEnemies");
@@ -168,7 +197,7 @@ public sealed class CarentanDriveEditor : Editor
 				for (int i = 0; i < DeploymentLabels.Length; i++)
 				{
 					int bit = 1 << i;
-					bool enabled = EditorGUILayout.ToggleLeft(DeploymentLabels[i], (selected & bit) != 0);
+					bool enabled = EditorGUILayout.ToggleLeft(DeploymentLabels[i], (selected & bit) != 0, GUILayout.Width(32));
 					selected = enabled ? selected | bit : selected & ~bit;
 				}
 			}
@@ -179,10 +208,16 @@ public sealed class CarentanDriveEditor : Editor
 			EditorGUILayout.PropertyField(solo, new GUIContent("포수석 이동"));
 			if (solo.boolValue)
 				EditorGUILayout.PropertyField(serializedObject.FindProperty("soloLever"), new GUIContent("포수석 레버 강도"));
+			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentHP"), new GUIContent("Tiger 시작 HP"));
 		}
 
-		DrawPropertiesExcluding(serializedObject, "deploymentEnemies", "deploymentStart", "deploymentSoloDrive", "soloLever");
-		serializedObject.ApplyModifiedProperties();
+		using (new EditorGUI.DisabledScope(!isDeployment))
+		{
+			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentInvulnerable"), new GUIContent("Tiger 무적"));
+			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentMinimap"), new GUIContent("우측 하단 지도"));
+		}
+
+		if (!isDeployment) EditorGUILayout.HelpBox("무적과 지도는 적 배치 디버그에서 적용됩니다.", MessageType.None);
 	}
 
 	private static void DrawDeployment(CarentanDrive drive)
@@ -193,17 +228,7 @@ public sealed class CarentanDriveEditor : Editor
 				if (GUILayout.Button("시험 시작 (0)")) drive.StartDeployment();
 			using (new EditorGUI.DisabledScope(!drive.DeploymentStarted))
 				if (GUILayout.Button("시험 정지 (9)")) drive.StopDeployment();
-			using (new EditorGUI.DisabledScope(!drive.CanRestartDeployment || PendingRestart != RestartPhase.None))
-				if (GUILayout.Button("같은 설정으로 재시작")) RestartDeployment(drive);
 		}
-
-		if (drive.DeploymentStarted || drive.DeploymentStopped)
-			EditorGUILayout.LabelField(drive.DeploymentStarted ? "진행 중" : "시험 종료", $"{drive.DeploymentSeconds:F2}초");
-		else if (drive.CanStartDeployment)
-			EditorGUILayout.LabelField("시험 준비", "0.00초");
-
-		if (drive.DeploymentSoloDrive)
-			EditorGUILayout.LabelField("포수석 이동", "2 포수석 · W/S 전후진 · A/D 선회");
 
 		using (new EditorGUI.DisabledScope(!drive.CanObserve))
 		{
@@ -221,14 +246,21 @@ public sealed class CarentanDriveEditor : Editor
 
 				for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
 				{
-					if (!drive.IsDeploymentSelected(i)) continue;
-
 					TankAI tank = drive.GetDeployed(i);
 					using (new EditorGUI.DisabledScope(tank == null))
 						if (GUILayout.Button(DeploymentLabels[i])) drive.ObserveEnemy(tank);
 				}
 			}
 		}
+
+		using (new EditorGUI.DisabledScope(!drive.CanRestartDeployment || PendingRestart != RestartPhase.None))
+			if (GUILayout.Button("같은 설정으로 재시작")) RestartDeployment(drive);
+
+		TankHealth health = drive.PlayerHealth;
+		bool invulnerable = health != null && health.IsInvulnerable;
+		string protection = drive.DeploymentInvulnerable ? "적용 대기" : "꺼짐";
+		if (invulnerable) protection = "켜짐";
+		EditorGUILayout.LabelField("Tiger 무적", protection, EditorStyles.boldLabel);
 
 		if (drive.DeploymentError.Length > 0)
 			EditorGUILayout.HelpBox(drive.DeploymentError, MessageType.Error);
@@ -237,21 +269,17 @@ public sealed class CarentanDriveEditor : Editor
 			EditorGUILayout.LabelField("세션·전차 내부", drive.SceneStage.ToString());
 			if (!string.IsNullOrEmpty(drive.SceneError)) EditorGUILayout.HelpBox(drive.SceneError, MessageType.Warning);
 		}
-		if (drive.PlayerHealth != null)
-			EditorGUILayout.LabelField("Tiger HP / 피격", $"{drive.PlayerHealth.CurrentHP:F0} / {drive.PlayerHealth.DamageHitCount}회");
+		if (health != null)
+			EditorGUILayout.LabelField("Tiger HP / 피격", $"{health.CurrentHP:F0} / {health.DamageHitCount}회");
 
 		EditorGUILayout.Space();
-		bool hasEnemies = false;
 		for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
 		{
-			if (!drive.IsDeploymentSelected(i)) continue;
-
-			hasEnemies = true;
 			TankAI tank = drive.GetDeployed(i);
 			string label = DeploymentLabels[i];
 			if (tank == null)
 			{
-				EditorGUILayout.LabelField(label, "배치 대기");
+				EditorGUILayout.LabelField(label, drive.IsDeploymentSelected(i) ? "배치 대기" : "선택 안 함");
 				continue;
 			}
 
@@ -265,7 +293,39 @@ public sealed class CarentanDriveEditor : Editor
 				EditorGUILayout.HelpBox($"{label} · {combat.LastStopReason}", MessageType.Info);
 		}
 
-		if (!hasEnemies) EditorGUILayout.LabelField("적 선택", "없음");
+		DrawTrialStatus(drive, invulnerable);
+	}
+
+	private static void DrawTrialStatus(CarentanDrive drive, bool invulnerable)
+	{
+		EditorGUILayout.Space();
+		if (drive.DeploymentStarted || drive.DeploymentStopped)
+			EditorGUILayout.LabelField(drive.DeploymentStarted ? "진행 중" : "시험 종료", $"{drive.DeploymentSeconds:F2}초");
+		else if (drive.CanStartDeployment)
+			EditorGUILayout.LabelField("시험 준비", "0.00초");
+
+		if (drive.DeploymentSoloDrive)
+			EditorGUILayout.LabelField("포수석 이동", "2 포수석 · W/S 전후진 · A/D 선회");
+
+		if (invulnerable)
+		{
+			EditorGUILayout.LabelField("가상 HP / 차단 명중", $"{drive.DeploymentVirtualHP:F0} / {drive.DeploymentBlockedHits}회");
+			if (drive.DeploymentVirtualDestroyedAt >= 0d)
+				EditorGUILayout.LabelField("가상 파괴", $"{drive.DeploymentVirtualDestroyedAt:F2}초");
+		}
+
+		if (!drive.CanRestartDeployment) return;
+
+		if (drive.DeploymentStarted) EditorGUILayout.LabelField("교전 기록", "B · 첫 적 확인 표시");
+		string path = drive.DeploymentLogPath;
+		if (!string.IsNullOrEmpty(path))
+		{
+			if (GUILayout.Button("이번 기록 보기")) EditorUtility.RevealInFinder(path);
+		}
+		else if (GUILayout.Button("기록 폴더 보기") && Directory.Exists(CarentanDrive.TrialLogDirectory))
+		{
+			EditorUtility.RevealInFinder(CarentanDrive.TrialLogDirectory);
+		}
 	}
 
 	private static void RestartDeployment(CarentanDrive drive)

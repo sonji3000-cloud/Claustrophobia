@@ -339,7 +339,12 @@ public sealed class TankControl : MonoBehaviour
 
 	public bool RequestFire(CrewInteract user)
 	{
-		if (GetFireInputBlock(user).Length != 0) return false;
+		string reason = GetFireInputBlock(user);
+		if (reason.Length != 0)
+		{
+			if (gun != null) gun.TraceBlockedFire(reason);
+			return false;
+		}
 
 		return gun.RequestFire();
 	}

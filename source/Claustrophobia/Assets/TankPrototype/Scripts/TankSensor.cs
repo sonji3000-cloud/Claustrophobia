@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
@@ -73,6 +74,7 @@ public sealed class TankSensor : MonoBehaviour
 	public int RayCount { get; private set; }
 	public bool QueryOverflow { get; private set; }
 	public int CandidateCount => readings.Count;
+	internal event Action<TankSensor> Scanned;
 	public Transform Origin => origin;
 	public float Interval => interval;
 	public float ConfirmTime => confirmTime;
@@ -260,6 +262,7 @@ public sealed class TankSensor : MonoBehaviour
 		else ValidateMemory(now);
 		scanTime = now;
 		ScanCount++;
+		Scanned?.Invoke(this);
 	}
 
 	private void SyncCandidates()

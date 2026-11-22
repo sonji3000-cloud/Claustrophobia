@@ -5,6 +5,17 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody), typeof(SphereCollider))]
 public sealed class TankProjectile : NetworkBehaviour
 {
+	internal struct Impact
+	{
+		public int Shot;
+		public Vector3 Point;
+		public string Reason;
+		public string Collider;
+		public TankHealth Health;
+		public TankHealth.DamageOutcome DamageOutcome;
+		public float Damage, Before, After;
+	}
+
     public const float TestLifetime = 5f;
     [Min(0.01f)] public float Lifetime = TestLifetime;
     [Networked] private int NetworkShotId { get; set; }
@@ -149,15 +160,18 @@ public sealed class TankProjectile : NetworkBehaviour
                     : error <= .25f ? "Collider agrees; error <= 0.25m" : "Contact error exceeds 0.25m"
             };
             source?.RecordImpactComparison(ImpactComparison);
+            var impact = new Impact { Shot = ShotId, Point = point, Reason = reason, Collider = targetName, Damage = Damage };
             if (target != null)
             {
-                TankHealth health = target.GetComponentInParent<TankHealth>();
-                float before = 0f, after = 0f;
+                impact.Health = target.GetComponentInParent<TankHealth>();
                 string result = "No HP component";
-                bool applied = health != null && health.ApplyDamage(Damage, ShotId, out before, out after, out result);
-                source?.RecordDamageResult(ShotId, health, Damage, applied, before, after, result);
+                if (impact.Health != null)
+                    impact.DamageOutcome = impact.Health.ResolveDamage(Damage, ShotId, out impact.Before, out impact.After, out result);
+                source?.RecordDamageResult(ShotId, impact.Health, Damage,
+                    impact.DamageOutcome == TankHealth.DamageOutcome.Applied, impact.Before, impact.After, result);
             }
             source?.RecordProjectileEnd(ShotId, reason, targetName, point);
+            source?.TraceImpact(impact);
             Debug.Log($"Projectile #{ShotId}: {reason}; target={targetName} [{actual.ColliderId}]; point={point.ToString("F3")}; predicted={ImpactComparison.ExpectedName} [{ImpactComparison.ExpectedColliderId}]; error={(comparable ? error.ToString("F4") : "n/a")}; {ImpactComparison.Result}");
         }
         finally

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public sealed class TankCombat : MonoBehaviour
 		Idle, Patrol, Approach, StopAndFire, WaitForSight, MoveToLastSeen, CheckSurroundings, ReturnToPatrol, Reposition,
 		ForcedMove, Retreat, CheckAfterHit, BackOff
 	}
+
+	internal event Action<TankCombat, CombatState, string> StateChanged;
 
 	private const float MaxSearchTime = 10f;
 	private const float HitCheckTime = 3f;
@@ -846,6 +849,7 @@ public sealed class TankCombat : MonoBehaviour
 			};
 		}
 		State = next;
+		StateChanged?.Invoke(this, previous, reason);
 		Debug.Log($"[AI COMBAT] {previous} -> {State}: {reason}", this);
 	}
 

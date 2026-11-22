@@ -5,6 +5,8 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class TankHealth : NetworkBehaviour
 {
+	internal enum DamageOutcome { Rejected, Applied, Invulnerable }
+
 	[Min(0.01f)] public float MaxHP = 100f;
 
 	[Networked, OnChangedRender(nameof(ApplyAppearance))]
@@ -14,6 +16,7 @@ public sealed class TankHealth : NetworkBehaviour
 
 	private NetworkObject networkObject;
 	private bool spawned;
+	private bool invulnerable;
 	private float localHP;
 	private int localHits;
 	private Renderer[] damagedRenderers;
@@ -23,6 +26,7 @@ public sealed class TankHealth : NetworkBehaviour
 	public float CurrentHP => spawned ? NetworkHP : localHP;
 	public float Capacity => spawned ? NetworkMaxHP : MaxHP;
 	public int DamageHitCount => spawned ? NetworkHits : localHits;
+	public bool IsInvulnerable => spawned && invulnerable;
 	public bool Destroyed => CurrentHP <= 0f;
 	public int DestructionCount => Destroyed ? 1 : 0;
 	public int LastProjectileId { get; private set; }
@@ -42,6 +46,7 @@ public sealed class TankHealth : NetworkBehaviour
 	public override void Spawned()
 	{
 		spawned = true;
+		invulnerable = false;
 		if (HasStateAuthority)
 		{
 			NetworkMaxHP = MaxHP;
@@ -59,6 +64,22 @@ public sealed class TankHealth : NetworkBehaviour
 	}
 
 	public bool ApplyDamage(float damage, int projectileId,
+		out float before, out float after, out string result) =>
+		ResolveDamage(damage, projectileId, out before, out after, out result) == DamageOutcome.Applied;
+
+	internal bool SetTrialHealth(float hp, bool protect)
+	{
+		if (!spawned || !HasStateAuthority || Runner == null || !Runner.IsRunning || Runner.GameMode != GameMode.Single
+			|| !float.IsFinite(hp) || hp <= 0f) return false;
+
+		NetworkMaxHP = NetworkHP = hp;
+		NetworkHits = 0;
+		invulnerable = protect;
+		ApplyAppearance();
+		return true;
+	}
+
+	internal DamageOutcome ResolveDamage(float damage, int projectileId,
 		out float before, out float after, out string result)
 	{
 		before = after = CurrentHP;
@@ -66,17 +87,22 @@ public sealed class TankHealth : NetworkBehaviour
 			|| Runner == null || !Runner.IsRunning || !Runner.IsServer))
 		{
 			result = "Rejected: host authority required";
-			return false;
+			return DamageOutcome.Rejected;
 		}
 
 		LastProjectileId = projectileId;
 		LastDamage = damage;
 		LastHPBefore = before;
-		bool applied = false;
+		DamageOutcome outcome = DamageOutcome.Rejected;
 		if (Destroyed) result = "Rejected: already destroyed";
 		else if (!isActiveAndEnabled) result = "Rejected: target inactive";
 		else if (float.IsNaN(damage) || float.IsInfinity(damage) || damage <= 0f)
 			result = "Rejected: positive finite damage required";
+		else if (invulnerable)
+		{
+			outcome = DamageOutcome.Invulnerable;
+			result = "Blocked: invulnerable";
+		}
 		else
 		{
 			after = Mathf.Max(0f, before - damage);
@@ -90,13 +116,13 @@ public sealed class TankHealth : NetworkBehaviour
 				localHP = after;
 				localHits++;
 			}
-			applied = true;
+			outcome = DamageOutcome.Applied;
 			result = "Damage applied";
 		}
 
 		LastHPAfter = after;
 		LastHitResult = result;
-		if (applied && Destroyed)
+		if (outcome == DamageOutcome.Applied && Destroyed)
 		{
 			Died?.Invoke();
 			ApplyAppearance();
@@ -104,7 +130,7 @@ public sealed class TankHealth : NetworkBehaviour
 		}
 
 		Debug.Log($"Projectile #{projectileId}: target={name}; damage={damage:F1}; HP {before:F1} -> {after:F1}; {result}", this);
-		return applied;
+		return outcome;
 	}
 
 	private void ApplyAppearance()
