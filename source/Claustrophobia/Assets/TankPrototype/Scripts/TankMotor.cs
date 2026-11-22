@@ -29,6 +29,7 @@ public sealed class TankMotor : NetworkBehaviour
 	private NetworkObject networkObject;
 	private TankCrewRegistry crewRegistry;
 	private PlayerRef lastDriver;
+	private Vector2 soloLevers;
 	private float requestedLeft;
 	private float requestedRight;
 	private bool wasGrounded;
@@ -44,6 +45,9 @@ public sealed class TankMotor : NetworkBehaviour
 	public float AppliedTurnSpeed { get; private set; }
 	public bool UsesCrewRegistry => crewRegistry != null;
 	public int PhysicsTickCount { get; private set; }
+	internal bool CanDriveSolo => Object != null && Object.IsValid && HasStateAuthority
+		&& Runner.GameMode == GameMode.Single && crewRegistry != null && crewRegistry.DriverPlayer.IsNone
+		&& !Runner.LocalPlayer.IsNone && crewRegistry.GunnerPlayer == Runner.LocalPlayer;
 
 	private void Awake()
 	{
@@ -57,6 +61,12 @@ public sealed class TankMotor : NetworkBehaviour
 	{
 		requestedLeft = Mathf.Clamp(left, -1f, 1f);
 		requestedRight = Mathf.Clamp(right, -1f, 1f);
+	}
+
+	internal void SetSoloLevers(Vector2 levers)
+	{
+		soloLevers = levers;
+		if (levers == Vector2.zero && lastDriver.IsNone) SetLeverInputs(0f, 0f);
 	}
 
 	private void FixedUpdate()
@@ -185,6 +195,7 @@ public sealed class TankMotor : NetworkBehaviour
 
 	public override void Spawned()
 	{
+		soloLevers = Vector2.zero;
 		if (HasStateAuthority && crewRegistry != null) HullRotation = body.rotation;
 
 		Debug.Log(
@@ -215,6 +226,8 @@ public sealed class TankMotor : NetworkBehaviour
 		bool wasNeutral = requestedLeft == 0f && requestedRight == 0f;
 		if (!driver.IsNone && Runner.TryGetInputForPlayer<TankCrewNetworkInput>(driver, out var data))
 			SetLeverInputs(data.LeftLever, data.RightLever);
+		else if (soloLevers != Vector2.zero && CanDriveSolo)
+			SetLeverInputs(soloLevers.x, soloLevers.y);
 		else
 			SetLeverInputs(0f, 0f);
 

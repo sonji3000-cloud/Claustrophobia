@@ -4,7 +4,20 @@ using UnityEngine;
 [CustomEditor(typeof(CarentanDrive))]
 public sealed class CarentanDriveEditor : Editor
 {
+	private enum RestartPhase { None, Exiting, Entering }
+
+	private const string RestartKey = "CarentanDrive.RestartPhase";
+	private const string OptionsKey = "CarentanDrive.RestartOptions";
+	private const string OptionsEnabledKey = "CarentanDrive.RestartOptionsEnabled";
 	private static readonly string[] DeploymentLabels = { "A", "B", "C", "D" };
+
+	private static RestartPhase PendingRestart => (RestartPhase)SessionState.GetInt(RestartKey, 0);
+
+	[InitializeOnLoadMethod]
+	private static void BindRestart()
+	{
+		if (PendingRestart != RestartPhase.None) EditorApplication.update += UpdateRestart;
+	}
 
 	public override bool RequiresConstantRepaint() => EditorApplication.isPlaying;
 
@@ -162,9 +175,13 @@ public sealed class CarentanDriveEditor : Editor
 
 			if (enemies.intValue != selected) enemies.intValue = selected;
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentStart"), new GUIContent("Tiger 출발점"));
+			SerializedProperty solo = serializedObject.FindProperty("deploymentSoloDrive");
+			EditorGUILayout.PropertyField(solo, new GUIContent("포수석 이동"));
+			if (solo.boolValue)
+				EditorGUILayout.PropertyField(serializedObject.FindProperty("soloLever"), new GUIContent("포수석 레버 강도"));
 		}
 
-		DrawPropertiesExcluding(serializedObject, "deploymentEnemies", "deploymentStart");
+		DrawPropertiesExcluding(serializedObject, "deploymentEnemies", "deploymentStart", "deploymentSoloDrive", "soloLever");
 		serializedObject.ApplyModifiedProperties();
 	}
 
@@ -176,7 +193,17 @@ public sealed class CarentanDriveEditor : Editor
 				if (GUILayout.Button("시험 시작 (0)")) drive.StartDeployment();
 			using (new EditorGUI.DisabledScope(!drive.DeploymentStarted))
 				if (GUILayout.Button("시험 정지 (9)")) drive.StopDeployment();
+			using (new EditorGUI.DisabledScope(!drive.CanRestartDeployment || PendingRestart != RestartPhase.None))
+				if (GUILayout.Button("같은 설정으로 재시작")) RestartDeployment(drive);
 		}
+
+		if (drive.DeploymentStarted || drive.DeploymentStopped)
+			EditorGUILayout.LabelField(drive.DeploymentStarted ? "진행 중" : "시험 종료", $"{drive.DeploymentSeconds:F2}초");
+		else if (drive.CanStartDeployment)
+			EditorGUILayout.LabelField("시험 준비", "0.00초");
+
+		if (drive.DeploymentSoloDrive)
+			EditorGUILayout.LabelField("포수석 이동", "2 포수석 · W/S 전후진 · A/D 선회");
 
 		using (new EditorGUI.DisabledScope(!drive.CanObserve))
 		{
@@ -239,6 +266,56 @@ public sealed class CarentanDriveEditor : Editor
 		}
 
 		if (!hasEnemies) EditorGUILayout.LabelField("적 선택", "없음");
+	}
+
+	private static void RestartDeployment(CarentanDrive drive)
+	{
+		if (!EditorApplication.isPlaying || !drive.CanRestartDeployment || PendingRestart != RestartPhase.None) return;
+
+		drive.StopDeployment();
+		SessionState.SetInt(OptionsKey, (int)EditorSettings.enterPlayModeOptions);
+		SessionState.SetBool(OptionsEnabledKey, EditorSettings.enterPlayModeOptionsEnabled);
+		SessionState.SetInt(RestartKey, (int)RestartPhase.Exiting);
+		EditorApplication.update += UpdateRestart;
+		EditorApplication.ExitPlaymode();
+	}
+
+	private static void UpdateRestart()
+	{
+		RestartPhase phase = PendingRestart;
+		if (phase == RestartPhase.None)
+		{
+			EditorApplication.update -= UpdateRestart;
+			return;
+		}
+
+		if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+
+		if (phase == RestartPhase.Entering)
+		{
+			if (EditorApplication.isPlaying || !EditorApplication.isPlayingOrWillChangePlaymode) RestoreRestart();
+			return;
+		}
+
+		if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode) return;
+		SessionState.SetInt(RestartKey, (int)RestartPhase.Entering);
+
+		// A fresh scene and domain also reset the runner, chamber and all spawned rounds.
+		if (EditorSettings.enterPlayModeOptionsEnabled)
+			EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.None;
+		EditorApplication.EnterPlaymode();
+	}
+
+	private static void RestoreRestart()
+	{
+		bool enabled = SessionState.GetBool(OptionsEnabledKey, false);
+		EnterPlayModeOptions options = (EnterPlayModeOptions)SessionState.GetInt(OptionsKey, 0);
+		if (EditorSettings.enterPlayModeOptionsEnabled != enabled) EditorSettings.enterPlayModeOptionsEnabled = enabled;
+		if (EditorSettings.enterPlayModeOptions != options) EditorSettings.enterPlayModeOptions = options;
+		EditorApplication.update -= UpdateRestart;
+		SessionState.EraseBool(OptionsEnabledKey);
+		SessionState.EraseInt(OptionsKey);
+		SessionState.EraseInt(RestartKey);
 	}
 
 	private static void DrawEntryTest(CarentanDrive drive)

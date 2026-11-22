@@ -37,6 +37,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 
 	public NetworkRunner Runner => runner;
 	public State CurrentState { get; private set; }
+	public bool IsLocalSession => localSession;
 	public string TargetScenePath => scenePath;
 	public int TargetSceneIndex => sceneIndex;
 	public bool StartSucceeded => startSucceeded;

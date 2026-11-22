@@ -42,6 +42,8 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("서쪽 틈 건물 뒤")] WestGap
 	}
 
+	private enum DeploymentState { Preparing, Ready, Running, Stopped }
+
 	[Serializable]
 	private sealed class DeploymentSlot
 	{
@@ -97,6 +99,8 @@ public sealed class CarentanDrive : MonoBehaviour
 	[Header("적 배치 디버그 · A / B / C / D")]
 	[SerializeField] private DeploymentEnemies deploymentEnemies = DeploymentEnemies.All;
 	[SerializeField] private DeploymentStart deploymentStart;
+	[SerializeField] private bool deploymentSoloDrive = true;
+	[SerializeField, Range(.1f, 1f)] private float soloLever = .5f;
 	[SerializeField] private DeploymentSlot[] deployment;
 	[SerializeField] private Transform deploymentTiger;
 	[SerializeField] private Transform deploymentCorner;
@@ -110,7 +114,13 @@ public sealed class CarentanDrive : MonoBehaviour
 	private const double EntryDelay = 4d;
 	private static readonly string[] DeploymentNames = { "A", "B", "C", "D" };
 	private readonly TankAI[] deployed = new TankAI[DeploymentCount];
-	private bool deploymentStarted;
+	private DeploymentState deploymentState;
+	private NetworkRunner deploymentRunner;
+	private double deploymentAt;
+	private double deploymentDuration;
+	private TankMotor playerMotor;
+	private bool soloArmed;
+
 	private TankAI enemy;
 	private TankAI westEnemy;
 	private Transform observedHull;
@@ -149,7 +159,13 @@ public sealed class CarentanDrive : MonoBehaviour
 	};
 	public Transform DeploymentCover => deploymentCover;
 	public Transform DeploymentGoal => deploymentGoal;
-	public bool DeploymentStarted => deploymentStarted;
+	public bool DeploymentStarted => deploymentState == DeploymentState.Running;
+	public bool DeploymentStopped => deploymentState == DeploymentState.Stopped;
+	public bool CanRestartDeployment => IsDeployment && sceneLink != null
+		&& sceneLink.Session != null && sceneLink.Session.IsLocalSession;
+	public bool DeploymentSoloDrive => deploymentSoloDrive && CanRestartDeployment;
+	public double DeploymentSeconds => DeploymentStarted && deploymentRunner != null && deploymentRunner.IsRunning
+		? deploymentRunner.SimulationTime - deploymentAt : deploymentDuration;
 	public string DeploymentError { get; private set; } = "";
 	public TankSceneLink.Stage SceneStage => sceneLink != null ? sceneLink.CurrentStage : TankSceneLink.Stage.Idle;
 	public string SceneError => sceneLink != null ? sceneLink.LastError ?? sceneLink.Session?.LastError : null;
@@ -163,7 +179,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	{
 		get
 		{
-			if (!IsDeployment || loadedLayout != Layout.Deployment || deploymentStarted || sceneLink == null || !sceneLink.IsReady
+			if (!IsDeployment || deploymentState != DeploymentState.Ready || sceneLink == null || !sceneLink.IsReady
 				|| PlayerHealth == null || PlayerHealth.Destroyed) return false;
 
 			for (int i = 0; i < DeploymentCount; i++)
@@ -206,7 +222,11 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (stage != TankSceneLink.Stage.Ready)
 		{
 			StopPatrol();
-			if (IsDeployment) StopFollowing();
+			if (IsDeployment)
+			{
+				ClearSoloLevers();
+				StopFollowing();
+			}
 			return;
 		}
 
@@ -327,6 +347,9 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (shotObstacle != null) shotObstacle.SetActive(false);
 		if (rearObstacle != null) rearObstacle.SetActive(false);
 		PlaceTiger(start);
+		player.TryGetComponent(out playerMotor);
+		deploymentRunner = runner;
+		deploymentState = DeploymentState.Ready;
 		loadedLayout = Layout.Deployment;
 		DeploymentError = "";
 	}
@@ -389,6 +412,10 @@ public sealed class CarentanDrive : MonoBehaviour
 	{
 		if (!CanStartDeployment) return;
 
+		deploymentAt = deploymentRunner.SimulationTime;
+		deploymentState = DeploymentState.Running;
+		PlayerHealth.Died += StopDeployment;
+
 		for (int i = 0; i < DeploymentCount; i++)
 		{
 			if (!IsDeploymentSelected(i)) continue;
@@ -400,16 +427,65 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
-		deploymentStarted = true;
 		DeploymentError = "";
 	}
 
 	public void StopDeployment()
 	{
-		if (!IsDeployment) return;
+		if (!DeploymentStarted) return;
 
-		deploymentStarted = false;
+		deploymentDuration = DeploymentSeconds;
+		deploymentState = DeploymentState.Stopped;
+		if (PlayerHealth != null) PlayerHealth.Died -= StopDeployment;
+
+		ClearSoloLevers();
 		for (int i = 0; i < DeploymentCount; i++) GetDeployed(i)?.StopActions();
+	}
+
+	private void UpdateSoloLevers()
+	{
+		if (playerMotor == null) return;
+
+		Keyboard keys = Keyboard.current;
+		if (!DeploymentStarted || !DeploymentSoloDrive || !Application.isFocused || keys == null
+			|| !sceneLink.IsReady || !playerMotor.CanDriveSolo)
+		{
+			ClearSoloLevers();
+			return;
+		}
+
+		TankTestMode mode = sceneLink.Interior.Mode;
+		if (!mode.IsInterior || mode.IsObserving)
+		{
+			ClearSoloLevers();
+			return;
+		}
+
+		bool forward = keys.wKey.isPressed;
+		bool reverse = keys.sKey.isPressed;
+		bool left = keys.aKey.isPressed;
+		bool right = keys.dKey.isPressed;
+		if (!soloArmed)
+		{
+			soloArmed = !(forward || reverse || left || right);
+			return;
+		}
+
+		int drive = (forward ? 1 : 0) - (reverse ? 1 : 0);
+		int turn = (right ? 1 : 0) - (left ? 1 : 0);
+		playerMotor.SetSoloLevers(new Vector2(Mathf.Clamp(drive + turn, -1, 1),
+			Mathf.Clamp(drive - turn, -1, 1)) * soloLever);
+	}
+
+	private void ClearSoloLevers()
+	{
+		soloArmed = false;
+		if (playerMotor != null) playerMotor.SetSoloLevers(Vector2.zero);
+	}
+
+	private void OnApplicationFocus(bool focused)
+	{
+		if (!focused) ClearSoloLevers();
 	}
 
 	[ContextMenu("Start Sherman Patrol")]
@@ -594,6 +670,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	{
 		if (!CanObserve || !sceneLink.Interior.Mode.TryObserve(followCamera, followAudio)) return;
 
+		ClearSoloLevers();
 		showTop = false;
 		showOverview = false;
 		observedHull = hull;
@@ -605,6 +682,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	{
 		if (!CanObserve || entryOverview == null || !sceneLink.Interior.Mode.TryObserve(followCamera, followAudio)) return;
 
+		ClearSoloLevers();
 		showTop = false;
 		showOverview = true;
 		observedHull = null;
@@ -617,6 +695,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (!IsDeployment || !CanObserve || deploymentTop == null
 			|| !sceneLink.Interior.Mode.TryObserve(followCamera, followAudio)) return;
 
+		ClearSoloLevers();
 		showTop = true;
 		showOverview = true;
 		observedHull = null;
@@ -635,6 +714,8 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void LateUpdate()
 	{
+		if (IsDeployment) UpdateSoloLevers();
+
 		if (followCamera == null || !followCamera.enabled) return;
 		if (showTop) FitDeploymentTop();
 		if (showOverview) return;
