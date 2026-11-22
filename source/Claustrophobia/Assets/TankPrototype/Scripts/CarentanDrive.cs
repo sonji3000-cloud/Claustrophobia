@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,10 +21,28 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("진입 비교 · 2대 동시")] EntryTogether,
 		[InspectorName("맵 변경 · 중앙 연결로 주행")] CentralDrive,
 		[InspectorName("맵 변경 · 시장 서쪽 틈 교전")] WestGap,
-		[InspectorName("4대 배치 디버그")] Deployment
+		[InspectorName("적 배치 디버그")] Deployment
 	}
 
-	[System.Serializable]
+	[Flags]
+	private enum DeploymentEnemies
+	{
+		None = 0,
+		A = 1 << 0,
+		B = 1 << 1,
+		C = 1 << 2,
+		D = 1 << 3,
+		All = A | B | C | D
+	}
+
+	private enum DeploymentStart
+	{
+		[InspectorName("남쪽 도로")] SouthRoad,
+		[InspectorName("남쪽 코너")] SouthCorner,
+		[InspectorName("서쪽 틈 건물 뒤")] WestGap
+	}
+
+	[Serializable]
 	private sealed class DeploymentSlot
 	{
 		public Transform Spawn;
@@ -75,9 +94,14 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform westGapCover;
 	[SerializeField] private Transform westGapOpening;
 
-	[Header("4대 배치 디버그 · A / B / C / D")]
+	[Header("적 배치 디버그 · A / B / C / D")]
+	[SerializeField] private DeploymentEnemies deploymentEnemies = DeploymentEnemies.All;
+	[SerializeField] private DeploymentStart deploymentStart;
 	[SerializeField] private DeploymentSlot[] deployment;
 	[SerializeField] private Transform deploymentTiger;
+	[SerializeField] private Transform deploymentCorner;
+	[SerializeField] private Transform deploymentCover;
+	[SerializeField] private Transform deploymentGoal;
 	[SerializeField] private Transform deploymentTop;
 	[SerializeField, Min(1f)] private float topHalfWidth = 145f;
 	[SerializeField, Min(1f)] private float topHalfDepth = 132f;
@@ -117,6 +141,14 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool IsWestGap => layout == Layout.WestGap;
 	public bool IsDeployment => layout == Layout.Deployment;
 	public bool CanObserve => followCamera != null && sceneLink != null && sceneLink.IsReady;
+	public Transform DeploymentPoint => deploymentStart switch
+	{
+		DeploymentStart.SouthCorner => deploymentCorner,
+		DeploymentStart.WestGap => westGapCover,
+		_ => deploymentTiger
+	};
+	public Transform DeploymentCover => deploymentCover;
+	public Transform DeploymentGoal => deploymentGoal;
 	public bool DeploymentStarted => deploymentStarted;
 	public string DeploymentError { get; private set; } = "";
 	public TankSceneLink.Stage SceneStage => sceneLink != null ? sceneLink.CurrentStage : TankSceneLink.Stage.Idle;
@@ -131,11 +163,13 @@ public sealed class CarentanDrive : MonoBehaviour
 	{
 		get
 		{
-			if (!IsDeployment || deploymentStarted || sceneLink == null || !sceneLink.IsReady
+			if (!IsDeployment || loadedLayout != Layout.Deployment || deploymentStarted || sceneLink == null || !sceneLink.IsReady
 				|| PlayerHealth == null || PlayerHealth.Destroyed) return false;
 
 			for (int i = 0; i < DeploymentCount; i++)
 			{
+				if (!IsDeploymentSelected(i)) continue;
+
 				TankAI tank = GetDeployed(i);
 				if (tank == null || !tank.CanAct || tank.Combat == null) return false;
 			}
@@ -143,6 +177,9 @@ public sealed class CarentanDrive : MonoBehaviour
 			return true;
 		}
 	}
+
+	public bool IsDeploymentSelected(int index) => (uint)index < DeploymentCount
+		&& ((int)deploymentEnemies & (1 << index)) != 0;
 
 	public TankAI GetDeployed(int index)
 	{
@@ -237,18 +274,29 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void PrepareDeployment(NetworkRunner runner, TankControl player)
 	{
-		if (GetDeployed(0) != null && loadedLayout == Layout.Deployment) return;
-		if (deployment == null || deployment.Length != DeploymentCount || !CanPlaceTiger(player, deploymentTiger))
+		if (loadedLayout == Layout.Deployment) return;
+
+		Transform start = DeploymentPoint;
+		if (!CanPlaceTiger(player, start))
 		{
-			ReportDeploymentError("4대 배치 또는 Tiger 출발점이 연결되지 않았습니다.");
+			ReportDeploymentError("Tiger 전차 또는 선택한 출발점이 연결되지 않았습니다.");
+			return;
+		}
+
+		if ((deploymentEnemies & DeploymentEnemies.All) != DeploymentEnemies.None
+			&& (deployment == null || deployment.Length != DeploymentCount || enemyPrefab == null))
+		{
+			ReportDeploymentError("적 배치 슬롯 또는 전차 프리팹이 연결되지 않았습니다.");
 			return;
 		}
 
 		for (int i = 0; i < DeploymentCount; i++)
 		{
+			if (!IsDeploymentSelected(i)) continue;
+
 			DeploymentSlot slot = deployment[i];
 			if (slot != null && slot.Spawn != null && slot.Waypoints != null && slot.Waypoints.Length != 0
-				&& System.Array.TrueForAll(slot.Waypoints, point => point != null)) continue;
+				&& Array.TrueForAll(slot.Waypoints, point => point != null)) continue;
 
 			ReportDeploymentError($"{DeploymentNames[i]}의 시작점 또는 경유점이 빠졌습니다.");
 			return;
@@ -256,13 +304,16 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		for (int i = 0; i < DeploymentCount; i++)
 		{
+			if (!IsDeploymentSelected(i)) continue;
+
 			TankAI tank = SpawnEnemy(runner, deployment[i].Spawn);
 			deployed[i] = tank;
 			if (tank == null || tank.Combat == null)
 			{
 				for (int j = 0; j <= i; j++)
 				{
-					if (deployed[j] != null) runner.Despawn(deployed[j].Object);
+					TankAI spawned = GetDeployed(j);
+					if (spawned != null) runner.Despawn(spawned.Object);
 					deployed[j] = null;
 				}
 
@@ -275,7 +326,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		if (shotObstacle != null) shotObstacle.SetActive(false);
 		if (rearObstacle != null) rearObstacle.SetActive(false);
-		PlaceTiger(deploymentTiger);
+		PlaceTiger(start);
 		loadedLayout = Layout.Deployment;
 		DeploymentError = "";
 	}
@@ -340,6 +391,8 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		for (int i = 0; i < DeploymentCount; i++)
 		{
+			if (!IsDeploymentSelected(i)) continue;
+
 			if (deployed[i].Combat.StartPatrol(deployment[i].Waypoints)) continue;
 
 			StopDeployment();

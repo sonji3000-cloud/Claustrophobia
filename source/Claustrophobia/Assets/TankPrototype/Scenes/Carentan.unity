@@ -11771,6 +11771,8 @@ MonoBehaviour:
   - {fileID: 802104031}
   westGapCover: {fileID: 802104041}
   westGapOpening: {fileID: 802104051}
+  deploymentEnemies: 15
+  deploymentStart: 0
   deployment:
   - Spawn: {fileID: 802105031}
     Waypoints:
@@ -11794,6 +11796,9 @@ MonoBehaviour:
     Waypoints:
     - {fileID: 802104031}
   deploymentTiger: {fileID: 802105011}
+  deploymentCorner: {fileID: 802105191}
+  deploymentCover: {fileID: 802105151}
+  deploymentGoal: {fileID: 802105161}
   deploymentTop: {fileID: 802105021}
   topHalfWidth: 145
   topHalfDepth: 132
@@ -20503,6 +20508,7 @@ Transform:
   - {fileID: 802105161}
   - {fileID: 802105171}
   - {fileID: 802105181}
+  - {fileID: 802105191}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &802105010
@@ -20531,6 +20537,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -85, y: 0.15, z: -92}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 802105001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &802105190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 802105191}
+  m_Layer: 0
+  m_Name: Tiger Start - South Corner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &802105191
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802105190}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 65, y: 0.15, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -27,14 +27,18 @@ public sealed class CarentanDriveEditor : Editor
 			return;
 		}
 
-		using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
-			DrawDefaultInspector();
-
 		if (!EditorApplication.isPlaying)
 		{
-			EditorGUILayout.HelpBox("Layout에서 시험 배치를 고른 다음 Play를 누르세요.", MessageType.Info);
+			DrawEditSettings(drive.IsDeployment);
+			string hint = drive.IsDeployment
+				? "적 선택과 Tiger 출발점을 고른 다음 Play를 누르세요. 적을 모두 해제하면 Tiger 주행만 시험합니다."
+				: "Layout에서 시험 배치를 고른 다음 Play를 누르세요.";
+			EditorGUILayout.HelpBox(hint, MessageType.Info);
 			return;
 		}
+
+		using (new EditorGUI.DisabledScope(true))
+			DrawDefaultInspector();
 
 		TankAI enemy = drive.Enemy;
 		TankCombat combat = enemy != null ? enemy.Combat : null;
@@ -138,6 +142,32 @@ public sealed class CarentanDriveEditor : Editor
 		DrawEntryTank("서쪽 Sherman", ai);
 	}
 
+	private void DrawEditSettings(bool isDeployment)
+	{
+		serializedObject.Update();
+		if (isDeployment)
+		{
+			SerializedProperty enemies = serializedObject.FindProperty("deploymentEnemies");
+			int selected = enemies.intValue;
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.PrefixLabel("적 선택");
+				for (int i = 0; i < DeploymentLabels.Length; i++)
+				{
+					int bit = 1 << i;
+					bool enabled = EditorGUILayout.ToggleLeft(DeploymentLabels[i], (selected & bit) != 0);
+					selected = enabled ? selected | bit : selected & ~bit;
+				}
+			}
+
+			if (enemies.intValue != selected) enemies.intValue = selected;
+			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentStart"), new GUIContent("Tiger 출발점"));
+		}
+
+		DrawPropertiesExcluding(serializedObject, "deploymentEnemies", "deploymentStart");
+		serializedObject.ApplyModifiedProperties();
+	}
+
 	private static void DrawDeployment(CarentanDrive drive)
 	{
 		using (new EditorGUILayout.HorizontalScope())
@@ -164,6 +194,8 @@ public sealed class CarentanDriveEditor : Editor
 
 				for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
 				{
+					if (!drive.IsDeploymentSelected(i)) continue;
+
 					TankAI tank = drive.GetDeployed(i);
 					using (new EditorGUI.DisabledScope(tank == null))
 						if (GUILayout.Button(DeploymentLabels[i])) drive.ObserveEnemy(tank);
@@ -182,8 +214,12 @@ public sealed class CarentanDriveEditor : Editor
 			EditorGUILayout.LabelField("Tiger HP / 피격", $"{drive.PlayerHealth.CurrentHP:F0} / {drive.PlayerHealth.DamageHitCount}회");
 
 		EditorGUILayout.Space();
+		bool hasEnemies = false;
 		for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
 		{
+			if (!drive.IsDeploymentSelected(i)) continue;
+
+			hasEnemies = true;
 			TankAI tank = drive.GetDeployed(i);
 			string label = DeploymentLabels[i];
 			if (tank == null)
@@ -201,6 +237,8 @@ public sealed class CarentanDriveEditor : Editor
 			else if (combat.LastStopReason.Length > 0 && drive.DeploymentStarted)
 				EditorGUILayout.HelpBox($"{label} · {combat.LastStopReason}", MessageType.Info);
 		}
+
+		if (!hasEnemies) EditorGUILayout.LabelField("적 선택", "없음");
 	}
 
 	private static void DrawEntryTest(CarentanDrive drive)
@@ -274,7 +312,20 @@ public sealed class CarentanDriveEditor : Editor
 	private void OnSceneGUI()
 	{
 		var drive = (CarentanDrive)target;
-		if (drive.IsDeployment) return;
+		if (drive.IsDeployment)
+		{
+			Transform start = drive.DeploymentPoint;
+			DrawPoint(start, "Tiger 출발", Color.cyan);
+			if (start != null)
+			{
+				using (new Handles.DrawingScope(Color.cyan))
+					Handles.ArrowHandleCap(0, start.position + Vector3.up * .3f, start.rotation, 4f, EventType.Repaint);
+			}
+
+			DrawPoint(drive.DeploymentCover, "남쪽 엄폐 후보", new Color(1f, .5f, .2f));
+			DrawPoint(drive.DeploymentGoal, "중앙 상단 공터", Color.yellow);
+			return;
+		}
 		if (drive.IsEntryTest)
 		{
 			DrawEntryRoute("southEntrySpawn", "southEntryPatrol", "남쪽", Color.yellow);
@@ -329,6 +380,7 @@ public sealed class CarentanDriveEditor : Editor
 
 	private static void DrawPoint(Transform point, string label, Color color)
 	{
+		if (point == null) return;
 
 		using (new Handles.DrawingScope(color))
 		{
