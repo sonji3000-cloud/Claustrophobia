@@ -6036,6 +6036,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6043,6 +6047,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1323364663}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1323364664}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1323364666}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1323364665}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &241569698 stripped
 Transform:
@@ -12567,6 +12580,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12574,6 +12591,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1860875559}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1860875560}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1860875562}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1860875561}
   m_SourcePrefab: {fileID: 100100000, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
 --- !u!4 &541072982 stripped
 Transform:
@@ -20018,6 +20044,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -20025,15 +20055,19 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
       insertIndex: -1
       addedObject: {fileID: 852070588}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 852070589}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 852070591}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 852070590}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &852070584 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4191345106234770, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
-  m_PrefabInstance: {fileID: 852070583}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &852070585 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
   m_PrefabInstance: {fileID: 852070583}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &852070588
@@ -20050,9 +20084,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 852070585}
+  - {fileID: 852070589}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &852070589
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3939468}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &852070590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3939468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 852070589}
+  fragments: []
+--- !u!54 &852070591
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3939468}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &861092422
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24135,6 +24240,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -24142,15 +24251,19 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1053145306}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1053145307}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1053145309}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1053145308}
   m_SourcePrefab: {fileID: 100100000, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
 --- !u!4 &1053145302 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 196039905771751878, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
-  m_PrefabInstance: {fileID: 1053145301}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &1053145303 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
   m_PrefabInstance: {fileID: 1053145301}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1053145306
@@ -24167,9 +24280,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 1053145303}
+  - {fileID: 1053145307}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &1053145307
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299832003}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &1053145308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299832003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 1053145307}
+  fragments: []
+--- !u!54 &1053145309
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299832003}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1074492131
 GameObject:
   m_ObjectHideFlags: 0
@@ -28400,6 +28584,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -28407,6 +28595,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2055470399}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2055470400}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2055470402}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2055470401}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &1211362308 stripped
 Transform:
@@ -28530,6 +28727,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -28537,6 +28738,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1697861432}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1697861433}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1697861435}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1697861434}
   m_SourcePrefab: {fileID: 100100000, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
 --- !u!4 &1230135359 stripped
 Transform:
@@ -29528,6 +29738,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29535,15 +29749,19 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1287288517}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1287288518}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1287288520}
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1287288519}
   m_SourcePrefab: {fileID: 100100000, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
 --- !u!4 &1287288513 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 196039905771751878, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
-  m_PrefabInstance: {fileID: 1287288512}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &1287288514 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
   m_PrefabInstance: {fileID: 1287288512}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1287288517
@@ -29560,9 +29778,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 1287288514}
+  - {fileID: 1287288518}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &1287288518
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2819587}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &1287288519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2819587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 1287288518}
+  fragments: []
+--- !u!54 &1287288520
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2819587}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1291142606
 GameObject:
   m_ObjectHideFlags: 0
@@ -31939,11 +32228,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
   m_PrefabInstance: {fileID: 241569697}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &1323364660 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
-  m_PrefabInstance: {fileID: 241569697}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1323364663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31958,9 +32242,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 1323364660}
+  - {fileID: 1323364664}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &1323364664
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323364659}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &1323364665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323364659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 1323364664}
+  fragments: []
+--- !u!54 &1323364666
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323364659}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1325813205
 GameObject:
   m_ObjectHideFlags: 0
@@ -38527,11 +38882,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
   m_PrefabInstance: {fileID: 1230135358}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &1697861429 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
-  m_PrefabInstance: {fileID: 1230135358}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1697861432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38546,9 +38896,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 1697861429}
+  - {fileID: 1697861433}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &1697861433
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697861428}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &1697861434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697861428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 1697861433}
+  fragments: []
+--- !u!54 &1697861435
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697861428}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!20 &1698757515 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
@@ -41597,11 +42018,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
   m_PrefabInstance: {fileID: 541072981}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &1860875556 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
-  m_PrefabInstance: {fileID: 541072981}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1860875559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41616,9 +42032,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 1860875556}
+  - {fileID: 1860875560}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &1860875560
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1860875555}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &1860875561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1860875555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 1860875560}
+  fragments: []
+--- !u!54 &1860875562
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1860875555}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1865803780
 GameObject:
   m_ObjectHideFlags: 0
@@ -43384,6 +43871,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -43391,15 +43882,19 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1959149795}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1959149796}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1959149798}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1959149797}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &1959149791 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4191345106234770, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
-  m_PrefabInstance: {fileID: 1959149790}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &1959149792 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
   m_PrefabInstance: {fileID: 1959149790}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1959149795
@@ -43416,9 +43911,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 1959149792}
+  - {fileID: 1959149796}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &1959149796
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484720534}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &1959149797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484720534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 1959149796}
+  fragments: []
+--- !u!54 &1959149798
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484720534}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &1983087302
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44159,6 +44725,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -44166,15 +44736,19 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2012354561}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2012354562}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2012354564}
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2012354563}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &2012354557 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4191345106234770, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
-  m_PrefabInstance: {fileID: 2012354556}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &2012354558 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
   m_PrefabInstance: {fileID: 2012354556}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &2012354561
@@ -44191,9 +44765,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 2012354558}
+  - {fileID: 2012354562}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &2012354562
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240262158}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &2012354563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240262158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 2012354562}
+  fragments: []
+--- !u!54 &2012354564
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240262158}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &2014717224
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44743,11 +45388,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
   m_PrefabInstance: {fileID: 1211362307}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &2055470396 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
-  m_PrefabInstance: {fileID: 1211362307}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2055470399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44762,9 +45402,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
   drive: {fileID: 1302798521}
   colliders:
-  - {fileID: 2055470396}
+  - {fileID: 2055470400}
   passAfter: 1
   removeAfter: 5
+--- !u!136 &2055470400
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055470395}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.29
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.035, y: 0.95, z: 0.015}
+--- !u!114 &2055470401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055470395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb99b447a8723d469bd361253e4b93c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetProp
+  response: 2
+  impactSpeed: 0.1
+  pushTime: 0
+  mesh: {fileID: 0}
+  visual: {fileID: 0}
+  damagedMesh: {fileID: 0}
+  solidColliders: []
+  releasedCollider: {fileID: 2055470400}
+  fragments: []
+--- !u!54 &2055470402
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055470395}
+  serializedVersion: 5
+  m_Mass: 55
+  m_LinearDamping: 0
+  m_AngularDamping: 0.12
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &2058018537
 PrefabInstance:
   m_ObjectHideFlags: 0

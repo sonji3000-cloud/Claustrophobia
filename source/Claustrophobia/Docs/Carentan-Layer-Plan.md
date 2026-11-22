@@ -40,7 +40,7 @@ Carentan의 `Meadow`, `Road`, `Market`은 같은 Terrain에 칠하는 **Terrain 
 | 드럼통 (`oil-drum`, `oil-drum-empty`) | 굴러갈 수 있는 동적 물체 | 가볍게 닿으면 굴러가거나 넘어지고, 강한 충격을 받으면 찌그러진 상태로 바뀐다. 파손 외형은 `oil-drum-demaged`를 쓴다. |
 | 전신주 (`pole-electric`) | 지면에 고정 | 처음 닿으면 저항한다. 충격이 크거나 전차가 계속 밀면 고정이 풀리고, 전신주 전체가 동적 Rigidbody로 전환돼 넘어지거나 밀린다. |
 | 낮은 돌담 (`fence-stone`) | 구간 단위로 지면에 고정 | 충격이 크거나 전차가 계속 밀면 맞닿은 구간이 무너지고 잔해가 밀려난다. 파손 외형은 `fence-demaged-stone`을 우선 사용한다. |
-| 나무 (`tree-lime`, `tree-lime_dark`) | 지면에 고정 | 첫 전차 충돌로 통과·제거 타이머를 시작한다. |
+| 나무 (`tree-lime`, `tree-lime_dark`) | 지면에 고정. 줄기에만 콜라이더 배치 | 전차가 줄기에 부딪히면 나무가 충돌 방향으로 넘어지고 통과·제거 타이머가 시작된다. |
 
 전신주와 담벽은 충돌 직후 속도가 떨어져도 전차가 계속 밀면 넘어가거나 무너지도록 한다. 전환은 프롭당 한 번만 일어나며, 원래 자리의 고정 콜라이더를 해제하고 넘어지는 모델이나 잔해의 콜라이더로 이어받는다. 이때 전차가 기존 자리의 보이지 않는 충돌체에 막히거나 잔해에 계속 걸리지 않도록 한다. 여기서 래그돌화는 전신주나 담벽 조각이 고정 상태에서 물리에 따라 움직이는 상태로 바뀌는 동작을 뜻한다.
 
@@ -51,7 +51,7 @@ Carentan의 `Meadow`, `Road`, `Market`은 같은 Terrain에 칠하는 **Terrain 
 ## Carentan에 반영한 설정
 
 1. **접지 검사.** Carentan의 Tiger는 씬에서 `Ground` 마스크를 지정하고, Sherman에게는 `CarentanDrive`가 생성 직후 같은 마스크를 지정한다. 공유 전차 프리팹은 `Default` 마스크를 유지하므로 기존 테스트 씬의 바닥을 계속 감지한다. [접지 검사 코드](../Assets/TankPrototype/Scripts/TankGroundProbe.cs#L11) · [Carentan 주행 설정](../Assets/TankPrototype/Scripts/CarentanDrive.cs)
-2. **물리와 시야.** 기존 충돌 매트릭스에서 전차의 `Default`가 새 환경 레이어와 충돌한다. 카메라와 AI 시야 마스크는 새 레이어를 포함한다. 건물 133채는 기존 콜라이더를 사용한다. 밀림·파손·전도는 상자 12개, 드럼통 7개, 전신주 27개, 낮은 돌담 53구간에 연결했다. 전차 충돌 후 타이머는 전신주, 돌담, 나무 9그루에 연결했다. 현재 프롭 물리는 Carentan의 로컬 단일 세션을 기준으로 한다. [물리 설정](../ProjectSettings/DynamicsManager.asset) · [프롭 동작](../Assets/TankPrototype/Scripts/StreetProp.cs)
+2. **물리와 시야.** 기존 충돌 매트릭스에서 전차의 `Default`가 새 환경 레이어와 충돌한다. 카메라와 AI 시야 마스크는 새 레이어를 포함한다. 건물 133채는 기존 콜라이더를 사용한다. 밀림·파손·전도는 상자 12개, 드럼통 7개, 전신주 27개, 낮은 돌담 53구간, 나무 9그루에 연결했다. 전차 충돌 후 타이머는 전신주, 돌담, 나무에 연결했다. 현재 프롭 물리는 Carentan의 로컬 단일 세션을 기준으로 한다. [물리 설정](../ProjectSettings/DynamicsManager.asset) · [프롭 동작](../Assets/TankPrototype/Scripts/StreetProp.cs)
 3. **NavMesh.** `Town Geometry`의 `NavMeshSurface`는 지형과 건물의 콜라이더를 수집하고 `StreetProp`은 고정 베이크에서 제외한다. 프롭이 밀려난 뒤 원래 자리에 고정 경로 차단이 남지 않도록 기존 `TankFlat` 에셋을 재베이크했다. [Carentan 블록아웃과 NavMesh 설정](Carentan-Blockout.md#전차-ai용-도로-navmesh)
 
 Play Mode에서 확인할 항목은 전차 접지, 건물 충돌, 약한 충돌 시 상자와 드럼통의 밀림, 강한 충돌 시 파손, 전신주와 담벽을 저속으로 계속 밀었을 때의 통과, 주요 도로의 AI 주행이다.
