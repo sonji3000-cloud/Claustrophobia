@@ -26,6 +26,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform[] patrol;
 	[SerializeField] private Transform offRoad;
 	[SerializeField] private Camera followCamera;
+	[SerializeField] private LayerMask groundMask = 1;
 
 	[Header("시장 광장 시험")]
 	[SerializeField, Tooltip("Play를 누르기 전에 배치를 선택합니다.")] private Layout layout;
@@ -140,6 +141,7 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
+		if (player.TryGetComponent(out TankGroundProbe ground)) ground.SetGroundMask(groundMask);
 		enemy = SpawnEnemy(runner, spawn);
 		if (enemy != null)
 		{
@@ -160,6 +162,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		NetworkObject tank = runner.Spawn(enemyPrefab, spawn.position, spawn.rotation);
 		if (tank == null) return null;
+		if (tank.TryGetComponent(out TankGroundProbe ground)) ground.SetGroundMask(groundMask);
 		if (tank.TryGetComponent(out TankAI ai) && ai.SetMoveMode(TankAI.MoveMode.NavMesh)) return ai;
 
 		runner.Despawn(tank);

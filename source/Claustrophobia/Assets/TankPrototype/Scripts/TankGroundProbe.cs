@@ -65,6 +65,13 @@ public sealed class TankGroundProbe : MonoBehaviour
 
 	public GroundPoint ReadPoint(int index) => points[index];
 
+	public void SetGroundMask(LayerMask mask)
+	{
+		groundMask = mask;
+		hasNormal = false;
+		Sample();
+	}
+
 	public void Sample()
 	{
 		HitCount = 0;
