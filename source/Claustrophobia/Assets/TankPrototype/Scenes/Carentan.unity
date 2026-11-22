@@ -259,6 +259,16 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2260981}
   m_Mesh: {fileID: 4300004, guid: 6139899100fd148929eb369b4a2a208a, type: 3}
+--- !u!1 &2819587 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+  m_PrefabInstance: {fileID: 1287288512}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3939468 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 852070583}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6896115
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -336,6 +346,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6896123}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6896126}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &6896116 stripped
 Transform:
@@ -444,6 +457,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6896126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6896117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 6896120}
+  - {fileID: 6896119}
+  - {fileID: 6896118}
+  - {fileID: 6896123}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &9187798
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,6 +698,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 10073712}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 10073715}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &10073705 stripped
 Transform:
@@ -773,6 +809,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &10073715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 10073706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 10073709}
+  - {fileID: 10073708}
+  - {fileID: 10073707}
+  - {fileID: 10073712}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &13362930
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,6 +951,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 19597576}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 19597579}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &19597571 stripped
 Transform:
@@ -991,6 +1050,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &19597579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19597572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 19597573}
+  - {fileID: 19597576}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &22267037
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2297,6 +2374,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 75332021}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 75332024}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &75332014 stripped
 Transform:
@@ -2405,6 +2485,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &75332024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75332015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 75332018}
+  - {fileID: 75332017}
+  - {fileID: 75332016}
+  - {fileID: 75332021}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &77719607
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2478,6 +2578,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 77719613}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 77719616}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &77719608 stripped
 Transform:
@@ -2574,6 +2677,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &77719616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 77719609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 77719610}
+  - {fileID: 77719613}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &80152723
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2655,6 +2776,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 80152731}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 80152734}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &80152724 stripped
 Transform:
@@ -2763,6 +2887,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &80152734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80152725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 80152728}
+  - {fileID: 80152727}
+  - {fileID: 80152726}
+  - {fileID: 80152731}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &86892288
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3218,6 +3362,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 119836986}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 119836989}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &119836979 stripped
 Transform:
@@ -3326,6 +3473,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &119836989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 119836980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 119836983}
+  - {fileID: 119836982}
+  - {fileID: 119836981}
+  - {fileID: 119836986}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &128466503
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3407,6 +3574,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 128466511}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 128466514}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &128466504 stripped
 Transform:
@@ -3515,6 +3685,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &128466514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128466505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 128466508}
+  - {fileID: 128466507}
+  - {fileID: 128466506}
+  - {fileID: 128466511}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &130585838
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3596,6 +3786,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 130585846}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 130585849}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &130585839 stripped
 Transform:
@@ -3704,6 +3897,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &130585849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130585840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 130585843}
+  - {fileID: 130585842}
+  - {fileID: 130585841}
+  - {fileID: 130585846}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &134190527
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3781,6 +3994,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 134190535}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 134190538}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &134190528 stripped
 Transform:
@@ -3889,6 +4105,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &134190538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134190529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 134190532}
+  - {fileID: 134190531}
+  - {fileID: 134190530}
+  - {fileID: 134190535}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &135054090
 GameObject:
   m_ObjectHideFlags: 0
@@ -4141,6 +4377,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 145457488}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 145457491}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &145457481 stripped
 Transform:
@@ -4249,6 +4488,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &145457491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145457482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 145457485}
+  - {fileID: 145457484}
+  - {fileID: 145457483}
+  - {fileID: 145457488}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &150664632
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5349,6 +5608,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 224090572}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 224090575}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &224090565 stripped
 Transform:
@@ -5457,6 +5719,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &224090575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 224090566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 224090569}
+  - {fileID: 224090568}
+  - {fileID: 224090567}
+  - {fileID: 224090572}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &236083513
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5681,6 +5963,11 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &240262158 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 2012354556}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &241569697
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5752,7 +6039,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1323364663}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &241569698 stripped
 Transform:
@@ -6775,6 +7065,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 288184754}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 288184757}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &288184747 stripped
 Transform:
@@ -6883,6 +7176,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &288184757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288184748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 288184751}
+  - {fileID: 288184750}
+  - {fileID: 288184749}
+  - {fileID: 288184754}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &293958595
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7058,6 +7371,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 298265317}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 298265320}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &298265310 stripped
 Transform:
@@ -7166,6 +7482,31 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &298265320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 298265311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 298265314}
+  - {fileID: 298265313}
+  - {fileID: 298265312}
+  - {fileID: 298265317}
+  passAfter: 1
+  removeAfter: 5
+--- !u!1 &299832003 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+  m_PrefabInstance: {fileID: 1053145301}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &302154335
 GameObject:
   m_ObjectHideFlags: 0
@@ -7530,6 +7871,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 308300669}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 308300672}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &308300662 stripped
 Transform:
@@ -7638,6 +7982,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &308300672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308300663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 308300666}
+  - {fileID: 308300665}
+  - {fileID: 308300664}
+  - {fileID: 308300669}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &311284561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7719,6 +8083,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 311284569}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 311284572}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &311284562 stripped
 Transform:
@@ -7827,6 +8194,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &311284572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311284563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 311284566}
+  - {fileID: 311284565}
+  - {fileID: 311284564}
+  - {fileID: 311284569}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &313619018
 GameObject:
   m_ObjectHideFlags: 0
@@ -7957,6 +8344,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 315105587}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 315105590}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &315105580 stripped
 Transform:
@@ -8065,6 +8455,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &315105590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 315105581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 315105584}
+  - {fileID: 315105583}
+  - {fileID: 315105582}
+  - {fileID: 315105587}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &318130738
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8138,6 +8548,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 318130744}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 318130747}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &318130739 stripped
 Transform:
@@ -8234,6 +8647,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &318130747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318130740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 318130741}
+  - {fileID: 318130744}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &329505545
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8315,6 +8746,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 329505553}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 329505556}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &329505546 stripped
 Transform:
@@ -8423,6 +8857,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &329505556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329505547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 329505550}
+  - {fileID: 329505549}
+  - {fileID: 329505548}
+  - {fileID: 329505553}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -8641,6 +9095,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 339225983}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 339225986}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &339225976 stripped
 Transform:
@@ -8749,6 +9206,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &339225986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339225977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 339225980}
+  - {fileID: 339225979}
+  - {fileID: 339225978}
+  - {fileID: 339225983}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &339414616
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8830,6 +9307,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 339414624}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 339414627}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &339414617 stripped
 Transform:
@@ -8938,6 +9418,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &339414627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339414618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 339414621}
+  - {fileID: 339414620}
+  - {fileID: 339414619}
+  - {fileID: 339414624}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &369874524
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9113,6 +9613,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 372250096}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 372250099}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &372250089 stripped
 Transform:
@@ -9221,6 +9724,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &372250099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372250090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 372250093}
+  - {fileID: 372250092}
+  - {fileID: 372250091}
+  - {fileID: 372250096}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &395506903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9710,6 +10233,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 410966341}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 410966344}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &410966336 stripped
 Transform:
@@ -9806,6 +10332,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &410966344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410966337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 410966338}
+  - {fileID: 410966341}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &417540823
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9879,6 +10423,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 417540829}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 417540832}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &417540824 stripped
 Transform:
@@ -9975,6 +10522,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &417540832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417540825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 417540826}
+  - {fileID: 417540829}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &421528006
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10236,6 +10801,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 430103079}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 430103082}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &430103074 stripped
 Transform:
@@ -10332,6 +10900,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &430103082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 430103075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 430103076}
+  - {fileID: 430103079}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &443167706
 GameObject:
   m_ObjectHideFlags: 0
@@ -10462,6 +11048,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 445594798}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 445594801}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &445594791 stripped
 Transform:
@@ -10570,6 +11159,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &445594801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 445594792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 445594795}
+  - {fileID: 445594794}
+  - {fileID: 445594793}
+  - {fileID: 445594798}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &447458575
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10745,6 +11354,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 459666767}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 459666770}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &459666760 stripped
 Transform:
@@ -10853,6 +11465,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &459666770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459666761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 459666764}
+  - {fileID: 459666763}
+  - {fileID: 459666762}
+  - {fileID: 459666767}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &469524652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11513,6 +12145,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 509157115}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 509157118}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &509157110 stripped
 Transform:
@@ -11609,6 +12244,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &509157118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 509157111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 509157112}
+  - {fileID: 509157115}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &510763387
 GameObject:
   m_ObjectHideFlags: 0
@@ -11917,7 +12570,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1860875559}
   m_SourcePrefab: {fileID: 100100000, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
 --- !u!4 &541072982 stripped
 Transform:
@@ -12005,6 +12661,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 543338098}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 543338101}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &543338091 stripped
 Transform:
@@ -12113,6 +12772,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &543338101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543338092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 543338095}
+  - {fileID: 543338094}
+  - {fileID: 543338093}
+  - {fileID: 543338098}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &543687135
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12280,6 +12959,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 545022663}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 545022666}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &545022658 stripped
 Transform:
@@ -12376,6 +13058,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &545022666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 545022659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 545022660}
+  - {fileID: 545022663}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &548371937
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14058,6 +14758,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 660246780}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 660246783}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &660246773 stripped
 Transform:
@@ -14166,6 +14869,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &660246783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 660246774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 660246777}
+  - {fileID: 660246776}
+  - {fileID: 660246775}
+  - {fileID: 660246780}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &666604087
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14481,6 +15204,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 684164032}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 684164035}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &684164025 stripped
 Transform:
@@ -14589,6 +15315,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &684164035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684164026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 684164029}
+  - {fileID: 684164028}
+  - {fileID: 684164027}
+  - {fileID: 684164032}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &694559575
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16312,6 +17058,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 763568889}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 763568892}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &763568884 stripped
 Transform:
@@ -16408,6 +17157,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &763568892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 763568885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 763568886}
+  - {fileID: 763568889}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &764805683
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18094,6 +18861,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 808036751}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 808036754}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &808036746 stripped
 Transform:
@@ -18190,6 +18960,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &808036754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 808036747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 808036748}
+  - {fileID: 808036751}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &813672056
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18357,6 +19145,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 813813876}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 813813879}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &813813871 stripped
 Transform:
@@ -18453,6 +19244,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &813813879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813813872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 813813873}
+  - {fileID: 813813876}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &824929682
 GameObject:
   m_ObjectHideFlags: 0
@@ -18583,6 +19392,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 825738761}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 825738764}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &825738754 stripped
 Transform:
@@ -18691,6 +19503,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &825738764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825738755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 825738758}
+  - {fileID: 825738757}
+  - {fileID: 825738756}
+  - {fileID: 825738761}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &832407807
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18764,6 +19596,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 832407813}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 832407816}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &832407808 stripped
 Transform:
@@ -18860,6 +19695,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &832407816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832407809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 832407810}
+  - {fileID: 832407813}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &834355851
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19168,13 +20021,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 852070588}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &852070584 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4191345106234770, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
   m_PrefabInstance: {fileID: 852070583}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &852070585 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 852070583}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &852070588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3939468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 852070585}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &861092422
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19649,6 +20527,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 872305873}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 872305876}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &872305866 stripped
 Transform:
@@ -19757,6 +20638,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &872305876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872305867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 872305870}
+  - {fileID: 872305869}
+  - {fileID: 872305868}
+  - {fileID: 872305873}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &899098828
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19981,6 +20882,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 901601783}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 901601786}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &901601776 stripped
 Transform:
@@ -20089,6 +20993,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &901601786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901601777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 901601780}
+  - {fileID: 901601779}
+  - {fileID: 901601778}
+  - {fileID: 901601783}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &905045684
 GameObject:
   m_ObjectHideFlags: 0
@@ -20680,6 +21604,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 929595647}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 929595650}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &929595640 stripped
 Transform:
@@ -20788,6 +21715,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &929595650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929595641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 929595644}
+  - {fileID: 929595643}
+  - {fileID: 929595642}
+  - {fileID: 929595647}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &936563029
 GameObject:
   m_ObjectHideFlags: 0
@@ -21556,6 +22503,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 973627823}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 973627826}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &973627818 stripped
 Transform:
@@ -21652,6 +22602,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &973627826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 973627819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 973627820}
+  - {fileID: 973627823}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &977323102
 GameObject:
   m_ObjectHideFlags: 0
@@ -22036,6 +23004,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 983730123}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 983730126}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &983730118 stripped
 Transform:
@@ -22132,6 +23103,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &983730126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 983730119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 983730120}
+  - {fileID: 983730123}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &987239491
 GameObject:
   m_ObjectHideFlags: 0
@@ -23149,13 +24138,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1053145306}
   m_SourcePrefab: {fileID: 100100000, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
 --- !u!4 &1053145302 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 196039905771751878, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
   m_PrefabInstance: {fileID: 1053145301}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &1053145303 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+  m_PrefabInstance: {fileID: 1053145301}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1053145306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299832003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1053145303}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1074492131
 GameObject:
   m_ObjectHideFlags: 0
@@ -23464,6 +24478,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1081093660}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1081093663}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1081093653 stripped
 Transform:
@@ -23572,6 +24589,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1081093663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081093654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1081093657}
+  - {fileID: 1081093656}
+  - {fileID: 1081093655}
+  - {fileID: 1081093660}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1092830469
 GameObject:
   m_ObjectHideFlags: 0
@@ -23793,6 +24830,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1093551636}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1093551639}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1093551629 stripped
 Transform:
@@ -23901,6 +24941,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1093551639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093551630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1093551633}
+  - {fileID: 1093551632}
+  - {fileID: 1093551631}
+  - {fileID: 1093551636}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1099100390
 GameObject:
   m_ObjectHideFlags: 0
@@ -24007,6 +25067,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1104763133}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1104763136}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1104763128 stripped
 Transform:
@@ -24103,6 +25166,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1104763136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104763129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1104763130}
+  - {fileID: 1104763133}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1106440555
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24184,6 +25265,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1106440563}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1106440566}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1106440556 stripped
 Transform:
@@ -24292,6 +25376,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1106440566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106440557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1106440560}
+  - {fileID: 1106440559}
+  - {fileID: 1106440558}
+  - {fileID: 1106440563}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1109626786
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24599,6 +25703,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1114047794}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1114047797}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1114047789 stripped
 Transform:
@@ -24695,6 +25802,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1114047797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114047790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1114047791}
+  - {fileID: 1114047794}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1119372514
 GameObject:
   m_ObjectHideFlags: 0
@@ -25005,6 +26130,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1130282007}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1130282010}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1130282002 stripped
 Transform:
@@ -25101,6 +26229,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1130282010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1130282003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1130282004}
+  - {fileID: 1130282007}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1140081872
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25705,6 +26851,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1171033709}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1171033712}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1171033702 stripped
 Transform:
@@ -25813,6 +26962,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1171033712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171033703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1171033706}
+  - {fileID: 1171033705}
+  - {fileID: 1171033704}
+  - {fileID: 1171033709}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1173421000
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26548,6 +27717,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1193013596}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1193013599}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1193013591 stripped
 Transform:
@@ -26644,6 +27816,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1193013599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193013592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1193013593}
+  - {fileID: 1193013596}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1196291449
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26819,6 +28009,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1199739296}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1199739299}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1199739289 stripped
 Transform:
@@ -26927,6 +28120,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1199739299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1199739290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1199739293}
+  - {fileID: 1199739292}
+  - {fileID: 1199739291}
+  - {fileID: 1199739296}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1200896552
 GameObject:
   m_ObjectHideFlags: 0
@@ -27190,7 +28403,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2055470399}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &1211362308 stripped
 Transform:
@@ -27317,7 +28533,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1697861432}
   m_SourcePrefab: {fileID: 100100000, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
 --- !u!4 &1230135359 stripped
 Transform:
@@ -27828,6 +29047,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1271732745}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1271732748}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1271732738 stripped
 Transform:
@@ -27936,6 +29158,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1271732748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271732739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1271732742}
+  - {fileID: 1271732741}
+  - {fileID: 1271732740}
+  - {fileID: 1271732745}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1280572046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28289,13 +29531,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1287288517}
   m_SourcePrefab: {fileID: 100100000, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
 --- !u!4 &1287288513 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 196039905771751878, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
   m_PrefabInstance: {fileID: 1287288512}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &1287288514 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+  m_PrefabInstance: {fileID: 1287288512}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1287288517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2819587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1287288514}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1291142606
 GameObject:
   m_ObjectHideFlags: 0
@@ -28463,6 +29730,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1299424858}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1299424861}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1299424853 stripped
 Transform:
@@ -28559,6 +29829,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1299424861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1299424854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1299424855}
+  - {fileID: 1299424858}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1302798520
 GameObject:
   m_ObjectHideFlags: 0
@@ -29386,6 +30674,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1311147535}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1311147538}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1311147528 stripped
 Transform:
@@ -29494,6 +30785,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1311147538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1311147529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1311147532}
+  - {fileID: 1311147531}
+  - {fileID: 1311147530}
+  - {fileID: 1311147535}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1311734454
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29669,6 +30980,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1315119313}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1315119316}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1315119306 stripped
 Transform:
@@ -29777,6 +31091,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1315119316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315119307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1315119310}
+  - {fileID: 1315119309}
+  - {fileID: 1315119308}
+  - {fileID: 1315119313}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1317083235
 GameObject:
   m_ObjectHideFlags: 0
@@ -30203,6 +31537,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1319497942}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1319497945}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1319497937 stripped
 Transform:
@@ -30299,6 +31636,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1319497945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319497938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1319497939}
+  - {fileID: 1319497942}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1322548664
 GameObject:
   m_ObjectHideFlags: 0
@@ -30579,6 +31934,33 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1323364547}
   m_Mesh: {fileID: 4300004, guid: 6139899100fd148929eb369b4a2a208a, type: 3}
+--- !u!1 &1323364659 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 241569697}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1323364660 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 241569697}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1323364663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323364659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1323364660}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1325813205
 GameObject:
   m_ObjectHideFlags: 0
@@ -31523,6 +32905,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1796258462110620, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1374239888}
+    - targetCorrespondingSourceObject: {fileID: 1796258462110620, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1374239891}
   m_SourcePrefab: {fileID: 100100000, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
 --- !u!4 &1374239883 stripped
 Transform:
@@ -31619,6 +33004,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1374239891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1374239884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1374239885}
+  - {fileID: 1374239888}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1377903729
 GameObject:
   m_ObjectHideFlags: 0
@@ -31840,6 +33243,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1397508010}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1397508013}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1397508003 stripped
 Transform:
@@ -31948,6 +33354,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1397508013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1397508004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1397508007}
+  - {fileID: 1397508006}
+  - {fileID: 1397508005}
+  - {fileID: 1397508010}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1399218983
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32395,6 +33821,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1450566215}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1450566218}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1450566208 stripped
 Transform:
@@ -32503,6 +33932,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1450566218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450566209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1450566212}
+  - {fileID: 1450566211}
+  - {fileID: 1450566210}
+  - {fileID: 1450566215}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1451008656
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32678,6 +34127,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1470714883}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1470714886}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1470714876 stripped
 Transform:
@@ -32786,6 +34238,31 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1470714886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1470714877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1470714880}
+  - {fileID: 1470714879}
+  - {fileID: 1470714878}
+  - {fileID: 1470714883}
+  passAfter: 1
+  removeAfter: 5
+--- !u!1 &1484720534 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 1959149790}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1525345257
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32953,6 +34430,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1531586918}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1531586921}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1531586913 stripped
 Transform:
@@ -33049,6 +34529,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1531586921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531586914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1531586915}
+  - {fileID: 1531586918}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1532331105
 GameObject:
   m_ObjectHideFlags: 0
@@ -33883,6 +35381,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1568256689}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1568256692}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1568256682 stripped
 Transform:
@@ -33991,6 +35492,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1568256692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568256683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1568256686}
+  - {fileID: 1568256685}
+  - {fileID: 1568256684}
+  - {fileID: 1568256689}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1570221478
 GameObject:
   m_ObjectHideFlags: 0
@@ -34298,6 +35819,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1578283478}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1578283481}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1578283473 stripped
 Transform:
@@ -34394,6 +35918,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1578283481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578283474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1578283475}
+  - {fileID: 1578283478}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1584683366
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34712,6 +36254,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1796258462110620, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1621545593}
+    - targetCorrespondingSourceObject: {fileID: 1796258462110620, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1621545596}
   m_SourcePrefab: {fileID: 100100000, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
 --- !u!4 &1621545588 stripped
 Transform:
@@ -34808,6 +36353,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1621545596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621545589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1621545590}
+  - {fileID: 1621545593}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1622022364
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34881,6 +36444,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1622022370}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1622022373}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1622022365 stripped
 Transform:
@@ -34977,6 +36543,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1622022373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1622022366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1622022367}
+  - {fileID: 1622022370}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1622184976
 GameObject:
   m_ObjectHideFlags: 0
@@ -36090,6 +37674,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1665239388}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1665239391}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1665239383 stripped
 Transform:
@@ -36186,6 +37773,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1665239391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665239384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1665239385}
+  - {fileID: 1665239388}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1665410771
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36361,6 +37966,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1666066705}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1666066708}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1666066698 stripped
 Transform:
@@ -36469,6 +38077,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1666066708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666066699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1666066702}
+  - {fileID: 1666066701}
+  - {fileID: 1666066700}
+  - {fileID: 1666066705}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1666761144
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36894,6 +38522,33 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &1697861428 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+  m_PrefabInstance: {fileID: 1230135358}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1697861429 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+  m_PrefabInstance: {fileID: 1230135358}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1697861432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697861428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1697861429}
+  passAfter: 1
+  removeAfter: 5
 --- !u!20 &1698757515 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 2420828212194038160, guid: 61592077183ef7c4988bd6d370a34139, type: 3}
@@ -37308,6 +38963,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1707260472}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1707260475}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1707260465 stripped
 Transform:
@@ -37416,6 +39074,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1707260475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1707260466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1707260469}
+  - {fileID: 1707260468}
+  - {fileID: 1707260467}
+  - {fileID: 1707260472}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1724068730
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37825,6 +39503,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1748262836}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1748262839}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1748262829 stripped
 Transform:
@@ -37933,6 +39614,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1748262839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748262830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1748262833}
+  - {fileID: 1748262832}
+  - {fileID: 1748262831}
+  - {fileID: 1748262836}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1749075218
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38491,6 +40192,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1790883971}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1790883974}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1790883964 stripped
 Transform:
@@ -38599,6 +40303,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1790883974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1790883965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1790883968}
+  - {fileID: 1790883967}
+  - {fileID: 1790883966}
+  - {fileID: 1790883971}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1791153948
 GameObject:
   m_ObjectHideFlags: 0
@@ -38820,6 +40544,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1796258462110620, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1810375131}
+    - targetCorrespondingSourceObject: {fileID: 1796258462110620, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1810375134}
   m_SourcePrefab: {fileID: 100100000, guid: 421e609fff4b84c19a738574e121ecc9, type: 3}
 --- !u!4 &1810375126 stripped
 Transform:
@@ -38916,6 +40643,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1810375134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810375127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1810375128}
+  - {fileID: 1810375131}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1818298212
 GameObject:
   m_ObjectHideFlags: 0
@@ -39563,6 +41308,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1851037521}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1851037524}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1851037514 stripped
 Transform:
@@ -39671,6 +41419,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1851037524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1851037515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1851037518}
+  - {fileID: 1851037517}
+  - {fileID: 1851037516}
+  - {fileID: 1851037521}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1857757609
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39824,6 +41592,33 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &1860875555 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 196039905771787750, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+  m_PrefabInstance: {fileID: 541072981}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1860875556 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 196039905771885379, guid: c2a4f9a69ccd24a47b55ef88db302710, type: 3}
+  m_PrefabInstance: {fileID: 541072981}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1860875559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1860875555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1860875556}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1865803780
 GameObject:
   m_ObjectHideFlags: 0
@@ -39946,6 +41741,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1868154369}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1868154372}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &1868154364 stripped
 Transform:
@@ -40042,6 +41840,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1868154372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1868154365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1868154366}
+  - {fileID: 1868154369}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1870036366
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40898,6 +42714,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1926123095}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1926123098}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &1926123088 stripped
 Transform:
@@ -41006,6 +42825,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1926123098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926123089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1926123092}
+  - {fileID: 1926123091}
+  - {fileID: 1926123090}
+  - {fileID: 1926123095}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &1927407475
 GameObject:
   m_ObjectHideFlags: 0
@@ -41548,13 +43387,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1959149795}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &1959149791 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4191345106234770, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
   m_PrefabInstance: {fileID: 1959149790}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &1959149792 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 1959149790}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1959149795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484720534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 1959149792}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &1983087302
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -42096,6 +43960,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2002144357}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2002144360}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &2002144350 stripped
 Transform:
@@ -42204,6 +44071,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2002144360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2002144351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 2002144354}
+  - {fileID: 2002144353}
+  - {fileID: 2002144352}
+  - {fileID: 2002144357}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &2012354556
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -42275,13 +44162,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2012354561}
   m_SourcePrefab: {fileID: 100100000, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
 --- !u!4 &2012354557 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4191345106234770, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
   m_PrefabInstance: {fileID: 2012354556}
   m_PrefabAsset: {fileID: 0}
+--- !u!64 &2012354558 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 2012354556}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2012354561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240262158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 2012354558}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &2014717224
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -42363,6 +44275,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2014717232}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2014717235}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &2014717225 stripped
 Transform:
@@ -42471,6 +44386,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2014717235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2014717226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 2014717229}
+  - {fileID: 2014717228}
+  - {fileID: 2014717227}
+  - {fileID: 2014717232}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &2026590450
 GameObject:
   m_ObjectHideFlags: 0
@@ -42803,6 +44738,33 @@ MonoBehaviour:
   m_IgnoreFromBuild: 0
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffffi
+--- !u!1 &2055470395 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1773369395145292, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 1211362307}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &2055470396 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 64615876653821382, guid: b1f734b78f9b544dc95f0b2244aab889, type: 3}
+  m_PrefabInstance: {fileID: 1211362307}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2055470399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055470395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 2055470396}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &2058018537
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43148,6 +45110,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2071668197}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2071668200}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &2071668192 stripped
 Transform:
@@ -43244,6 +45209,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2071668200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071668193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 2071668194}
+  - {fileID: 2071668197}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &2073817114
 GameObject:
   m_ObjectHideFlags: 0
@@ -43911,6 +45894,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2121285206}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2121285209}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &2121285199 stripped
 Transform:
@@ -44019,6 +46005,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2121285209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2121285200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 2121285203}
+  - {fileID: 2121285202}
+  - {fileID: 2121285201}
+  - {fileID: 2121285206}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &2121324021
 GameObject:
   m_ObjectHideFlags: 0
@@ -44217,6 +46223,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2123744240}
+    - targetCorrespondingSourceObject: {fileID: 1579609964871906, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2123744243}
   m_SourcePrefab: {fileID: 100100000, guid: fb4e0e62686034ff8800e6dfaef37404, type: 3}
 --- !u!4 &2123744235 stripped
 Transform:
@@ -44313,6 +46322,24 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2123744243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123744236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 2123744237}
+  - {fileID: 2123744240}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1001 &2127342574
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44394,6 +46421,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2127342582}
+    - targetCorrespondingSourceObject: {fileID: 1785892023854868, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2127342585}
   m_SourcePrefab: {fileID: 100100000, guid: 452e588e175ad40b58ddf3baaa367518, type: 3}
 --- !u!4 &2127342575 stripped
 Transform:
@@ -44502,6 +46532,26 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2127342585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127342576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c464a028ac6d34caf3f18903a2074a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StreetPropLifetime
+  drive: {fileID: 1302798521}
+  colliders:
+  - {fileID: 2127342579}
+  - {fileID: 2127342578}
+  - {fileID: 2127342577}
+  - {fileID: 2127342582}
+  passAfter: 1
+  removeAfter: 5
 --- !u!1 &2128203048
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,6 +17,7 @@ public sealed class StreetProp : MonoBehaviour
 	[SerializeField] private Rigidbody[] fragments;
 
 	private Rigidbody body;
+	private StreetPropLifetime lifetime;
 	private Rigidbody pushingTank;
 	private double lastPush = double.NegativeInfinity;
 	private float pushedFor;
@@ -25,6 +26,7 @@ public sealed class StreetProp : MonoBehaviour
 	private void Awake()
 	{
 		body = GetComponent<Rigidbody>();
+		TryGetComponent(out lifetime);
 	}
 
 	private void OnCollisionEnter(Collision collision) => CheckImpact(collision);
@@ -66,6 +68,7 @@ public sealed class StreetProp : MonoBehaviour
 				body.angularVelocity = Vector3.Cross(Vector3.up, dir) * 1.7f;
 				break;
 		}
+		if (lifetime != null) lifetime.RefreshTankContacts();
 	}
 
 	private bool IsPushed(Rigidbody tank, TankMotor motor, Vector3 dir)

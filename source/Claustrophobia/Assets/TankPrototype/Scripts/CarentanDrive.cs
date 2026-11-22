@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -70,6 +71,9 @@ public sealed class CarentanDrive : MonoBehaviour
 	private Layout loadedLayout;
 	private NetworkTransform playerMotion;
 	private Rigidbody playerBody;
+	private readonly HashSet<Rigidbody> registeredTanks = new();
+	private readonly List<Collider> tankColliders = new();
+	private readonly List<StreetPropLifetime> openProps = new();
 
 	public TankAI Enemy => enemy;
 	public TankAI WestEnemy => IsWestOnly ? enemy : westEnemy;
@@ -142,6 +146,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		}
 
 		if (player.TryGetComponent(out TankGroundProbe ground)) ground.SetGroundMask(groundMask);
+		RegisterTank(player.gameObject);
 		enemy = SpawnEnemy(runner, spawn);
 		if (enemy != null)
 		{
@@ -163,11 +168,39 @@ public sealed class CarentanDrive : MonoBehaviour
 		NetworkObject tank = runner.Spawn(enemyPrefab, spawn.position, spawn.rotation);
 		if (tank == null) return null;
 		if (tank.TryGetComponent(out TankGroundProbe ground)) ground.SetGroundMask(groundMask);
-		if (tank.TryGetComponent(out TankAI ai) && ai.SetMoveMode(TankAI.MoveMode.NavMesh)) return ai;
+		if (tank.TryGetComponent(out TankAI ai) && ai.SetMoveMode(TankAI.MoveMode.NavMesh))
+		{
+			RegisterTank(tank.gameObject);
+			return ai;
+		}
 
 		runner.Despawn(tank);
 		return null;
 	}
+
+	internal void RegisterTank(GameObject tank)
+	{
+		if (!tank.TryGetComponent(out Rigidbody body) || !registeredTanks.Add(body)) return;
+		for (int i = tankColliders.Count - 1; i >= 0; i--)
+			if (tankColliders[i] == null) tankColliders.RemoveAt(i);
+
+		foreach (Collider collider in tank.GetComponentsInChildren<Collider>(true))
+		{
+			if (collider.isTrigger || collider.attachedRigidbody != body || tankColliders.Contains(collider)) continue;
+			tankColliders.Add(collider);
+			foreach (StreetPropLifetime prop in openProps)
+				prop.IgnoreTank(collider);
+		}
+	}
+
+	internal void OpenProp(StreetPropLifetime prop)
+	{
+		if (!openProps.Contains(prop)) openProps.Add(prop);
+		foreach (Collider collider in tankColliders)
+			prop.IgnoreTank(collider);
+	}
+
+	internal void ForgetProp(StreetPropLifetime prop) => openProps.Remove(prop);
 
 	private void Update()
 	{
