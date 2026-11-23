@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using UnityEngine.SceneManagement;
 public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 {
 	public enum State { Idle, Starting, Running, Stopped, Failed }
+
+	private sealed class RetryHost : MonoBehaviour { }
 
 	private static readonly NetworkObjectGuid CrewPlayerGuid = NetworkObjectGuid.Parse("9375fc0e9b7510b4ab57ee31aeb2f740");
 
@@ -29,6 +32,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	private bool sceneLoaded;
 	private bool sceneReady;
 	private bool connectedToHost;
+	private bool joinOnly;
 	private uint version;
 	private Task stopTask;
 	private CancellationTokenSource startCancel;
@@ -68,13 +72,16 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 	private async void Start() => await StartSession();
 
 	/// <summary>Returns startup success. SceneReady separately confirms the target scene callback.</summary>
-	public async Task<bool> StartSession()
+	public Task<bool> StartSession() => StartSession(false);
+
+	private async Task<bool> StartSession(bool joinOnly)
 	{
 		if (!Application.isPlaying || !isActiveAndEnabled) return false;
 		if (CurrentState != State.Idle) return CurrentState == State.Running;
 		uint request = ++version;
 		CurrentState = State.Starting;
 		LastError = null;
+		this.joinOnly = joinOnly;
 		if (sceneIndex < 0 || string.IsNullOrEmpty(scenePath))
 		{
 			EndSession("The owning scene is not enabled in Build Settings.");
@@ -98,7 +105,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 		{
 			var result = await runner.StartGame(new StartGameArgs
 			{
-				GameMode = localSession ? GameMode.Single : GameMode.AutoHostOrClient,
+				GameMode = localSession ? GameMode.Single : joinOnly ? GameMode.Client : GameMode.AutoHostOrClient,
 				SessionName = "MySession",
 				PlayerCount = 3,
 				IsOpen = true,
@@ -110,7 +117,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 			if (request != version || !Application.isPlaying || !isActiveAndEnabled) return false;
 			if (!result.Ok)
 			{
-				EndSession(result.ShutdownReason.ToString());
+				FailStart(result.ShutdownReason);
 				return false;
 			}
 
@@ -128,6 +135,62 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 		{
 			if (startCancel == cancel) startCancel = null;
 			cancel.Dispose();
+		}
+	}
+
+	private void FailStart(ShutdownReason reason)
+	{
+		if (!localSession && reason is ShutdownReason.GameIsFull or ShutdownReason.GameClosed
+			or ShutdownReason.GameNotFound or ShutdownReason.PhotonCloudTimeout
+			or ShutdownReason.ConnectionTimeout or ShutdownReason.OperationTimeout)
+		{
+			Scene scene = SceneManager.GetSceneByPath(scenePath);
+			if (scene.IsValid() && scene.isLoaded)
+			{
+				bool clientOnly = joinOnly || reason is ShutdownReason.GameIsFull or ShutdownReason.GameClosed;
+				// Fusion destroys the failed runner's GameObject before returning from StartGame.
+				var host = new GameObject("Session Join Retry").AddComponent<RetryHost>();
+				SceneManager.MoveGameObjectToScene(host.gameObject, scene);
+				host.StartCoroutine(RetrySession(host, scene, clientOnly));
+				Debug.Log($"[SESSION RETRY] {reason}. Retrying in 1 second.", this);
+			}
+		}
+
+		EndSession(reason.ToString());
+	}
+
+	private static IEnumerator RetrySession(RetryHost host, Scene scene, bool joinOnly)
+	{
+		yield return new WaitForSecondsRealtime(1f);
+		if (SceneManager.GetActiveScene() != scene)
+		{
+			Destroy(host.gameObject);
+			yield break;
+		}
+
+		int buildIndex = scene.buildIndex;
+		SceneManager.sceneLoaded += OnSceneReloaded;
+		try
+		{
+			SceneManager.LoadSceneAsync(buildIndex, LoadSceneMode.Single);
+		}
+		catch
+		{
+			SceneManager.sceneLoaded -= OnSceneReloaded;
+			Destroy(host.gameObject);
+			throw;
+		}
+
+		void OnSceneReloaded(Scene loaded, LoadSceneMode mode)
+		{
+			if (loaded.buildIndex != buildIndex || mode != LoadSceneMode.Single) return;
+			SceneManager.sceneLoaded -= OnSceneReloaded;
+			foreach (GameObject root in loaded.GetRootGameObjects())
+			{
+				if (!root.TryGetComponent(out SessionJoinInit session) || !session.isActiveAndEnabled) continue;
+				_ = session.StartSession(joinOnly);
+				break;
+			}
 		}
 	}
 
@@ -248,6 +311,7 @@ public class SessionJoinInit : MonoBehaviour, INetworkRunnerCallbacks
 		crewPlayers.Clear();
 
 		if (IsConnectedGuest) QuitGuest(reason.ToString());
+		else if (CurrentState == State.Starting && reason != ShutdownReason.Ok) FailStart(reason);
 		else EndSession(reason == ShutdownReason.Ok ? null : reason.ToString());
 	}
 
