@@ -21,6 +21,10 @@ public sealed class TankInput : MonoBehaviour
 	private bool disconnected;
 	private uint inputVersion;
 
+#if UNITY_EDITOR
+	private bool trialInput;
+#endif
+
 	public bool IsBound => bound;
 	public bool IsInputReady => inputReady && control != null && inputVersion == control.InputVersion;
 	public bool CanInput => isActiveAndEnabled && CanRead;
@@ -71,6 +75,9 @@ public sealed class TankInput : MonoBehaviour
 
 	private void Update()
 	{
+#if UNITY_EDITOR
+		if (trialInput) return;
+#endif
 		if (!CanRead)
 		{
 			if (testMode != null) testMode.StopSight();
@@ -149,10 +156,21 @@ public sealed class TankInput : MonoBehaviour
 
 	private void LateUpdate()
 	{
+#if UNITY_EDITOR
+		if (trialInput) return;
+#endif
 		if (!inputReady || !CanRead || !Application.isFocused) return;
 
 		ReadLook(Mouse.current);
 	}
+
+#if UNITY_EDITOR
+	internal void SetTrialInput(bool active)
+	{
+		SuspendInput();
+		trialInput = active;
+	}
+#endif
 
 	private void ReadLook(Mouse mouse)
 	{

@@ -145,6 +145,10 @@ public sealed class CarentanDrive : MonoBehaviour
 	private readonly List<Collider> tankColliders = new();
 	private readonly List<StreetPropLifetime> openProps = new();
 
+#if UNITY_EDITOR
+	public CarentanComparison Comparison { get; private set; }
+#endif
+
 	public TankAI Enemy => enemy;
 	public TankAI WestEnemy => IsWestOnly ? enemy : westEnemy;
 	public bool IsWestOnly => layout == Layout.EntryWest;
@@ -225,6 +229,21 @@ public sealed class CarentanDrive : MonoBehaviour
 	private void Awake()
 	{
 		if (followCamera != null) followCamera.TryGetComponent(out followAudio);
+
+#if UNITY_EDITOR
+		int run = CarentanComparison.RunIndex;
+		if (run >= 0 && run < CarentanComparison.RunCount && gameObject.scene.path == CarentanComparison.ScenePath
+			&& sceneLink != null && sceneLink.Session != null && sceneLink.Session.IsLocalSession)
+		{
+			layout = Layout.Deployment;
+			deploymentEnemies = DeploymentEnemies.A;
+			deploymentStart = DeploymentStart.SouthCorner;
+			deploymentHP = CarentanComparison.StartHP;
+			deploymentInvulnerable = false;
+			deploymentMinimap = false;
+			Comparison = new CarentanComparison(this, sceneLink, run);
+		}
+#endif
 	}
 
 	private void OnEnable()
@@ -430,6 +449,9 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void Update()
 	{
+#if UNITY_EDITOR
+		if (Comparison != null) return;
+#endif
 		bool canDrive = enemy != null && sceneLink.IsReady;
 		if (canDrive && HasWestOrder) UpdateWestEntry();
 
@@ -518,8 +540,22 @@ public sealed class CarentanDrive : MonoBehaviour
 	private bool IsCabinView() => sceneLink != null && sceneLink.IsReady
 		&& sceneLink.Interior.Mode.IsInterior && !sceneLink.Interior.Mode.IsObserving;
 
+#if UNITY_EDITOR
+	private void FixedUpdate() => Comparison?.Step();
+
+	internal void SetTrialLevers(Vector2 levers)
+	{
+		if (DeploymentStarted && IsCabinView() && playerMotor != null && playerMotor.CanDriveSolo)
+			playerMotor.SetSoloLevers(levers);
+		else ClearSoloLevers();
+	}
+#endif
+
 	private void UpdateSoloLevers()
 	{
+#if UNITY_EDITOR
+		if (Comparison != null) return;
+#endif
 		if (playerMotor == null) return;
 
 		Keyboard keys = Keyboard.current;
@@ -554,6 +590,9 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void OnApplicationFocus(bool focused)
 	{
+#if UNITY_EDITOR
+		if (Comparison != null) return;
+#endif
 		if (!focused) ClearSoloLevers();
 	}
 
@@ -978,6 +1017,9 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void OnDisable()
 	{
+#if UNITY_EDITOR
+		Comparison?.Dispose();
+#endif
 		if (sceneLink != null) sceneLink.StageChanged -= OnStageChanged;
 		StopFollowing();
 		StopPatrol();
