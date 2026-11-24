@@ -25,6 +25,11 @@ public sealed class CarentanDriveEditor : Editor
 	public override void OnInspectorGUI()
 	{
 		CarentanDrive drive = (CarentanDrive)target;
+		if (EditorApplication.isPlaying && drive.Comparison != null)
+		{
+			EditorGUILayout.LabelField("A 단독 반복 시험", drive.Comparison.Status);
+			return;
+		}
 		if (EditorApplication.isPlaying && drive.IsDeployment)
 		{
 			DrawDeployment(drive);
