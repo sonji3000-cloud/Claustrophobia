@@ -32842,7 +32842,8 @@ MonoBehaviour:
   missionStart: {fileID: 802105011}
   missionEntry: {fileID: 802106012}
   missionExit: {fileID: 802106022}
-  missionGoal: {fileID: 802105161}
+  missionGoal: {fileID: 802106041}
+  missionTargetPrefab: {fileID: 6578099338761688508, guid: 2ffda8bcd4038d5458c4a6e59245fd3f, type: 3}
   missionFiring: {fileID: 802106031}
 --- !u!4 &1302798522
 Transform:
@@ -51121,6 +51122,7 @@ Transform:
   - {fileID: 802106011}
   - {fileID: 802106021}
   - {fileID: 802106031}
+  - {fileID: 802106041}
   m_Father: {fileID: 1302798522}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &802106010
@@ -51253,13 +51255,44 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 802106030}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.40965605, z: 0, w: 0.9122401}
+  m_LocalRotation: {x: 0, y: -0.3279613, z: 0, w: 0.9446912}
   m_LocalPosition: {x: 1, y: 0.15, z: 78}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 802106001}
-  m_LocalEulerAnglesHint: {x: 0, y: -48.36646, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -38.290165, z: 0}
+--- !u!1 &802106040
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 802106041}
+  m_Layer: 2
+  m_Name: Mission Commander Spawn - Upper Courtyard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &802106041
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802106040}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -14, y: 0.1, z: 97}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 802106001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

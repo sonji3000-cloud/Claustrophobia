@@ -179,6 +179,14 @@ public sealed class CarentanDriveEditor : Editor
 		}
 		if (!drive.MissionReady) return;
 
+		TankHealth targetHealth = drive.MissionTarget;
+		string hp = $"HP {targetHealth.CurrentHP:F0} / {targetHealth.Capacity:F0} · 피탄 {targetHealth.DamageHitCount}회";
+		EditorGUILayout.LabelField("지휘관 전차", targetHealth.Destroyed ? $"{hp} · 파괴됨" : hp);
+
+		using (new EditorGUI.DisabledScope(drive.PlayerHealth.Destroyed
+			|| serializedObject.FindProperty("missionFiring").objectReferenceValue == null))
+			if (GUILayout.Button("Tiger를 사격 위치로")) drive.PlaceMissionTiger();
+
 		Vector3 center = drive.MissionTigerCenter;
 		EditorGUILayout.LabelField("Tiger 차체 중심", center.ToString("F1"));
 		DrawZoneStatus("missionEntry", "시가지 진입 구역", center);

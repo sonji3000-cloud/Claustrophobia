@@ -122,6 +122,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private BoxCollider missionEntry;
 	[SerializeField] private BoxCollider missionExit;
 	[SerializeField] private Transform missionGoal;
+	[SerializeField] private TankHealth missionTargetPrefab;
 	[Tooltip("Scene 뷰에서 지휘관 전차를 바라보는 주행 시험 위치")]
 	[SerializeField] private Transform missionFiring;
 
@@ -176,7 +177,9 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool IsDeployment => layout == Layout.Deployment;
 	public bool IsMission => layout == Layout.Mission;
 	public bool MissionReady => loadedLayout == Layout.Mission && playerBody != null
+		&& MissionTarget != null && MissionTarget.IsReady
 		&& sceneLink != null && sceneLink.IsReady;
+	public TankHealth MissionTarget { get; private set; }
 	public string MissionError { get; private set; }
 #if UNITY_EDITOR
 	public Vector3 MissionTigerCenter => playerBody.worldCenterOfMass;
@@ -294,7 +297,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		RegisterTank(player.gameObject);
 		if (IsMission)
 		{
-			PrepareMission(player);
+			PrepareMission(runner, player);
 			return;
 		}
 
@@ -353,23 +356,57 @@ public sealed class CarentanDrive : MonoBehaviour
 			&& player.TryGetComponent(out playerBody) && playerMotion.HasStateAuthority;
 	}
 
-	private void PrepareMission(TankControl player)
+	private void PrepareMission(NetworkRunner runner, TankControl player)
 	{
 		if (loadedLayout == Layout.Mission) return;
 
-		if (!CanPlaceTiger(player, missionStart) || missionGoal == null
+		if (!CanPlaceTiger(player, missionStart) || missionGoal == null || missionTargetPrefab == null
 			|| !IsMissionZone(missionEntry) || !IsMissionZone(missionExit) || missionEntry == missionExit)
 		{
-			MissionError = "Tiger 출발점, 표적 위치와 활성화된 진입·복귀 트리거를 확인하세요.";
-			Debug.LogError($"[Carentan] {MissionError}", this);
+			ReportMissionError("Tiger 출발점, 표적 프리팹·위치와 활성화된 진입·복귀 트리거를 확인하세요.");
 			return;
 		}
+
+		if (!TrySpawnMissionTarget(runner)) return;
 
 		if (shotObstacle != null) shotObstacle.SetActive(false);
 		if (rearObstacle != null) rearObstacle.SetActive(false);
 		PlaceTiger(missionStart);
 		loadedLayout = Layout.Mission;
 		MissionError = null;
+	}
+
+	private bool TrySpawnMissionTarget(NetworkRunner runner)
+	{
+		if (MissionTarget != null && MissionTarget.IsReady && MissionTarget.Runner == runner) return true;
+
+		TankHealth target;
+		NetworkSpawnStatus status;
+		try
+		{
+			status = runner.TrySpawn(missionTargetPrefab, out target, missionGoal.position, missionGoal.rotation);
+		}
+		catch (InvalidOperationException error)
+		{
+			ReportMissionError($"지휘관 전차를 배치하지 못했습니다. ({error.Message})");
+			return false;
+		}
+
+		if (status != NetworkSpawnStatus.Spawned)
+		{
+			ReportMissionError($"지휘관 전차를 배치하지 못했습니다. ({status})");
+			return false;
+		}
+
+		MissionTarget = target;
+		RegisterTank(target.gameObject);
+		return true;
+	}
+
+	private void ReportMissionError(string message)
+	{
+		MissionError = message;
+		Debug.LogError($"[Carentan] {message}", this);
 	}
 
 	private static bool IsMissionZone(BoxCollider zone) => zone != null && zone.enabled
@@ -587,6 +624,14 @@ public sealed class CarentanDrive : MonoBehaviour
 
 #if UNITY_EDITOR
 	private void FixedUpdate() => Comparison?.Step();
+
+	public void PlaceMissionTiger()
+	{
+		if (!MissionReady || missionFiring == null || PlayerHealth == null || PlayerHealth.Destroyed
+			|| playerMotion == null || !playerMotion.HasStateAuthority) return;
+
+		PlaceTiger(missionFiring);
+	}
 
 	internal void SetTrialLevers(Vector2 levers)
 	{
