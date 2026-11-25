@@ -22,7 +22,8 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("진입 비교 · 2대 동시")] EntryTogether,
 		[InspectorName("맵 변경 · 중앙 연결로 주행")] CentralDrive,
 		[InspectorName("맵 변경 · 시장 서쪽 틈 교전")] WestGap,
-		[InspectorName("적 배치 디버그")] Deployment
+		[InspectorName("적 배치 디버그")] Deployment,
+		[InspectorName("임무 · 남쪽 통로")] Mission
 	}
 
 	[Flags]
@@ -116,6 +117,14 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField, Min(1f)] private float topHalfWidth = 145f;
 	[SerializeField, Min(1f)] private float topHalfDepth = 132f;
 
+	[Header("임무 · 남쪽 통로")]
+	[SerializeField] private Transform missionStart;
+	[SerializeField] private BoxCollider missionEntry;
+	[SerializeField] private BoxCollider missionExit;
+	[SerializeField] private Transform missionGoal;
+	[Tooltip("Scene 뷰에서 지휘관 전차를 바라보는 주행 시험 위치")]
+	[SerializeField] private Transform missionFiring;
+
 	public const int DeploymentCount = 4;
 	private const double EntryDelay = 4d;
 	private static readonly string[] DeploymentNames = { "A", "B", "C", "D" };
@@ -165,6 +174,13 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool IsCentralDrive => layout == Layout.CentralDrive;
 	public bool IsWestGap => layout == Layout.WestGap;
 	public bool IsDeployment => layout == Layout.Deployment;
+	public bool IsMission => layout == Layout.Mission;
+	public bool MissionReady => loadedLayout == Layout.Mission && playerBody != null
+		&& sceneLink != null && sceneLink.IsReady;
+	public string MissionError { get; private set; }
+#if UNITY_EDITOR
+	public Vector3 MissionTigerCenter => playerBody.worldCenterOfMass;
+#endif
 	public bool CanObserve => followCamera != null && sceneLink != null && sceneLink.IsReady;
 	public Transform DeploymentPoint => deploymentStart switch
 	{
@@ -194,7 +210,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool CanStartMarket => loadedLayout != Layout.Road && sceneLink != null && sceneLink.IsReady
 		&& enemy != null && enemy.CanAct;
 	public bool CanStartCentralDrive => IsCentralDrive && CanStartMarket && enemy.MoveStatus != TankAI.MoveState.Moving;
-	private bool CanUseRoadKeys => !IsEntryTest && !IsCentralDrive && !IsWestGap && !IsDeployment;
+	private bool CanUseRoadKeys => !IsEntryTest && !IsCentralDrive && !IsWestGap && !IsDeployment && !IsMission;
 
 	public bool CanStartDeployment
 	{
@@ -258,6 +274,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (stage != TankSceneLink.Stage.Ready)
 		{
 			StopPatrol();
+			if (loadedLayout == Layout.Mission) loadedLayout = Layout.Road;
 			if (IsDeployment)
 			{
 				ClearSoloLevers();
@@ -275,6 +292,12 @@ public sealed class CarentanDrive : MonoBehaviour
 		PlayerHealth = health;
 		if (player.TryGetComponent(out TankGroundProbe ground)) ground.SetGroundMask(groundMask);
 		RegisterTank(player.gameObject);
+		if (IsMission)
+		{
+			PrepareMission(player);
+			return;
+		}
+
 		if (IsDeployment)
 		{
 			PrepareDeployment(runner, player);
@@ -329,6 +352,28 @@ public sealed class CarentanDrive : MonoBehaviour
 		return point != null && PlayerHealth != null && player.TryGetComponent(out playerMotion)
 			&& player.TryGetComponent(out playerBody) && playerMotion.HasStateAuthority;
 	}
+
+	private void PrepareMission(TankControl player)
+	{
+		if (loadedLayout == Layout.Mission) return;
+
+		if (!CanPlaceTiger(player, missionStart) || missionGoal == null
+			|| !IsMissionZone(missionEntry) || !IsMissionZone(missionExit) || missionEntry == missionExit)
+		{
+			MissionError = "Tiger 출발점, 표적 위치와 활성화된 진입·복귀 트리거를 확인하세요.";
+			Debug.LogError($"[Carentan] {MissionError}", this);
+			return;
+		}
+
+		if (shotObstacle != null) shotObstacle.SetActive(false);
+		if (rearObstacle != null) rearObstacle.SetActive(false);
+		PlaceTiger(missionStart);
+		loadedLayout = Layout.Mission;
+		MissionError = null;
+	}
+
+	private static bool IsMissionZone(BoxCollider zone) => zone != null && zone.enabled
+		&& zone.gameObject.activeInHierarchy && zone.isTrigger;
 
 	private void PrepareDeployment(NetworkRunner runner, TankControl player)
 	{

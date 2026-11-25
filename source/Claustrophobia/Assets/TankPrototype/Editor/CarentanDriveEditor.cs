@@ -35,6 +35,11 @@ public sealed class CarentanDriveEditor : Editor
 			DrawDeployment(drive);
 			return;
 		}
+		if (EditorApplication.isPlaying && drive.IsMission)
+		{
+			DrawMission(drive);
+			return;
+		}
 		if (EditorApplication.isPlaying && drive.IsEntryTest)
 		{
 			DrawEntryTest(drive);
@@ -49,7 +54,9 @@ public sealed class CarentanDriveEditor : Editor
 		if (!EditorApplication.isPlaying)
 		{
 			DrawEditSettings(drive.IsDeployment);
-			string hint = drive.IsDeployment
+			string hint = drive.IsMission
+				? "Play를 누르면 남쪽 통로에서 출발합니다. Scene 뷰에서 진입·복귀 구역을 확인할 수 있습니다."
+				: drive.IsDeployment
 				? "적 선택과 Tiger 출발점을 고른 다음 Play를 누르세요. 적을 모두 해제하면 Tiger 주행만 시험합니다."
 				: "Layout에서 시험 배치를 고른 다음 Play를 누르세요.";
 			EditorGUILayout.HelpBox(hint, MessageType.Info);
@@ -159,6 +166,33 @@ public sealed class CarentanDriveEditor : Editor
 			EditorGUILayout.LabelField("Tiger HP / 피격", $"{drive.PlayerHealth.CurrentHP:F0} / {drive.PlayerHealth.DamageHitCount}회");
 
 		DrawEntryTank("서쪽 Sherman", ai);
+	}
+
+	private void DrawMission(CarentanDrive drive)
+	{
+		EditorGUILayout.LabelField("씬 상태", drive.SceneStage.ToString());
+		string error = string.IsNullOrEmpty(drive.SceneError) ? drive.MissionError : drive.SceneError;
+		if (!string.IsNullOrEmpty(error))
+		{
+			EditorGUILayout.HelpBox(error, MessageType.Error);
+			return;
+		}
+		if (!drive.MissionReady) return;
+
+		Vector3 center = drive.MissionTigerCenter;
+		EditorGUILayout.LabelField("Tiger 차체 중심", center.ToString("F1"));
+		DrawZoneStatus("missionEntry", "시가지 진입 구역", center);
+		DrawZoneStatus("missionExit", "남쪽 복귀 구역", center);
+		EditorGUILayout.HelpBox("F9 → 1 → 조종 장치를 보고 Space. W/I로 전진하고 Q/U로 중립으로 돌립니다.", MessageType.Info);
+	}
+
+	private void DrawZoneStatus(string field, string label, Vector3 point)
+	{
+		if (serializedObject.FindProperty(field).objectReferenceValue is not BoxCollider zone) return;
+
+		Vector3 local = zone.transform.InverseTransformPoint(point) - zone.center;
+		var box = new Bounds(Vector3.zero, zone.size);
+		EditorGUILayout.LabelField(label, box.Contains(local) ? "안" : "밖");
 	}
 
 	private void DrawEditSettings(bool isDeployment)
@@ -454,6 +488,16 @@ public sealed class CarentanDriveEditor : Editor
 	private void OnSceneGUI()
 	{
 		var drive = (CarentanDrive)target;
+		if (drive.IsMission)
+		{
+			DrawPoint("missionStart", "Tiger 출발", Color.cyan);
+			DrawPoint("missionGoal", "지휘관 전차 위치", Color.yellow);
+			DrawPoint("missionFiring", "Tiger 사격 위치", Color.cyan);
+			DrawZone("missionEntry", "시가지 진입", Color.green);
+			DrawZone("missionExit", "남쪽 통로 복귀", new Color(1f, .6f, .25f));
+			return;
+		}
+
 		if (drive.IsDeployment)
 		{
 			Transform start = drive.DeploymentPoint;
@@ -492,6 +536,18 @@ public sealed class CarentanDriveEditor : Editor
 		DrawPoint("southPlayerStart", "Tiger 출발", Color.cyan);
 		DrawPoint("southContact", "노출 / 재등장", Color.yellow);
 		DrawPoint("southCover", "건물 뒤 엄폐", new Color(1f, .5f, .2f));
+	}
+
+	private void DrawZone(string field, string label, Color color)
+	{
+		if (serializedObject.FindProperty(field).objectReferenceValue is not BoxCollider zone) return;
+
+		using (new Handles.DrawingScope(color, zone.transform.localToWorldMatrix))
+			Handles.DrawWireCube(zone.center, zone.size);
+
+		using (new Handles.DrawingScope(color))
+			Handles.Label(zone.transform.TransformPoint(zone.center + Vector3.up * zone.size.y * .5f),
+				label, EditorStyles.whiteBoldLabel);
 	}
 
 	private void DrawEntryRoute(string spawnField, string routeField, string label, Color color)
