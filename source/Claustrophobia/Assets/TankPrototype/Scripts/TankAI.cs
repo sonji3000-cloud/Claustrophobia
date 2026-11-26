@@ -29,6 +29,7 @@ public sealed class TankAI : NetworkBehaviour
 	[SerializeField] private TankPath path;
 	[SerializeField] private TankSensor sensor;
 	[SerializeField] private TankCombat combat;
+	[SerializeField] private bool stationary;
 
 	[Header("Point movement")]
 	[SerializeField, Min(0.05f)] private float stopRadius = 0.5f;
@@ -88,7 +89,7 @@ public sealed class TankAI : NetworkBehaviour
 	public bool IsHost => Object != null && Object.IsValid
 		&& Runner != null && Runner.IsRunning && Runner.IsServer && HasStateAuthority;
 	public bool CanAct => IsHost && isActiveAndEnabled
-		&& motor != null && motor.isActiveAndEnabled
+		&& (stationary || motor != null && motor.isActiveAndEnabled)
 		&& aim != null && aim.isActiveAndEnabled
 		&& gun != null && gun.isActiveAndEnabled
 		&& health != null && health.isActiveAndEnabled && !health.Destroyed;
@@ -125,6 +126,7 @@ public sealed class TankAI : NetworkBehaviour
 		get
 		{
 			if (!CanAct) return "AI is not an active host or is destroyed";
+			if (stationary) return "Hull is fixed";
 			if (body == null) return "Missing Rigidbody";
 			if (body.isKinematic) return "Rigidbody is kinematic";
 			if (!IsFinite(motor.MaxMoveSpeed) || motor.MaxMoveSpeed <= 0f
@@ -139,6 +141,7 @@ public sealed class TankAI : NetworkBehaviour
 	public Transform Target => attackTarget;
 	public TankHealth TargetHealth => targetHealth;
 	public AttackState AttackStatus { get; private set; }
+	public int ShotCount => gun != null ? gun.ShotCount : 0;
 	public string AttackBlockReason { get; private set; } = "";
 	public bool IsShotBlocked => shotBlockedSince >= 0d;
 	public float ShotBlockedSeconds { get; private set; }
@@ -181,7 +184,7 @@ public sealed class TankAI : NetworkBehaviour
 		leftLever = rightLever = 0f;
 		aimInput = Vector2.zero;
 		hadHost = IsHost;
-		if (body != null) body.isKinematic = !hadHost;
+		if (body != null) body.isKinematic = stationary || !hadHost;
 		MoveStatus = MoveState.Idle;
 		ClearPath();
 		Destination = body != null ? body.position : transform.position;
@@ -205,6 +208,12 @@ public sealed class TankAI : NetworkBehaviour
 			return;
 		}
 		if (sensor != null) sensor.Tick();
+		if (stationary)
+		{
+			UpdateGuard();
+			return;
+		}
+
 		EnsureHostBody();
 
 		Transform moveAimPoint = null;
@@ -231,7 +240,7 @@ public sealed class TankAI : NetworkBehaviour
 
 	public bool SetDrive(float left, float right)
 	{
-		if (!CanAct || !IsFinite(left) || !IsFinite(right)) return false;
+		if (stationary || !CanAct || !IsFinite(left) || !IsFinite(right)) return false;
 
 		CommandId++;
 		ClearAttack();
@@ -367,7 +376,7 @@ public sealed class TankAI : NetworkBehaviour
 
 	public bool SetMoveMode(MoveMode mode)
 	{
-		if (!CanAct || mode != MoveMode.Direct && mode != MoveMode.NavMesh) return false;
+		if (stationary || !CanAct || mode != MoveMode.Direct && mode != MoveMode.NavMesh) return false;
 		if (mode == moveMode) return true;
 
 		StopMove();
@@ -424,7 +433,7 @@ public sealed class TankAI : NetworkBehaviour
 
 	private void EnsureHostBody()
 	{
-		if (IsHost && body != null && body.isKinematic) body.isKinematic = false;
+		if (!stationary && IsHost && body != null && body.isKinematic) body.isKinematic = false;
 	}
 
 	private void UpdateMove()
@@ -758,6 +767,21 @@ public sealed class TankAI : NetworkBehaviour
 		AttackStatus = AttackState.Idle;
 		AttackBlockReason = "";
 		if (gun != null) gun.ClearAIRequest();
+	}
+
+	private void UpdateGuard()
+	{
+		TankTarget visible = sensor != null && sensor.IsVisible ? sensor.SelectedTarget : null;
+		Transform point = visible != null ? visible.AimPoint : null;
+		if (point == null)
+		{
+			if (AttackStatus != AttackState.Idle) StopAttack();
+			return;
+		}
+
+		if (attackTarget != point && !Attack(point)) return;
+
+		UpdateAttack();
 	}
 
 	private void UpdateAttack()

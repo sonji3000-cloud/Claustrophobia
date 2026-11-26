@@ -23,7 +23,13 @@ public sealed class CarentanDrive : MonoBehaviour
 		[InspectorName("맵 변경 · 중앙 연결로 주행")] CentralDrive,
 		[InspectorName("맵 변경 · 시장 서쪽 틈 교전")] WestGap,
 		[InspectorName("적 배치 디버그")] Deployment,
-		[InspectorName("임무 · 남쪽 통로")] Mission
+		[InspectorName("임무 · 남쪽 통로 (기존)")] Mission
+	}
+
+	private enum Trial
+	{
+		[InspectorName("적 전차 배치 (A–D)")] Combat,
+		[InspectorName("임무 · 고정 지휘관 Sherman")] Mission
 	}
 
 	[Flags]
@@ -99,7 +105,8 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private Transform westGapCover;
 	[SerializeField] private Transform westGapOpening;
 
-	[Header("적 배치 디버그 · A / B / C / D")]
+	[Header("적 배치 디버그")]
+	[SerializeField] private Trial deploymentTrial;
 	[SerializeField] private DeploymentEnemies deploymentEnemies = DeploymentEnemies.All;
 	[SerializeField] private DeploymentStart deploymentStart;
 	[SerializeField] private bool deploymentSoloDrive = true;
@@ -175,7 +182,8 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool IsCentralDrive => layout == Layout.CentralDrive;
 	public bool IsWestGap => layout == Layout.WestGap;
 	public bool IsDeployment => layout == Layout.Deployment;
-	public bool IsMission => layout == Layout.Mission;
+	public bool IsMission => layout == Layout.Mission || IsDeployment && deploymentTrial == Trial.Mission;
+	public bool IsTrial => IsDeployment || IsMission;
 	public bool MissionReady => loadedLayout == Layout.Mission && playerBody != null
 		&& MissionTarget != null && MissionTarget.IsReady
 		&& sceneLink != null && sceneLink.IsReady;
@@ -183,6 +191,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	public string MissionError { get; private set; }
 #if UNITY_EDITOR
 	public Vector3 MissionTigerCenter => playerBody.worldCenterOfMass;
+	public TankAI MissionGuard { get; private set; }
 #endif
 	public bool CanObserve => followCamera != null && sceneLink != null && sceneLink.IsReady;
 	public Transform DeploymentPoint => deploymentStart switch
@@ -195,10 +204,10 @@ public sealed class CarentanDrive : MonoBehaviour
 	public Transform DeploymentGoal => deploymentGoal;
 	public bool DeploymentStarted => deploymentState == DeploymentState.Running;
 	public bool DeploymentStopped => deploymentState == DeploymentState.Stopped;
-	public bool CanRestartDeployment => IsDeployment && sceneLink != null
+	public bool CanRestartTrial => IsTrial && sceneLink != null
 		&& sceneLink.Session != null && sceneLink.Session.IsLocalSession;
-	public bool DeploymentSoloDrive => deploymentSoloDrive && CanRestartDeployment;
-	public bool DeploymentInvulnerable => deploymentInvulnerable && CanRestartDeployment;
+	public bool TrialSoloDrive => deploymentSoloDrive && CanRestartTrial;
+	public bool TrialInvulnerable => deploymentInvulnerable && CanRestartTrial;
 	public float DeploymentVirtualHP => trialLog?.VirtualHP ?? (PlayerHealth != null ? PlayerHealth.CurrentHP : 0f);
 	public int DeploymentBlockedHits => trialLog?.BlockedHits ?? 0;
 	public double DeploymentVirtualDestroyedAt => trialLog?.VirtualDestroyedAt ?? -1d;
@@ -213,13 +222,13 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool CanStartMarket => loadedLayout != Layout.Road && sceneLink != null && sceneLink.IsReady
 		&& enemy != null && enemy.CanAct;
 	public bool CanStartCentralDrive => IsCentralDrive && CanStartMarket && enemy.MoveStatus != TankAI.MoveState.Moving;
-	private bool CanUseRoadKeys => !IsEntryTest && !IsCentralDrive && !IsWestGap && !IsDeployment && !IsMission;
+	private bool CanUseRoadKeys => !IsEntryTest && !IsCentralDrive && !IsWestGap && !IsTrial;
 
 	public bool CanStartDeployment
 	{
 		get
 		{
-			if (!IsDeployment || deploymentState != DeploymentState.Ready || sceneLink == null || !sceneLink.IsReady
+			if (!IsDeployment || IsMission || deploymentState != DeploymentState.Ready || sceneLink == null || !sceneLink.IsReady
 				|| PlayerHealth == null || PlayerHealth.Destroyed) return false;
 
 			for (int i = 0; i < DeploymentCount; i++)
@@ -255,6 +264,7 @@ public sealed class CarentanDrive : MonoBehaviour
 			&& sceneLink != null && sceneLink.Session != null && sceneLink.Session.IsLocalSession)
 		{
 			layout = Layout.Deployment;
+			deploymentTrial = Trial.Combat;
 			deploymentEnemies = DeploymentEnemies.A;
 			deploymentStart = DeploymentStart.SouthCorner;
 			deploymentHP = CarentanComparison.StartHP;
@@ -277,8 +287,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (stage != TankSceneLink.Stage.Ready)
 		{
 			StopPatrol();
-			if (loadedLayout == Layout.Mission) loadedLayout = Layout.Road;
-			if (IsDeployment)
+			if (IsTrial)
 			{
 				ClearSoloLevers();
 				StopFollowing();
@@ -358,7 +367,8 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void PrepareMission(NetworkRunner runner, TankControl player)
 	{
-		if (loadedLayout == Layout.Mission) return;
+		if (loadedLayout == Layout.Mission && MissionTarget != null && MissionTarget.IsReady
+			&& MissionTarget.Runner == runner) return;
 
 		if (!CanPlaceTiger(player, missionStart) || missionGoal == null || missionTargetPrefab == null
 			|| !IsMissionZone(missionEntry) || !IsMissionZone(missionExit) || missionEntry == missionExit)
@@ -367,11 +377,15 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
+		if (!ApplyTrialHealth())
+		{
+			ReportMissionError("Tiger의 시험 체력 설정을 적용하지 못했습니다.");
+			return;
+		}
+
 		if (!TrySpawnMissionTarget(runner)) return;
 
-		if (shotObstacle != null) shotObstacle.SetActive(false);
-		if (rearObstacle != null) rearObstacle.SetActive(false);
-		PlaceTiger(missionStart);
+		PlaceTrialTiger(player, missionStart);
 		loadedLayout = Layout.Mission;
 		MissionError = null;
 	}
@@ -399,6 +413,10 @@ public sealed class CarentanDrive : MonoBehaviour
 		}
 
 		MissionTarget = target;
+#if UNITY_EDITOR
+		target.TryGetComponent(out TankAI guard);
+		MissionGuard = guard;
+#endif
 		RegisterTank(target.gameObject);
 		return true;
 	}
@@ -442,7 +460,7 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
-		if (CanRestartDeployment && !PlayerHealth.SetTrialHealth(deploymentHP, deploymentInvulnerable))
+		if (!ApplyTrialHealth())
 		{
 			ReportDeploymentError("Tiger의 시험 체력 설정을 적용하지 못했습니다.");
 			return;
@@ -470,16 +488,23 @@ public sealed class CarentanDrive : MonoBehaviour
 			tank.name = "Sherman " + DeploymentNames[i];
 		}
 
+		PlaceTrialTiger(player, start);
+		deploymentRunner = runner;
+		deploymentState = DeploymentState.Ready;
+		loadedLayout = Layout.Deployment;
+		DeploymentError = "";
+	}
+
+	private bool ApplyTrialHealth() => !CanRestartTrial || PlayerHealth.SetTrialHealth(deploymentHP, deploymentInvulnerable);
+
+	private void PlaceTrialTiger(TankControl player, Transform start)
+	{
 		if (shotObstacle != null) shotObstacle.SetActive(false);
 		if (rearObstacle != null) rearObstacle.SetActive(false);
 		PlaceTiger(start);
 		player.TryGetComponent(out playerMotor);
 		if (minimapCamera != null && minimapCamera.targetTexture != null)
 			minimapCamera.aspect = (float)minimapCamera.targetTexture.width / minimapCamera.targetTexture.height;
-		deploymentRunner = runner;
-		deploymentState = DeploymentState.Ready;
-		loadedLayout = Layout.Deployment;
-		DeploymentError = "";
 	}
 
 	private void ReportDeploymentError(string reason)
@@ -540,7 +565,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		Keyboard keys = Keyboard.current;
 		if (keys != null && Application.isFocused)
 		{
-			if (IsDeployment)
+			if (IsDeployment && !IsMission)
 			{
 				if (keys.digit0Key.wasPressedThisFrame || keys.numpad0Key.wasPressedThisFrame) StartDeployment();
 				else if (keys.digit9Key.wasPressedThisFrame || keys.numpad9Key.wasPressedThisFrame) StopDeployment();
@@ -577,9 +602,9 @@ public sealed class CarentanDrive : MonoBehaviour
 		deploymentAt = deploymentRunner.SimulationTime;
 		deploymentState = DeploymentState.Running;
 		PlayerHealth.Died += OnTigerDied;
-		if (CanRestartDeployment)
+		if (CanRestartTrial)
 			trialLog = new CarentanTrialLog(deploymentRunner, PlayerHealth, deployed, DeploymentPoint,
-				deploymentCover, deploymentGoal, DeploymentInvulnerable, deploymentAt);
+				deploymentCover, deploymentGoal, TrialInvulnerable, deploymentAt);
 
 		for (int i = 0; i < DeploymentCount; i++)
 		{
@@ -630,6 +655,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (!MissionReady || missionFiring == null || PlayerHealth == null || PlayerHealth.Destroyed
 			|| playerMotion == null || !playerMotion.HasStateAuthority) return;
 
+		ClearSoloLevers();
 		PlaceTiger(missionFiring);
 	}
 
@@ -649,7 +675,8 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (playerMotor == null) return;
 
 		Keyboard keys = Keyboard.current;
-		if (!DeploymentStarted || !DeploymentSoloDrive || !Application.isFocused || keys == null
+		bool running = IsMission ? MissionReady && PlayerHealth != null && !PlayerHealth.Destroyed : DeploymentStarted;
+		if (!running || !TrialSoloDrive || !Application.isFocused || keys == null
 			|| !IsCabinView() || !playerMotor.CanDriveSolo)
 		{
 			ClearSoloLevers();
@@ -864,6 +891,11 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (PlayerHealth != null) ObserveHull(PlayerHealth.transform);
 	}
 
+	public void ObserveMissionTarget()
+	{
+		if (MissionReady) ObserveHull(MissionTarget.transform);
+	}
+
 	private void ObserveHull(Transform hull)
 	{
 		if (!CanObserve || !sceneLink.Interior.Mode.TryObserve(followCamera, followAudio)) return;
@@ -890,7 +922,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	public void ObserveDeploymentTop()
 	{
-		if (!IsDeployment || !CanObserve || deploymentTop == null
+		if (!IsTrial || !CanObserve || deploymentTop == null
 			|| !sceneLink.Interior.Mode.TryObserve(followCamera, followAudio)) return;
 
 		ClearSoloLevers();
@@ -912,7 +944,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (IsDeployment)
+		if (IsTrial)
 		{
 			UpdateSoloLevers();
 			UpdateMinimap();
@@ -940,7 +972,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	private void UpdateMinimap()
 	{
 		if (minimapCamera == null) return;
-		bool visible = deploymentMinimap && minimapCamera.targetTexture != null && CanObserve
+		bool visible = deploymentMinimap && minimapCamera.targetTexture != null && CanObserve && (!IsMission || MissionReady)
 			&& !sceneLink.Interior.Mode.IsObserving;
 		if (minimapCamera.enabled != visible) minimapCamera.enabled = visible;
 	}
@@ -963,6 +995,14 @@ public sealed class CarentanDrive : MonoBehaviour
 		mapLabel.normal.textColor = Color.white;
 
 		if (PlayerHealth != null) DrawMapLabel(PlayerHealth.transform, "Tiger", mapLabel.fontSize * 3f);
+		if (IsMission)
+		{
+			if (missionGoal != null) DrawMapLabel(missionGoal, "지휘관", mapLabel.fontSize * 4f);
+			if (missionEntry != null) DrawMapLabel(missionEntry.transform, "진입", mapLabel.fontSize * 3f);
+			if (missionExit != null) DrawMapLabel(missionExit.transform, "복귀", mapLabel.fontSize * 3f);
+			return;
+		}
+
 		for (int i = 0; i < DeploymentCount; i++)
 		{
 			TankAI tank = GetDeployed(i);
@@ -1000,12 +1040,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		GUI.DrawTexture(rect, texture);
 		GUI.Box(new Rect(rect.center.x - 10f, rect.y + 2f, 20f, 18f), "N", minimapTag);
 
-		if (deploymentGoal != null) DrawMinimapTag(rect, deploymentGoal.position, "목표", 36f, new Color(.75f, .92f, .70f));
-		for (int i = 0; i < DeploymentCount; i++)
-		{
-			TankAI tank = GetDeployed(i);
-			if (tank != null) DrawMinimapTag(rect, tank.transform.position, DeploymentNames[i], 20f, new Color(1f, .76f, .52f));
-		}
+		DrawMinimapMarkers(rect);
 
 		if (PlayerHealth != null && TryMinimapPoint(rect, PlayerHealth.transform.position, out Vector2 center))
 		{
@@ -1018,6 +1053,26 @@ public sealed class CarentanDrive : MonoBehaviour
 			GUI.matrix = matrix;
 		}
 		GUI.color = tint;
+	}
+
+	private void DrawMinimapMarkers(Rect rect)
+	{
+		if (IsMission)
+		{
+			bool destroyed = MissionTarget != null && MissionTarget.Destroyed;
+			if (missionGoal != null) DrawMinimapTag(rect, missionGoal.position, destroyed ? "파괴됨" : "지휘관", 44f,
+				destroyed ? Color.gray : new Color(1f, .76f, .52f));
+			if (missionEntry != null) DrawMinimapTag(rect, missionEntry.bounds.center, "진입", 32f, new Color(.75f, .92f, .70f));
+			if (missionExit != null) DrawMinimapTag(rect, missionExit.bounds.center, "복귀", 32f, new Color(1f, .86f, .62f));
+			return;
+		}
+
+		if (deploymentGoal != null) DrawMinimapTag(rect, deploymentGoal.position, "목표", 36f, new Color(.75f, .92f, .70f));
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			TankAI tank = GetDeployed(i);
+			if (tank != null) DrawMinimapTag(rect, tank.transform.position, DeploymentNames[i], 20f, new Color(1f, .76f, .52f));
+		}
 	}
 
 	private void DrawMinimapTag(Rect rect, Vector3 pos, string label, float width, Color tint)
@@ -1111,6 +1166,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		Comparison?.Dispose();
 #endif
 		if (sceneLink != null) sceneLink.StageChanged -= OnStageChanged;
+		ClearSoloLevers();
 		StopFollowing();
 		StopPatrol();
 		FinishTrialLog();

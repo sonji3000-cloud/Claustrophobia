@@ -46,6 +46,13 @@ GameObject:
   - component: {fileID: 4844986646108440200}
   - component: {fileID: 6578099338761688508}
   - component: {fileID: 3876200361258630598}
+  - component: {fileID: 3668881041496873660}
+  - component: {fileID: 7042447960851535041}
+  - component: {fileID: 2393754425843229371}
+  - component: {fileID: 6211039010310109330}
+  - component: {fileID: 2898213130702081218}
+  - component: {fileID: 4807215229821167592}
+  - component: {fileID: 2898213130702081217}
   m_Layer: 0
   m_Name: CommanderTank-Sherman
   m_TagString: enemy_tank
@@ -69,6 +76,7 @@ Transform:
   - {fileID: 4885684627565841961}
   - {fileID: 1296110565378400403}
   - {fileID: 4232190940153194308}
+  - {fileID: 479045723281520471}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &7463410511368956783
@@ -139,6 +147,10 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 4844986646108440200}
   - {fileID: 6578099338761688508}
+  - {fileID: 3668881041496873660}
+  - {fileID: 2393754425843229371}
+  - {fileID: 6211039010310109330}
+  - {fileID: 2898213130702081217}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &4844986646108440200
 MonoBehaviour:
@@ -772,3 +784,211 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400028, guid: efad970e0998e4c6592bbc378defdaae, type: 3}
   m_PrefabInstance: {fileID: 4885684627565450421}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3668881041496873660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2343151087282849892}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2658b5293818681498cea67e8fb081e4, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankMotor
+  MaxMoveSpeed: 5
+  MaxTurnSpeed: 60
+  MoveAcceleration: 2
+  MoveDeceleration: 4
+  TurnAcceleration: 90
+  TurnDeceleration: 180
+  ground: {fileID: 7042447960851535041}
+  maxDriveSlope: 20
+  tiltSpeed: 90
+  tiltGain: 8
+--- !u!114 &7042447960851535041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2343151087282849892}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb851c0a4d19af34ba02f16e0a1c78ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankGroundProbe
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1
+  center: {x: 0, y: 0.0846262, z: -0.010281086}
+  halfSize: {x: 1.1483307, y: 2.6376915}
+  startHeight: 0.6
+  scanDepth: 1
+  contactGap: 0.2
+  penetration: 0.12
+  minContacts: 2
+  maxSlope: 60
+  normalSpeed: 180
+  drawGizmos: 1
+--- !u!114 &2393754425843229371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2343151087282849892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38244224542a74448aef15e233c651b1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankAim
+  turretPivot: {fileID: 1296110565378400403}
+  gunPivot: {fileID: 5091754123196968676}
+  YawSpeed: 60
+  PitchSpeed: 30
+  MinPitch: -10
+  MaxPitch: 30
+  logYaw: 0
+  _TurretYaw: 0
+  _GunPitch: 0
+--- !u!114 &6211039010310109330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2343151087282849892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4816d6a3705165445b86f3e367402394, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankGun
+  muzzle: {fileID: 5704619926600436157}
+  projectilePrefab: {fileID: 6459995312326675074, guid: 17a566cb1ef3a994e8e746b6177fe8ea, type: 3}
+  ownerBody: {fileID: 7463410511368956783}
+  TestAllowFire: 1
+  ProjectileSpeed: 20
+  ShotDamage: 25
+  RecoveryDuration: 1.5
+--- !u!114 &2898213130702081218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2343151087282849892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115705b1dfda3a446b58995688bc7b31, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankBallistics
+  autoRefresh: 0
+  PredictionEnabled: 1
+  ShowMarker: 0
+  ShowDiagnostics: 0
+  UpdateInterval: 0.1
+  MaxPredictionTime: 5
+  MaxSteps: 300
+  MarkerRadius: 0.4
+  MarkerLineWidth: 0.025
+  SurfaceOffset: 0.02
+  marker: {fileID: 0}
+  ring: {fileID: 0}
+--- !u!114 &4807215229821167592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2343151087282849892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d19e96c542850f94a80da703624df677, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankSensor
+  owner: {fileID: 2898213130702081217}
+  self: {fileID: 3876200361258630598}
+  origin: {fileID: 479045723281520471}
+  sightMask:
+    serializedVersion: 2
+    m_Bits: 4294966523
+  interval: 0.1
+  acquireRange: 32
+  keepRange: 36
+  acquireAngle: 360
+  keepAngle: 360
+  confirmTime: 0.3
+  memoryTime: 10
+--- !u!114 &2898213130702081217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2343151087282849892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eafcad93bc59ee547a3eb4a1aeacc454, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TankAI
+  motor: {fileID: 3668881041496873660}
+  aim: {fileID: 2393754425843229371}
+  gun: {fileID: 6211039010310109330}
+  health: {fileID: 6578099338761688508}
+  body: {fileID: 7463410511368956783}
+  ballistics: {fileID: 2898213130702081218}
+  path: {fileID: 0}
+  sensor: {fileID: 4807215229821167592}
+  combat: {fileID: 0}
+  stationary: 1
+  moveMode: 0
+  cornerRadius: 0.25
+  sharpAngle: 30
+  cornerSpeed: 1.5
+  alignAngle: 3
+  stallTimeout: 4
+  progressDistance: 0.25
+  turnGrace: 8
+  retryDelay: 0.5
+  retryLimit: 2
+  stopRadius: 0.5
+  slowDistance: 3
+  turnAngle: 45
+  turnGain: 2
+  turnTolerance: 1.5
+  stopSpeed: 0.05
+  stopTurnSpeed: 0.5
+  aimTolerance: 0.5
+  shotCheckInterval: 0.1
+--- !u!1 &6153834344820703128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 479045723281520471}
+  m_Layer: 0
+  m_Name: Sensor Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &479045723281520471
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153834344820703128}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8670737213564714036}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -30,14 +30,9 @@ public sealed class CarentanDriveEditor : Editor
 			EditorGUILayout.LabelField("A 단독 반복 시험", drive.Comparison.Status);
 			return;
 		}
-		if (EditorApplication.isPlaying && drive.IsDeployment)
+		if (EditorApplication.isPlaying && drive.IsTrial)
 		{
-			DrawDeployment(drive);
-			return;
-		}
-		if (EditorApplication.isPlaying && drive.IsMission)
-		{
-			DrawMission(drive);
+			DrawTrial(drive);
 			return;
 		}
 		if (EditorApplication.isPlaying && drive.IsEntryTest)
@@ -53,7 +48,7 @@ public sealed class CarentanDriveEditor : Editor
 
 		if (!EditorApplication.isPlaying)
 		{
-			DrawEditSettings(drive.IsDeployment);
+			DrawEditSettings(drive);
 			string hint = drive.IsMission
 				? "Play를 누르면 남쪽 통로에서 출발합니다. Scene 뷰에서 진입·복귀 구역을 확인할 수 있습니다."
 				: drive.IsDeployment
@@ -170,11 +165,9 @@ public sealed class CarentanDriveEditor : Editor
 
 	private void DrawMission(CarentanDrive drive)
 	{
-		EditorGUILayout.LabelField("씬 상태", drive.SceneStage.ToString());
-		string error = string.IsNullOrEmpty(drive.SceneError) ? drive.MissionError : drive.SceneError;
-		if (!string.IsNullOrEmpty(error))
+		if (!string.IsNullOrEmpty(drive.MissionError))
 		{
-			EditorGUILayout.HelpBox(error, MessageType.Error);
+			EditorGUILayout.HelpBox(drive.MissionError, MessageType.Error);
 			return;
 		}
 		if (!drive.MissionReady) return;
@@ -182,6 +175,13 @@ public sealed class CarentanDriveEditor : Editor
 		TankHealth targetHealth = drive.MissionTarget;
 		string hp = $"HP {targetHealth.CurrentHP:F0} / {targetHealth.Capacity:F0} · 피탄 {targetHealth.DamageHitCount}회";
 		EditorGUILayout.LabelField("지휘관 전차", targetHealth.Destroyed ? $"{hp} · 파괴됨" : hp);
+		TankAI guard = drive.MissionGuard;
+		if (guard != null)
+		{
+			EditorGUILayout.LabelField("지휘관 공격 / 발사", $"{guard.AttackStatus} / {guard.ShotCount}발");
+			if (!targetHealth.Destroyed && guard.Sensor != null) DrawSight(guard.Sensor);
+			if (guard.AttackBlockReason.Length > 0) EditorGUILayout.HelpBox(guard.AttackBlockReason, MessageType.Info);
+		}
 
 		using (new EditorGUI.DisabledScope(drive.PlayerHealth.Destroyed
 			|| serializedObject.FindProperty("missionFiring").objectReferenceValue == null))
@@ -191,7 +191,8 @@ public sealed class CarentanDriveEditor : Editor
 		EditorGUILayout.LabelField("Tiger 차체 중심", center.ToString("F1"));
 		DrawZoneStatus("missionEntry", "시가지 진입 구역", center);
 		DrawZoneStatus("missionExit", "남쪽 복귀 구역", center);
-		EditorGUILayout.HelpBox("F9 → 1 → 조종 장치를 보고 Space. W/I로 전진하고 Q/U로 중립으로 돌립니다.", MessageType.Info);
+		if (!drive.TrialSoloDrive)
+			EditorGUILayout.HelpBox("F9 → 1 → 조종 장치를 보고 Space. W/I로 전진하고 Q/U로 중립으로 돌립니다.", MessageType.Info);
 	}
 
 	private void DrawZoneStatus(string field, string label, Vector3 point)
@@ -203,7 +204,7 @@ public sealed class CarentanDriveEditor : Editor
 		EditorGUILayout.LabelField(label, box.Contains(local) ? "안" : "밖");
 	}
 
-	private void DrawEditSettings(bool isDeployment)
+	private void DrawEditSettings(CarentanDrive drive)
 	{
 		serializedObject.Update();
 		SerializedProperty property = serializedObject.GetIterator();
@@ -213,6 +214,7 @@ public sealed class CarentanDriveEditor : Editor
 			enterChildren = false;
 			switch (property.name)
 			{
+				case "deploymentTrial":
 				case "deploymentEnemies":
 				case "deploymentStart":
 				case "deploymentSoloDrive":
@@ -226,15 +228,23 @@ public sealed class CarentanDriveEditor : Editor
 			using (new EditorGUI.DisabledScope(property.name == "m_Script"))
 				EditorGUILayout.PropertyField(property, true);
 
-			if (property.name == "layout") DrawTrialSettings(isDeployment);
+			if (property.name == "layout" && drive.IsTrial) DrawTrialSettings(drive);
 		}
 
 		serializedObject.ApplyModifiedProperties();
 	}
 
-	private void DrawTrialSettings(bool isDeployment)
+	private void DrawTrialSettings(CarentanDrive drive)
 	{
-		if (isDeployment)
+		bool combat = false;
+		if (drive.IsDeployment)
+		{
+			SerializedProperty trial = serializedObject.FindProperty("deploymentTrial");
+			EditorGUILayout.PropertyField(trial, new GUIContent("시험 종류"));
+			combat = trial.enumValueIndex == 0;
+		}
+
+		if (combat)
 		{
 			SerializedProperty enemies = serializedObject.FindProperty("deploymentEnemies");
 			int selected = enemies.intValue;
@@ -251,30 +261,28 @@ public sealed class CarentanDriveEditor : Editor
 
 			if (enemies.intValue != selected) enemies.intValue = selected;
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentStart"), new GUIContent("Tiger 출발점"));
-			SerializedProperty solo = serializedObject.FindProperty("deploymentSoloDrive");
-			EditorGUILayout.PropertyField(solo, new GUIContent("포수석 이동"));
-			if (solo.boolValue)
-				EditorGUILayout.PropertyField(serializedObject.FindProperty("soloLever"), new GUIContent("포수석 레버 강도"));
-			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentHP"), new GUIContent("Tiger 시작 HP"));
 		}
 
-		using (new EditorGUI.DisabledScope(!isDeployment))
-		{
-			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentInvulnerable"), new GUIContent("Tiger 무적"));
-			EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentMinimap"), new GUIContent("우측 하단 지도"));
-		}
-
-		if (!isDeployment) EditorGUILayout.HelpBox("무적과 지도는 적 배치 디버그에서 적용됩니다.", MessageType.None);
+		SerializedProperty solo = serializedObject.FindProperty("deploymentSoloDrive");
+		EditorGUILayout.PropertyField(solo, new GUIContent("포수석 이동"));
+		if (solo.boolValue)
+			EditorGUILayout.PropertyField(serializedObject.FindProperty("soloLever"), new GUIContent("포수석 레버 강도"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentHP"), new GUIContent("Tiger 시작 HP"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentInvulnerable"), new GUIContent("Tiger 무적"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentMinimap"), new GUIContent("우측 하단 지도"));
 	}
 
-	private static void DrawDeployment(CarentanDrive drive)
+	private void DrawTrial(CarentanDrive drive)
 	{
-		using (new EditorGUILayout.HorizontalScope())
+		if (!drive.IsMission)
 		{
-			using (new EditorGUI.DisabledScope(!drive.CanStartDeployment))
-				if (GUILayout.Button("시험 시작 (0)")) drive.StartDeployment();
-			using (new EditorGUI.DisabledScope(!drive.DeploymentStarted))
-				if (GUILayout.Button("시험 정지 (9)")) drive.StopDeployment();
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				using (new EditorGUI.DisabledScope(!drive.CanStartDeployment))
+					if (GUILayout.Button("시험 시작 (0)")) drive.StartDeployment();
+				using (new EditorGUI.DisabledScope(!drive.DeploymentStarted))
+					if (GUILayout.Button("시험 정지 (9)")) drive.StopDeployment();
+			}
 		}
 
 		using (new EditorGUI.DisabledScope(!drive.CanObserve))
@@ -291,21 +299,29 @@ public sealed class CarentanDriveEditor : Editor
 				using (new EditorGUI.DisabledScope(drive.PlayerHealth == null))
 					if (GUILayout.Button("Tiger")) drive.ObserveTiger();
 
-				for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
+				if (drive.IsMission)
 				{
-					TankAI tank = drive.GetDeployed(i);
-					using (new EditorGUI.DisabledScope(tank == null))
-						if (GUILayout.Button(DeploymentLabels[i])) drive.ObserveEnemy(tank);
+					using (new EditorGUI.DisabledScope(!drive.MissionReady))
+						if (GUILayout.Button("지휘관 Sherman")) drive.ObserveMissionTarget();
+				}
+				else
+				{
+					for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
+					{
+						TankAI tank = drive.GetDeployed(i);
+						using (new EditorGUI.DisabledScope(tank == null))
+							if (GUILayout.Button(DeploymentLabels[i])) drive.ObserveEnemy(tank);
+					}
 				}
 			}
 		}
 
-		using (new EditorGUI.DisabledScope(!drive.CanRestartDeployment || PendingRestart != RestartPhase.None))
-			if (GUILayout.Button("같은 설정으로 재시작")) RestartDeployment(drive);
+		using (new EditorGUI.DisabledScope(!drive.CanRestartTrial || PendingRestart != RestartPhase.None))
+			if (GUILayout.Button("같은 설정으로 재시작")) RestartTrial(drive);
 
 		TankHealth health = drive.PlayerHealth;
 		bool invulnerable = health != null && health.IsInvulnerable;
-		string protection = drive.DeploymentInvulnerable ? "적용 대기" : "꺼짐";
+		string protection = drive.TrialInvulnerable ? "적용 대기" : "꺼짐";
 		if (invulnerable) protection = "켜짐";
 		EditorGUILayout.LabelField("Tiger 무적", protection, EditorStyles.boldLabel);
 
@@ -318,8 +334,16 @@ public sealed class CarentanDriveEditor : Editor
 		}
 		if (health != null)
 			EditorGUILayout.LabelField("Tiger HP / 피격", $"{health.CurrentHP:F0} / {health.DamageHitCount}회");
+		if (drive.TrialSoloDrive)
+			EditorGUILayout.LabelField("포수석 이동", "2 포수석 · W/S 전후진 · A/D 선회");
 
 		EditorGUILayout.Space();
+		if (drive.IsMission)
+		{
+			DrawMission(drive);
+			return;
+		}
+
 		for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
 		{
 			TankAI tank = drive.GetDeployed(i);
@@ -351,9 +375,6 @@ public sealed class CarentanDriveEditor : Editor
 		else if (drive.CanStartDeployment)
 			EditorGUILayout.LabelField("시험 준비", "0.00초");
 
-		if (drive.DeploymentSoloDrive)
-			EditorGUILayout.LabelField("포수석 이동", "2 포수석 · W/S 전후진 · A/D 선회");
-
 		if (invulnerable)
 		{
 			EditorGUILayout.LabelField("가상 HP / 차단 명중", $"{drive.DeploymentVirtualHP:F0} / {drive.DeploymentBlockedHits}회");
@@ -361,7 +382,7 @@ public sealed class CarentanDriveEditor : Editor
 				EditorGUILayout.LabelField("가상 파괴", $"{drive.DeploymentVirtualDestroyedAt:F2}초");
 		}
 
-		if (!drive.CanRestartDeployment) return;
+		if (!drive.CanRestartTrial) return;
 
 		if (drive.DeploymentStarted) EditorGUILayout.LabelField("교전 기록", "B · 첫 적 확인 표시");
 		string path = drive.DeploymentLogPath;
@@ -375,11 +396,11 @@ public sealed class CarentanDriveEditor : Editor
 		}
 	}
 
-	private static void RestartDeployment(CarentanDrive drive)
+	private static void RestartTrial(CarentanDrive drive)
 	{
-		if (!EditorApplication.isPlaying || !drive.CanRestartDeployment || PendingRestart != RestartPhase.None) return;
+		if (!EditorApplication.isPlaying || !drive.CanRestartTrial || PendingRestart != RestartPhase.None) return;
 
-		drive.StopDeployment();
+		if (!drive.IsMission) drive.StopDeployment();
 		SessionState.SetInt(OptionsKey, (int)EditorSettings.enterPlayModeOptions);
 		SessionState.SetBool(OptionsEnabledKey, EditorSettings.enterPlayModeOptionsEnabled);
 		SessionState.SetInt(RestartKey, (int)RestartPhase.Exiting);
