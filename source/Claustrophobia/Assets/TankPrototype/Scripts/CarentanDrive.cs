@@ -127,11 +127,15 @@ public sealed class CarentanDrive : MonoBehaviour
 	[Header("임무 · 남쪽 통로")]
 	[SerializeField] private Transform missionStart;
 	[SerializeField] private BoxCollider missionEntry;
+	[Tooltip("복귀 구역의 로컬 +Z 면은 시가지 쪽, -Z 면은 바깥쪽을 향하게 둡니다.")]
 	[SerializeField] private BoxCollider missionExit;
 	[SerializeField] private Transform missionGoal;
 	[SerializeField] private TankHealth missionTargetPrefab;
 	[Tooltip("Scene 뷰에서 지휘관 전차를 바라보는 주행 시험 위치")]
 	[SerializeField] private Transform missionFiring;
+	[SerializeField] private string missionEntryText = "시가지 진입";
+	[SerializeField] private string missionTargetText = "지휘관 전차 격파";
+	[SerializeField] private string missionReturnText = "진입 통로로 복귀";
 
 	public const int DeploymentCount = 4;
 	private const double EntryDelay = 4d;
@@ -158,6 +162,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	private Layout loadedLayout;
 	private NetworkTransform playerMotion;
 	private Rigidbody playerBody;
+	private CarentanMission mission;
 	private readonly HashSet<Rigidbody> registeredTanks = new();
 	private readonly List<Collider> tankColliders = new();
 	private readonly List<StreetPropLifetime> openProps = new();
@@ -187,6 +192,16 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool MissionReady => loadedLayout == Layout.Mission && playerBody != null
 		&& MissionTarget != null && MissionTarget.IsReady
 		&& sceneLink != null && sceneLink.IsReady;
+	public CarentanMission.Phase MissionPhase => mission != null ? mission.CurrentPhase : CarentanMission.Phase.Preparing;
+	public string MissionObjective => MissionPhase switch
+	{
+		CarentanMission.Phase.EnterTown => missionEntryText,
+		CarentanMission.Phase.DestroyTarget => missionTargetText,
+		CarentanMission.Phase.ReturnSouth => missionReturnText,
+		CarentanMission.Phase.Succeeded => "임무 성공",
+		CarentanMission.Phase.Failed => "임무 실패",
+		_ => "임무 준비 중"
+	};
 	public TankHealth MissionTarget { get; private set; }
 	public string MissionError { get; private set; }
 #if UNITY_EDITOR
@@ -297,9 +312,10 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		sceneLink.Interior.Mode.SetMode(TankTestMode.Mode.Interior);
 		NetworkRunner runner = sceneLink.Session.Runner;
+		TankControl player = sceneLink.Session.tankControl;
+		if (IsMission && player != null) player.TryGetComponent(out mission);
 		if (runner == null || !runner.IsServer || enemy != null) return;
 
-		TankControl player = sceneLink.Session.tankControl;
 		player.TryGetComponent(out TankHealth health);
 		PlayerHealth = health;
 		if (player.TryGetComponent(out TankGroundProbe ground)) ground.SetGroundMask(groundMask);
@@ -370,6 +386,12 @@ public sealed class CarentanDrive : MonoBehaviour
 		if (loadedLayout == Layout.Mission && MissionTarget != null && MissionTarget.IsReady
 			&& MissionTarget.Runner == runner) return;
 
+		if (mission == null || !mission.IsSpawned)
+		{
+			ReportMissionError("Tiger에 연결된 CarentanMission과 NetworkObject를 확인하세요.");
+			return;
+		}
+
 		if (!CanPlaceTiger(player, missionStart) || missionGoal == null || missionTargetPrefab == null
 			|| !IsMissionZone(missionEntry) || !IsMissionZone(missionExit) || missionEntry == missionExit)
 		{
@@ -387,6 +409,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		PlaceTrialTiger(player, missionStart);
 		loadedLayout = Layout.Mission;
+		mission.Begin(missionEntry, missionExit, MissionTarget);
 		MissionError = null;
 	}
 
@@ -657,6 +680,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		ClearSoloLevers();
 		PlaceTiger(missionFiring);
+		mission.ResetRouteSample();
 	}
 
 	internal void SetTrialLevers(Vector2 levers)

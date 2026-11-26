@@ -165,6 +165,18 @@ public sealed class CarentanDriveEditor : Editor
 
 	private void DrawMission(CarentanDrive drive)
 	{
+		EditorGUILayout.LabelField("현재 임무", drive.MissionObjective, EditorStyles.boldLabel);
+		string reason = drive.MissionPhase switch
+		{
+			CarentanMission.Phase.EnterTown => "Tiger와 지정 표적 배치 완료",
+			CarentanMission.Phase.DestroyTarget => "Tiger가 시가지 진입 구역에 도착",
+			CarentanMission.Phase.ReturnSouth => "지정 지휘관 전차 파괴",
+			CarentanMission.Phase.Succeeded => "Tiger가 복귀 구역을 시가지 쪽에서 남쪽으로 통과",
+			CarentanMission.Phase.Failed => "임무 완료 전 Tiger 파괴",
+			_ => "Tiger와 지정 표적 배치 대기"
+		};
+		EditorGUILayout.LabelField("마지막 전환 사유", reason);
+
 		if (!string.IsNullOrEmpty(drive.MissionError))
 		{
 			EditorGUILayout.HelpBox(drive.MissionError, MessageType.Error);
