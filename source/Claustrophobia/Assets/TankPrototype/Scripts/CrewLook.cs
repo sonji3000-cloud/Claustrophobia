@@ -26,6 +26,7 @@ public sealed class CrewLook : NetworkBehaviour
 	private float pitch;
 	private bool bodyHidden;
 	private bool ownsCursor;
+	private bool lookPaused;
 	private CursorLockMode savedLock;
 	private bool savedVisible;
 	private SessionJoinInit session;
@@ -40,6 +41,8 @@ public sealed class CrewLook : NetworkBehaviour
 
 	public bool HasCursor => ownsCursor;
 	public Transform Pivot => pitchPivot;
+
+	internal void SetLookPaused(bool paused) => lookPaused = paused;
 
 	private void Awake()
 	{
@@ -90,7 +93,7 @@ public sealed class CrewLook : NetworkBehaviour
 			return;
 		}
 
-		ReadLook(mouse);
+		if (!lookPaused) ReadLook(mouse);
 	}
 
 	private void ReadLook(Mouse mouse)

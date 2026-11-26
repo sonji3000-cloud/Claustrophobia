@@ -17,6 +17,7 @@ public sealed class TankInterior : MonoBehaviour
 	[SerializeField] private TankJoystick joystick;
 	[SerializeField] private CrewInteractHud interactionHud;
 	[SerializeField] private TankStatusPanel statusPanel;
+	[SerializeField] private CommanderMapView commanderMap;
 
 	private bool prepared;
 
@@ -33,6 +34,7 @@ public sealed class TankInterior : MonoBehaviour
 	public TankJoystick Joystick => joystick;
 	public CrewInteractHud Hud => interactionHud;
 	public TankStatusPanel StatusPanel => statusPanel;
+	public CommanderMapView CommanderMap => commanderMap;
 	public bool IsPrepared => prepared && seats != null && seats.IsInitialized;
 
 	public bool ValidateRefs(out string reason)

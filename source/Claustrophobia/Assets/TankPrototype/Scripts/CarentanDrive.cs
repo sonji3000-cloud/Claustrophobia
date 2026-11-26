@@ -163,6 +163,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	private NetworkTransform playerMotion;
 	private Rigidbody playerBody;
 	private CarentanMission mission;
+	private CommanderMapView commanderMap;
 	private readonly HashSet<Rigidbody> registeredTanks = new();
 	private readonly List<Collider> tankColliders = new();
 	private readonly List<StreetPropLifetime> openProps = new();
@@ -204,6 +205,8 @@ public sealed class CarentanDrive : MonoBehaviour
 	};
 	public TankHealth MissionTarget { get; private set; }
 	public string MissionError { get; private set; }
+	internal string MissionTargetText => missionTargetText;
+	internal string MissionReturnText => missionReturnText;
 #if UNITY_EDITOR
 	public Vector3 MissionTigerCenter => playerBody.worldCenterOfMass;
 	public TankAI MissionGuard { get; private set; }
@@ -301,6 +304,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	{
 		if (stage != TankSceneLink.Stage.Ready)
 		{
+			UnbindCommanderMap();
 			StopPatrol();
 			if (IsTrial)
 			{
@@ -313,7 +317,12 @@ public sealed class CarentanDrive : MonoBehaviour
 		sceneLink.Interior.Mode.SetMode(TankTestMode.Mode.Interior);
 		NetworkRunner runner = sceneLink.Session.Runner;
 		TankControl player = sceneLink.Session.tankControl;
-		if (IsMission && player != null) player.TryGetComponent(out mission);
+		if (IsMission && player != null)
+		{
+			player.TryGetComponent(out mission);
+			commanderMap = sceneLink.Interior.CommanderMap;
+			if (commanderMap != null) commanderMap.Bind(this, minimapCamera, player.transform);
+		}
 		if (runner == null || !runner.IsServer || enemy != null) return;
 
 		player.TryGetComponent(out TankHealth health);
@@ -996,9 +1005,35 @@ public sealed class CarentanDrive : MonoBehaviour
 	private void UpdateMinimap()
 	{
 		if (minimapCamera == null) return;
-		bool visible = deploymentMinimap && minimapCamera.targetTexture != null && CanObserve && (!IsMission || MissionReady)
+		bool smallMap = deploymentMinimap && minimapCamera.targetTexture != null && CanObserve && (!IsMission || MissionReady)
 			&& !sceneLink.Interior.Mode.IsObserving;
+		bool visible = smallMap || commanderMap != null && commanderMap.IsOpen;
 		if (minimapCamera.enabled != visible) minimapCamera.enabled = visible;
+	}
+
+	internal bool TryGetMissionPoint(out Vector3 point)
+	{
+		switch (MissionPhase)
+		{
+			case CarentanMission.Phase.EnterTown when missionEntry != null:
+				point = missionEntry.bounds.center;
+				return true;
+			case CarentanMission.Phase.DestroyTarget when missionGoal != null:
+				point = missionGoal.position;
+				return true;
+			case CarentanMission.Phase.ReturnSouth when missionExit != null:
+				point = missionExit.bounds.center;
+				return true;
+			default:
+				point = default;
+				return false;
+		}
+	}
+
+	private void UnbindCommanderMap()
+	{
+		if (commanderMap != null) commanderMap.Unbind();
+		commanderMap = null;
 	}
 
 	private GUIStyle mapLabel;
@@ -1008,6 +1043,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	private void OnGUI()
 	{
 		if (Event.current.type != EventType.Repaint) return;
+		if (commanderMap != null && commanderMap.IsOpen) return;
 		if (!showTop || followCamera == null || !followCamera.enabled)
 		{
 			if (minimapCamera != null && minimapCamera.enabled) DrawMinimap();
@@ -1190,6 +1226,7 @@ public sealed class CarentanDrive : MonoBehaviour
 		Comparison?.Dispose();
 #endif
 		if (sceneLink != null) sceneLink.StageChanged -= OnStageChanged;
+		UnbindCommanderMap();
 		ClearSoloLevers();
 		StopFollowing();
 		StopPatrol();
