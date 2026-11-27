@@ -11,6 +11,8 @@ public sealed class CarentanDriveEditor : Editor
 	private const string OptionsKey = "CarentanDrive.RestartOptions";
 	private const string OptionsEnabledKey = "CarentanDrive.RestartOptionsEnabled";
 	private static readonly string[] DeploymentLabels = { "A", "B", "C", "D" };
+	private static readonly GUIContent MissionFiringButton = new("Tiger를 사격 위치로",
+		"진입 전이면 시가지 진입 단계를 건너뛰고 사격 위치로 이동합니다.");
 
 	private static RestartPhase PendingRestart => (RestartPhase)SessionState.GetInt(RestartKey, 0);
 
@@ -50,7 +52,7 @@ public sealed class CarentanDriveEditor : Editor
 		{
 			DrawEditSettings(drive);
 			string hint = drive.IsMission
-				? "Play를 누르면 남쪽 통로에서 출발합니다. Scene 뷰에서 진입·복귀 구역을 확인할 수 있습니다."
+				? "Play를 누르면 적 전차 4대가 경계를 시작합니다. 지정 지휘관을 격파하고 남쪽 통로로 복귀하세요."
 				: drive.IsDeployment
 				? "적 선택과 Tiger 출발점을 고른 다음 Play를 누르세요. 적을 모두 해제하면 Tiger 주행만 시험합니다."
 				: "Layout에서 시험 배치를 고른 다음 Play를 누르세요.";
@@ -169,6 +171,7 @@ public sealed class CarentanDriveEditor : Editor
 		string reason = drive.MissionPhase switch
 		{
 			CarentanMission.Phase.EnterTown => "Tiger와 지정 표적 배치 완료",
+			CarentanMission.Phase.DestroyTarget when drive.MissionEntrySkipped => "사격 시험을 위해 진입 단계 건너뜀",
 			CarentanMission.Phase.DestroyTarget => "Tiger가 시가지 진입 구역에 도착",
 			CarentanMission.Phase.ReturnSouth => "지정 지휘관 전차 파괴",
 			CarentanMission.Phase.Succeeded => "Tiger가 복귀 구역을 시가지 쪽에서 남쪽으로 통과",
@@ -197,7 +200,7 @@ public sealed class CarentanDriveEditor : Editor
 
 		using (new EditorGUI.DisabledScope(drive.PlayerHealth.Destroyed
 			|| serializedObject.FindProperty("missionFiring").objectReferenceValue == null))
-			if (GUILayout.Button("Tiger를 사격 위치로")) drive.PlaceMissionTiger();
+			if (GUILayout.Button(MissionFiringButton)) drive.PlaceMissionTiger();
 
 		Vector3 center = drive.MissionTigerCenter;
 		EditorGUILayout.LabelField("Tiger 차체 중심", center.ToString("F1"));
@@ -233,6 +236,7 @@ public sealed class CarentanDriveEditor : Editor
 				case "soloLever":
 				case "deploymentHP":
 				case "deploymentInvulnerable":
+				case "missionInvulnerable":
 				case "deploymentMinimap":
 					continue;
 			}
@@ -280,7 +284,8 @@ public sealed class CarentanDriveEditor : Editor
 		if (solo.boolValue)
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("soloLever"), new GUIContent("포수석 레버 강도"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentHP"), new GUIContent("Tiger 시작 HP"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentInvulnerable"), new GUIContent("Tiger 무적"));
+		string invulnerable = drive.IsMission ? "missionInvulnerable" : "deploymentInvulnerable";
+		EditorGUILayout.PropertyField(serializedObject.FindProperty(invulnerable), new GUIContent("Tiger 무적"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("deploymentMinimap"), new GUIContent("우측 하단 지도"));
 	}
 
@@ -316,14 +321,11 @@ public sealed class CarentanDriveEditor : Editor
 					using (new EditorGUI.DisabledScope(!drive.MissionReady))
 						if (GUILayout.Button("지휘관 Sherman")) drive.ObserveMissionTarget();
 				}
-				else
+				for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
 				{
-					for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
-					{
-						TankAI tank = drive.GetDeployed(i);
-						using (new EditorGUI.DisabledScope(tank == null))
-							if (GUILayout.Button(DeploymentLabels[i])) drive.ObserveEnemy(tank);
-					}
+					TankAI tank = drive.GetDeployed(i);
+					using (new EditorGUI.DisabledScope(tank == null))
+						if (GUILayout.Button(DeploymentLabels[i])) drive.ObserveEnemy(tank);
 				}
 			}
 		}
@@ -350,11 +352,7 @@ public sealed class CarentanDriveEditor : Editor
 			EditorGUILayout.LabelField("포수석 이동", "2 포수석 · W/S 전후진 · A/D 선회");
 
 		EditorGUILayout.Space();
-		if (drive.IsMission)
-		{
-			DrawMission(drive);
-			return;
-		}
+		if (drive.IsMission) DrawMission(drive);
 
 		for (int i = 0; i < CarentanDrive.DeploymentCount; i++)
 		{
@@ -367,16 +365,17 @@ public sealed class CarentanDriveEditor : Editor
 			}
 
 			TankCombat combat = tank.Combat;
-			string state = i == 3 && combat.State == TankCombat.CombatState.Patrol
+			bool destroyed = tank.TryGetComponent(out TankHealth enemyHealth) && enemyHealth.Destroyed;
+			string state = destroyed ? "파괴됨" : i == 3 && combat.State == TankCombat.CombatState.Patrol
 				&& tank.MoveStatus == TankAI.MoveState.Arrived ? "경계 대기" : $"{combat.State} / {tank.MoveStatus}";
-			if (combat.PatrolIndex >= 0 && i != 3) state += $" · 경유점 {combat.PatrolIndex + 1}";
+			if (!destroyed && combat.PatrolIndex >= 0 && i != 3) state += $" · 경유점 {combat.PatrolIndex + 1}";
 			EditorGUILayout.LabelField(label, state);
 			if (tank.MoveFailure.Length > 0) EditorGUILayout.HelpBox($"{label} · {tank.MoveFailure}", MessageType.Warning);
 			else if (combat.LastStopReason.Length > 0 && drive.DeploymentStarted)
 				EditorGUILayout.HelpBox($"{label} · {combat.LastStopReason}", MessageType.Info);
 		}
 
-		DrawTrialStatus(drive, invulnerable);
+		if (!drive.IsMission) DrawTrialStatus(drive, invulnerable);
 	}
 
 	private static void DrawTrialStatus(CarentanDrive drive, bool invulnerable)

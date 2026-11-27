@@ -133,6 +133,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	[SerializeField] private TankHealth missionTargetPrefab;
 	[Tooltip("Scene 뷰에서 지휘관 전차를 바라보는 주행 시험 위치")]
 	[SerializeField] private Transform missionFiring;
+	[SerializeField] private bool missionInvulnerable;
 	[SerializeField] private string missionEntryText = "시가지 진입";
 	[SerializeField] private string missionTargetText = "지휘관 전차 격파";
 	[SerializeField] private string missionReturnText = "진입 통로로 복귀";
@@ -210,6 +211,7 @@ public sealed class CarentanDrive : MonoBehaviour
 #if UNITY_EDITOR
 	public Vector3 MissionTigerCenter => playerBody.worldCenterOfMass;
 	public TankAI MissionGuard { get; private set; }
+	public bool MissionEntrySkipped => mission != null && mission.EntrySkipped;
 #endif
 	public bool CanObserve => followCamera != null && sceneLink != null && sceneLink.IsReady;
 	public Transform DeploymentPoint => deploymentStart switch
@@ -225,7 +227,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	public bool CanRestartTrial => IsTrial && sceneLink != null
 		&& sceneLink.Session != null && sceneLink.Session.IsLocalSession;
 	public bool TrialSoloDrive => deploymentSoloDrive && CanRestartTrial;
-	public bool TrialInvulnerable => deploymentInvulnerable && CanRestartTrial;
+	public bool TrialInvulnerable => CanRestartTrial && (IsMission ? missionInvulnerable : deploymentInvulnerable);
 	public float DeploymentVirtualHP => trialLog?.VirtualHP ?? (PlayerHealth != null ? PlayerHealth.CurrentHP : 0f);
 	public int DeploymentBlockedHits => trialLog?.BlockedHits ?? 0;
 	public double DeploymentVirtualDestroyedAt => trialLog?.VirtualDestroyedAt ?? -1d;
@@ -262,7 +264,7 @@ public sealed class CarentanDrive : MonoBehaviour
 	}
 
 	public bool IsDeploymentSelected(int index) => (uint)index < DeploymentCount
-		&& ((int)deploymentEnemies & (1 << index)) != 0;
+		&& (IsMission || ((int)deploymentEnemies & (1 << index)) != 0);
 
 	public TankAI GetDeployed(int index)
 	{
@@ -408,6 +410,13 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
+		string error = CheckDeploymentSlots();
+		if (error != null)
+		{
+			ReportMissionError(error);
+			return;
+		}
+
 		if (!ApplyTrialHealth())
 		{
 			ReportMissionError("Tiger의 시험 체력 설정을 적용하지 못했습니다.");
@@ -415,6 +424,19 @@ public sealed class CarentanDrive : MonoBehaviour
 		}
 
 		if (!TrySpawnMissionTarget(runner)) return;
+
+		error = SpawnDeployment(runner) ?? StartDeployedPatrols();
+		if (error != null)
+		{
+			DespawnDeployment(runner);
+			runner.Despawn(MissionTarget.Object);
+			MissionTarget = null;
+#if UNITY_EDITOR
+			MissionGuard = null;
+#endif
+			ReportMissionError(error);
+			return;
+		}
 
 		PlaceTrialTiger(player, missionStart);
 		loadedLayout = Layout.Mission;
@@ -473,22 +495,10 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
-		if ((deploymentEnemies & DeploymentEnemies.All) != DeploymentEnemies.None
-			&& (deployment == null || deployment.Length != DeploymentCount || enemyPrefab == null))
+		string error = CheckDeploymentSlots();
+		if (error != null)
 		{
-			ReportDeploymentError("적 배치 슬롯 또는 전차 프리팹이 연결되지 않았습니다.");
-			return;
-		}
-
-		for (int i = 0; i < DeploymentCount; i++)
-		{
-			if (!IsDeploymentSelected(i)) continue;
-
-			DeploymentSlot slot = deployment[i];
-			if (slot != null && slot.Spawn != null && slot.Waypoints != null && slot.Waypoints.Length != 0
-				&& Array.TrueForAll(slot.Waypoints, point => point != null)) continue;
-
-			ReportDeploymentError($"{DeploymentNames[i]}의 시작점 또는 경유점이 빠졌습니다.");
+			ReportDeploymentError(error);
 			return;
 		}
 
@@ -498,26 +508,12 @@ public sealed class CarentanDrive : MonoBehaviour
 			return;
 		}
 
-		for (int i = 0; i < DeploymentCount; i++)
+		error = SpawnDeployment(runner);
+		if (error != null)
 		{
-			if (!IsDeploymentSelected(i)) continue;
-
-			TankAI tank = SpawnEnemy(runner, deployment[i].Spawn);
-			deployed[i] = tank;
-			if (tank == null || tank.Combat == null)
-			{
-				for (int j = 0; j <= i; j++)
-				{
-					TankAI spawned = GetDeployed(j);
-					if (spawned != null) runner.Despawn(spawned.Object);
-					deployed[j] = null;
-				}
-
-				ReportDeploymentError($"{DeploymentNames[i]} 전차를 생성하지 못했습니다.");
-				return;
-			}
-
-			tank.name = "Sherman " + DeploymentNames[i];
+			DespawnDeployment(runner);
+			ReportDeploymentError(error);
+			return;
 		}
 
 		PlaceTrialTiger(player, start);
@@ -527,7 +523,53 @@ public sealed class CarentanDrive : MonoBehaviour
 		DeploymentError = "";
 	}
 
-	private bool ApplyTrialHealth() => !CanRestartTrial || PlayerHealth.SetTrialHealth(deploymentHP, deploymentInvulnerable);
+	private string CheckDeploymentSlots()
+	{
+		if (!IsMission && (deploymentEnemies & DeploymentEnemies.All) == DeploymentEnemies.None) return null;
+		if (deployment == null || deployment.Length != DeploymentCount || enemyPrefab == null)
+			return "적 배치 슬롯 또는 전차 프리팹이 연결되지 않았습니다.";
+
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			if (!IsDeploymentSelected(i)) continue;
+
+			DeploymentSlot slot = deployment[i];
+			if (slot == null || slot.Spawn == null || slot.Waypoints == null || slot.Waypoints.Length == 0
+				|| !Array.TrueForAll(slot.Waypoints, point => point != null))
+				return $"{DeploymentNames[i]}의 시작점 또는 경유점이 빠졌습니다.";
+		}
+
+		return null;
+	}
+
+	private string SpawnDeployment(NetworkRunner runner)
+	{
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			if (!IsDeploymentSelected(i)) continue;
+
+			TankAI tank = SpawnEnemy(runner, deployment[i].Spawn);
+			deployed[i] = tank;
+			if (tank == null || tank.Combat == null)
+				return $"{DeploymentNames[i]} 전차를 생성하지 못했습니다.";
+
+			tank.name = "Sherman " + DeploymentNames[i];
+		}
+
+		return null;
+	}
+
+	private void DespawnDeployment(NetworkRunner runner)
+	{
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			TankAI tank = GetDeployed(i);
+			if (tank != null && tank.Runner == runner) runner.Despawn(tank.Object);
+			deployed[i] = null;
+		}
+	}
+
+	private bool ApplyTrialHealth() => !CanRestartTrial || PlayerHealth.SetTrialHealth(deploymentHP, TrialInvulnerable);
 
 	private void PlaceTrialTiger(TankControl player, Transform start)
 	{
@@ -549,8 +591,8 @@ public sealed class CarentanDrive : MonoBehaviour
 	{
 		if (spawn == null) return null;
 
-		NetworkObject tank = runner.Spawn(enemyPrefab, spawn.position, spawn.rotation);
-		if (tank == null) return null;
+		if (runner.TrySpawn(enemyPrefab, out NetworkObject tank, spawn.position, spawn.rotation) != NetworkSpawnStatus.Spawned)
+			return null;
 		if (tank.TryGetComponent(out TankGroundProbe ground)) ground.SetGroundMask(groundMask);
 		if (tank.TryGetComponent(out TankAI ai) && ai.SetMoveMode(TankAI.MoveMode.NavMesh))
 		{
@@ -638,18 +680,27 @@ public sealed class CarentanDrive : MonoBehaviour
 			trialLog = new CarentanTrialLog(deploymentRunner, PlayerHealth, deployed, DeploymentPoint,
 				deploymentCover, deploymentGoal, TrialInvulnerable, deploymentAt);
 
-		for (int i = 0; i < DeploymentCount; i++)
+		string error = StartDeployedPatrols();
+		if (error != null)
 		{
-			if (!IsDeploymentSelected(i)) continue;
-
-			if (deployed[i].Combat.StartPatrol(deployment[i].Waypoints)) continue;
-
 			StopDeployment();
-			ReportDeploymentError($"{DeploymentNames[i]}의 순찰·경계 명령을 시작하지 못했습니다.");
+			ReportDeploymentError(error);
 			return;
 		}
 
 		DeploymentError = "";
+	}
+
+	private string StartDeployedPatrols()
+	{
+		for (int i = 0; i < DeploymentCount; i++)
+		{
+			if (!IsDeploymentSelected(i)) continue;
+			if (!deployed[i].Combat.StartPatrol(deployment[i].Waypoints))
+				return $"{DeploymentNames[i]}의 순찰·경계 명령을 시작하지 못했습니다.";
+		}
+
+		return null;
 	}
 
 	public void StopDeployment() => EndDeployment("stopped");
@@ -689,7 +740,7 @@ public sealed class CarentanDrive : MonoBehaviour
 
 		ClearSoloLevers();
 		PlaceTiger(missionFiring);
-		mission.ResetRouteSample();
+		mission.SkipEntryForShot();
 	}
 
 	internal void SetTrialLevers(Vector2 levers)
@@ -1060,7 +1111,6 @@ public sealed class CarentanDrive : MonoBehaviour
 			if (missionGoal != null) DrawMapLabel(missionGoal, "지휘관", mapLabel.fontSize * 4f);
 			if (missionEntry != null) DrawMapLabel(missionEntry.transform, "진입", mapLabel.fontSize * 3f);
 			if (missionExit != null) DrawMapLabel(missionExit.transform, "복귀", mapLabel.fontSize * 3f);
-			return;
 		}
 
 		for (int i = 0; i < DeploymentCount; i++)

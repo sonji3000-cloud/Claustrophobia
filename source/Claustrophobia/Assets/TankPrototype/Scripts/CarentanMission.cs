@@ -19,6 +19,9 @@ public sealed class CarentanMission : NetworkBehaviour, IAfterTick
 
 	public bool IsSpawned => Object != null && Object.IsValid;
 	public Phase CurrentPhase => IsSpawned ? NetworkPhase : Phase.Preparing;
+#if UNITY_EDITOR
+	internal bool EntrySkipped { get; private set; }
+#endif
 
 	private void Awake()
 	{
@@ -32,6 +35,9 @@ public sealed class CarentanMission : NetworkBehaviour, IAfterTick
 		entry = null;
 		exit = null;
 		enteredExit = false;
+#if UNITY_EDITOR
+		EntrySkipped = false;
+#endif
 	}
 
 	internal void Begin(BoxCollider entryZone, BoxCollider exitZone, TankHealth designatedTarget)
@@ -45,7 +51,20 @@ public sealed class CarentanMission : NetworkBehaviour, IAfterTick
 		SetPhase(Phase.EnterTown);
 	}
 
-	internal void ResetRouteSample()
+#if UNITY_EDITOR
+	internal void SkipEntryForShot()
+	{
+		if (!IsSpawned || !HasStateAuthority || !Runner.IsServer) return;
+
+		ResetRouteSample();
+		if (CurrentPhase != Phase.EnterTown) return;
+
+		EntrySkipped = true;
+		SetPhase(Phase.DestroyTarget);
+	}
+#endif
+
+	private void ResetRouteSample()
 	{
 		previous = body.worldCenterOfMass;
 		enteredExit = false;
@@ -60,9 +79,9 @@ public sealed class CarentanMission : NetworkBehaviour, IAfterTick
 
 		Vector3 current = body.worldCenterOfMass;
 		if (tiger.Destroyed) SetPhase(Phase.Failed);
-		else if (phase == Phase.EnterTown && CrossedEntry(previous, current)) SetPhase(Phase.DestroyTarget);
-		else if (phase == Phase.DestroyTarget && target != null && target.IsReady && target.Destroyed)
+		else if ((phase is Phase.EnterTown or Phase.DestroyTarget) && target != null && target.IsReady && target.Destroyed)
 			SetPhase(Phase.ReturnSouth);
+		else if (phase == Phase.EnterTown && CrossedEntry(previous, current)) SetPhase(Phase.DestroyTarget);
 		else if (phase == Phase.ReturnSouth && CrossedExit(previous, current)) SetPhase(Phase.Succeeded);
 
 		previous = current;

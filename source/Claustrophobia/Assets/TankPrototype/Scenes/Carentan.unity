@@ -33049,6 +33049,7 @@ MonoBehaviour:
   missionGoal: {fileID: 802106041}
   missionTargetPrefab: {fileID: 6578099338761688508, guid: 2ffda8bcd4038d5458c4a6e59245fd3f, type: 3}
   missionFiring: {fileID: 802106031}
+  missionInvulnerable: 0
 --- !u!4 &1302798522
 Transform:
   m_ObjectHideFlags: 0
