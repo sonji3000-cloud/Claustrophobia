@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 1
+    path: Assets/TankPrototype/Scenes/Lobby.unity
+    guid: 754901d9d6bf72948b54630abf6ef94d
   - enabled: 0
     path: Assets/polyperfect/Low Poly War Pack/Scenes/Beach.unity
     guid: 6ef2e6de2df36d5438e45d6f8c419522
